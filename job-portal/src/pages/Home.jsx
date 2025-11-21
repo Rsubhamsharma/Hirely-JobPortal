@@ -1,108 +1,108 @@
-import React from "react";
+// pages/Home.jsx
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import "../Styles/home.css";
 
-const Home = () => {
-  const containerStyle = {
-    fontFamily: "Arial, sans-serif",
-    color: "#333",
-    textAlign: "center",
-    padding: "0 20px",
+export default function Home() {
+  const [showLogin, setShowLogin] = useState(false);
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPass, setLoginPass] = useState("");
+  const [loginErr, setLoginErr] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoginErr("");
+    setLoading(true);
+
+    try {
+      const { data } = await axios.post("http://localhost:5000/api/auth/login", {
+        email: loginEmail,
+        password: loginPass,
+      });
+
+      // Save token in localStorage
+      localStorage.setItem("token", data.token);
+
+      // Close login popup
+      setShowLogin(false);
+
+      // Navigate to profile page
+      navigate("/profile");
+    } catch (err) {
+      setLoginErr(err?.response?.data?.msg || "Invalid login details");
+    } finally {
+      setLoading(false);
+    }
   };
-
-  const heroStyle = {
-    background: "linear-gradient(to right, #1e90ff, #00bfff)",
-    color: "white",
-    padding: "100px 20px",
-    borderRadius: "10px",
-    marginTop: "20px",
-  };
-
-  const buttonStyle = {
-    backgroundColor: "white",
-    color: "#1e90ff",
-    padding: "12px 25px",
-    fontSize: "16px",
-    fontWeight: "bold",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-    marginTop: "20px",
-    transition: "0.3s",
-  };
-
-  const sectionStyle = {
-    marginTop: "50px",
-  };
-
-  const cardStyle = {
-    display: "inline-block",
-    width: "250px",
-    margin: "15px",
-    padding: "20px",
-    borderRadius: "10px",
-    boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
-    transition: "0.3s",
-    backgroundColor: "#fff",
-  };
-
-  const services = [
-    { title: "Find Jobs", desc: "Search and apply to thousands of jobs in top companies." },
-    { title: "Post Jobs", desc: "Companies can post their openings and hire the best talent." },
-    { title: "Career Advice", desc: "Get tips and guidance to grow your career successfully." },
-  ];
 
   return (
-    <div style={containerStyle}>
-      {/* Hero Section */}
-      <div style={heroStyle}>
-        <h1 style={{ fontSize: "3rem", marginBottom: "20px" }}>Welcome to JobPortal</h1>
-        <p style={{ fontSize: "1.2rem" }}>Connecting talent with opportunity. Your dream job is just a click away!</p>
-        <button
-          style={buttonStyle}
-          onMouseOver={(e) => (e.target.style.backgroundColor = "#f0f0f0")}
-          onMouseOut={(e) => (e.target.style.backgroundColor = "white")}
-        >
-          Get Started
-        </button>
+    <>
+      {/* MAIN CONTENT */}
+      <div className={`home-content ${showLogin ? "blurred" : ""}`}>
+        <h1 className="title">Welcome to JobPortal</h1>
+        <p className="sub">Find your dream job today 🚀</p>
+
+        <div className="btns">
+          <button className="btn" onClick={() => setShowLogin(true)}>
+            Login
+          </button>
+          <button className="btn" onClick={() => navigate("/signup")}>
+            Signup
+          </button>
+        </div>
       </div>
 
-      {/* Services Section */}
-      <div style={sectionStyle}>
-        <h2 style={{ fontSize: "2rem", marginBottom: "30px" }}>What We Offer</h2>
-        {services.map((service, index) => (
-          <div
-            key={index}
-            style={cardStyle}
-            onMouseOver={(e) => {
-              e.currentTarget.style.transform = "translateY(-5px)";
-              e.currentTarget.style.boxShadow = "0 8px 16px rgba(0,0,0,0.3)";
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "0 4px 8px rgba(0,0,0,0.2)";
-            }}
-          >
-            <h3 style={{ marginBottom: "10px", color: "#1e90ff" }}>{service.title}</h3>
-            <p>{service.desc}</p>
-          </div>
-        ))}
-      </div>
+      {/* BACKDROP */}
+      {showLogin && <div className="backdrop" onClick={() => setShowLogin(false)} />}
 
-      {/* Call to Action */}
-      <div style={{ ...sectionStyle, marginBottom: "100px" }}>
-        <h2 style={{ fontSize: "2rem", marginBottom: "20px" }}>Join Us Today!</h2>
-        <p style={{ fontSize: "1rem", maxWidth: "600px", margin: "0 auto" }}>
-          Sign up now and take the first step towards your dream career. Explore jobs, post openings, and grow professionally with JobPortal.
-        </p>
-        <button
-          style={buttonStyle}
-          onMouseOver={(e) => (e.target.style.backgroundColor = "#f0f0f0")}
-          onMouseOut={(e) => (e.target.style.backgroundColor = "white")}
-        >
-          Sign Up
-        </button>
-      </div>
-    </div>
+      {/* LOGIN POPUP */}
+      {showLogin && (
+        <div className="popup">
+          <h2>Login</h2>
+          {loginErr && <p className="error">{loginErr}</p>}
+          <form onSubmit={handleLogin}>
+            <input
+              type="email"
+              placeholder="Email"
+              value={loginEmail}
+              onChange={(e) => setLoginEmail(e.target.value)}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={loginPass}
+              onChange={(e) => setLoginPass(e.target.value)}
+              required
+            />
+            <button className="submit-btn" type="submit" disabled={loading}>
+              {loading ? "Logging in..." : "Login"}
+            </button>
+          </form>
+        </div>
+      )}
+
+      {/* INLINE STYLES */}
+      <style>{`
+        .home-content { text-align: center; padding: 60px 20px; transition: filter 0.3s; }
+        .blurred { filter: blur(4px); }
+        .title { font-size: 36px; margin-bottom: 16px; color: #062244; }
+        .sub { font-size: 18px; margin-bottom: 32px; }
+        .btns { display: flex; justify-content: center; gap: 16px; }
+        .btn { padding: 12px 24px; background: #0272d0; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1000; }
+        .popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 24px; border-radius: 12px; width: 360px; max-width: 90%; z-index: 1001; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        .popup h2 { margin-bottom: 16px; color: #062244; text-align: center; }
+        .error { color: #9b2c2c; background: #fff5f5; padding: 8px; border-radius: 6px; margin-bottom: 12px; text-align: center; }
+        form { display: flex; flex-direction: column; gap: 12px; }
+        input { padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 14px; }
+        .submit-btn { background: #0272d0; color: #fff; padding: 10px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; }
+        .submit-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+      `}</style>
+    </>
   );
-};
-
-export default Home;
+}
