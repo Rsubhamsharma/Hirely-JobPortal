@@ -20,6 +20,13 @@ const profileSchema = new mongoose.Schema({
   skills: {
     type: [String],
   },
+  experience:{
+    type: String,
+  },
+  education:{
+    type:String,
+  }
+  
 });
 
 const Profile = mongoose.model("Profile", profileSchema);

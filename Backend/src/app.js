@@ -15,15 +15,6 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 
-// routes import
-import userRouter from './routes/user.routes.js'
-import jobRouter from './routes/job.routes.js'
-import applicationRouter from './routes/application.routes.js'
-
-// routes declaration
-app.use("/api/v1/users", userRouter)
-app.use("/api/v1/jobs", jobRouter)
-app.use("/api/v1/applications", applicationRouter)
 
 
 export default app;
