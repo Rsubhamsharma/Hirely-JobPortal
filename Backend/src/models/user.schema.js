@@ -1,8 +1,10 @@
 import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 
 const userSchema = new mongoose.Schema(
   {
-    name: {
+    fullname: {
       type: String,
       required: true,
     },
@@ -18,9 +20,44 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["applicant", "recruiter"],
     },
+    refreshToken: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
+
+userSchema.methods.generateAccessAndRefreshTokens = async function () {
+  try {
+    const accessToken = jwt.sign(
+      { id: this._id },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
+    );
+    const refreshToken = jwt.sign(
+      { id: this._id },
+      process.env.REFRESH_TOKEN_SECRET,
+      { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
+    );
+
+    this.refreshToken = refreshToken;
+    await this.save({ validateBeforeSave: false });
+
+    return { accessToken, refreshToken };
+  } catch (error) {
+    console.log(error);
+  }
+};
+userSchema.pre("save", async function (){
+  if(!this.isModified(this.password)){
+    return next()
+  }
+  this.password=await bcrypt.hash(this.password,10)
+  next()
+})
+userSchema.methods.isPasswordCorrect = async function(password){
+  return await bcrypt.compare(password,this.password)
+}
 
 const User = mongoose.model("user", userSchema);
 export default User;
