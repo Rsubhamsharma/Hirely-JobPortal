@@ -11,6 +11,10 @@ import Jobs from "./components/Jobs";
 import JobDetails from "./components/JobDetails";
 import ApplicantDashboard from "./components/ApplicantDashboard";
 import RecruiterDashboard from "./components/RecruiterDashboard";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import Signup from "./pages/Signup";
+import UserProfile from "./pages/UserProfile";
 
 function App() {
   return (
@@ -27,6 +31,11 @@ function App() {
           <Route path="/recruiter" element={<RecruiterDashboard />} />
         </Routes>
       </div>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/profile" element={<UserProfile />} />
+      </Routes>
     </Router>
   );
 }
