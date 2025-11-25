@@ -38,7 +38,7 @@ const loginUser = asyncHandler(async(req,res)=>{
     if(!user){
         throw new ApiError(404,"User not found or does not exist")
     }
-    const isPasswordMatched = await isPasswordCorrect(password)
+    const isPasswordMatched = await user.isPasswordCorrect(password)
     if (!isPasswordMatched){
         throw new ApiError(401,"Invalid credentials")
         }
