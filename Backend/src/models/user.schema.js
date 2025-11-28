@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["applicant", "recruiter"],
+      enum: ["applicant", "recruiter","admin"],
     },
     refreshToken: {
       type: String,
@@ -48,7 +48,7 @@ userSchema.methods.generateAccessAndRefreshTokens = async function () {
     console.log(error);
   }
 };
-userSchema.pre("save", async function (){
+userSchema.pre("save", async function (next){
   if(!this.isModified(this.password)){
     return next()
   }
