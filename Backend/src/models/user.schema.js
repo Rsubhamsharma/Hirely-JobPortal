@@ -23,6 +23,21 @@ const userSchema = new mongoose.Schema(
     refreshToken: {
       type: String,
     },
+    profile:{
+      type:mongoose.Schema.Types.ObjectId,
+      ref:"profile"
+    },
+    //password reset token and expiry 
+    resetotphash:{
+      type:String
+    },
+    resetotpexpiry:{
+      type:Date
+    },
+    resetotpattempts:{
+      type:Number,
+      default:0
+    }
   },
   { timestamps: true }
 );
