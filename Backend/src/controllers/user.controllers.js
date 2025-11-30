@@ -47,16 +47,19 @@ const loginUser = asyncHandler(async(req,res)=>{
     const {accessToken,refreshToken}=await user.generateAccessAndRefreshTokens()
     const loggedInUser =await User.findById(user._id).select("-password -refreshToken")
     const options = {
-        httpOnly:true,
-        secure:true
-    }
-    res.status(200).cookie("refreshToken",refreshToken,options)
-    .cookie("accessToken",accessToken,options)
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+    };
+
+    res.status(200)
+      .cookie("refreshToken", refreshToken, options)
+      .cookie("accessToken", accessToken, options)
     .json(new ApiResponse(200,{user:loggedInUser,accessToken,refreshToken},"User logged in successfully",))
 })
 const getUserProfile = asyncHandler(async(req,res)=>{
    
-    const user = await User.findById(req.user).select("-password -refreshToken")
+    const user = await User.findById(req.user._id).select("-password -refreshToken")
     if(!user){
         throw new ApiError(404,{},"User not found")
     }
@@ -68,7 +71,7 @@ const logOutUser = asyncHandler(async(req,res)=>{
         $unset:{refreshToken:1}
      },{new:true})
      const options = {
-        httpOnly:true,
+        httpOnly:true, 
         secure:true
     }
      
