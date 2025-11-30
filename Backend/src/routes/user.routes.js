@@ -7,8 +7,8 @@ router.post("/register",registerUser)
 router.post("/login",loginUser)
 router.get("/profile",verifyjwt,getUserProfile)
 router.post("/logout",verifyjwt,logOutUser)
-router.post("/forgot-password",verifyjwt,forgotPassword)
-router.post("/reset-password",verifyjwt,resetPassword)
+router.post("/forgot-password",forgotPassword)
+router.post("/reset-password",resetPassword)
 
 
 export default router;
