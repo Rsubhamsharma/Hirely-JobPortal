@@ -3,6 +3,7 @@ import {ApiResponse} from '../utils/ApiResponse.js';
 import {asyncHandler} from '../utils/asyncHandler.js';
 import User from '../models/user.schema.js';
 import mongoose from 'mongoose';
+import crypto from "crypto";
 import { generateOtp } from '../utils/generateOtp.js';
 import { sendResetMail } from '../utils/resetMail.js';
 
@@ -99,6 +100,7 @@ const forgotPassword = asyncHandler(async(req,res)=>{
    const sendMail=await sendResetMail(user.email,otp)
     if(!sendMail){
         throw new ApiError(500,"Unable to send reset OTP email")
+       
     }
     res.status(200).json(new ApiResponse(200,{},"Password reset OTP sent to email successfully"))
 })
@@ -115,8 +117,12 @@ const resetPassword = asyncHandler(async(req,res)=>{
     if(user.resetotpattempts>=5){
         throw new ApiError(400,"Password reset OTP attempts exceeded")
     }
-    if(!user.resetotpexpiry||!user.resetotpexpiry<Date.now()){
+    if(!user.resetotpexpiry){
+        throw new ApiError(400,"Reset otp Expiry not set")
+    }
+    if(user.resetotpexpiry < Date.now()){
         throw new ApiError(400,"Password reset OTP expired")
+
     }
     const incomingOtp = await crypto.createHash("sha256").update(otp).digest("hex")
     if(incomingOtp!==user.resetotphash){

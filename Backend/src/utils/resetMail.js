@@ -12,12 +12,11 @@ const transporter=nodemailer.createTransport({
     }
 })
 export const sendResetMail= async (to,otp)=>{
-    await  transporter.sendMail({
+ return await transporter.sendMail({
         from:"Finder <noreply@finder.com>",
         to,
         subject:"Password Reset OTP",
-        text:`Your password reset OTP.It is valid for 10 minutes. If you did not request this, please ignore this email.`,
-        html:`<p>Your password reset OTP is <b>${otp}</b>.`,
-        html:`with regards,<br/>Finder Team</p>`
+        text:`Your password reset OTP is ${otp}. It is valid for 10 minutes. If you did not request this, please ignore this email.`,
+        html:`<p>Your password reset OTP is <b>${otp}</b>.</p><p>With regards,<br/>Finder Team</p>`
     })
 }
