@@ -8,8 +8,17 @@ const profileSchema = new mongoose.Schema(
       required: true,
       unique: true, // Ensures one profile per user
     },
+    profilesummary:{
+      type:String,
+      default:""
+    },
+    profileimage:{
+      type:String,
+      default:""
+    },
     phoneNumber: {
       type: String,
+      default:""
     },
     // firstName and lastName are removed to avoid redundancy with User model's fullname
     resume: {
