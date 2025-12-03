@@ -188,7 +188,7 @@ const addSkills = asyncHandler(async(req,res)=>{
             runValidators:true,
             context:"query"
         }
-    ).populate("user","fullname")
+    ).populate("user","fullname email")
     
 res.status(200).json(new ApiResponse(200,profile,"Skills added successfully"))
 })
@@ -217,11 +217,77 @@ const addEducation = asyncHandler(async(req,res)=>{
         runValidators:true,
         context:"query"
     }
-   ).populate("user","fullname")
+   ).populate("user","fullname email")
    if(!education){
     throw new ApiError(404,"Education cannot be added")
    }
    res.status(200).json(new ApiResponse(200,education,"Education added successfully"))  
 
 })
-export {createOrUpdateProfile,getProfile,changeExperience,addSkills,addEducation}
+
+const removeExperience = asyncHandler(async(req,res)=>{
+    const {experienceId} = req.params
+    if(!experienceId) throw new ApiError(400,"Experience ID is required")
+        if(!mongoose.Types.ObjectId.isValid(experienceId)) {
+        throw new ApiError(400, "Invalid Experience ID format")
+    }
+    const experience = await Profile.findOneAndUpdate({user:req.user._id},
+        {$pull:{experience:{_id:experienceId}}},
+        {
+            new:true,
+            runValidators:true,
+            context:"query"
+        }
+    ).populate("user","fullname email")
+    if(!experience){
+        throw new ApiError(404,"Experience not found")
+    }
+    res.status(200).json(new ApiResponse(200,experience,"Experience removed successfully"))
+
+})
+
+const removeEducation = asyncHandler(async(req,res)=>{
+    const {educationId} = req.params
+    if(!educationId) throw new ApiError(400,"Education ID is required")
+    if(!mongoose.Types.ObjectId.isValid(educationId)) {
+        throw new ApiError(400, "Invalid Education ID format")
+    }
+    const education = await Profile.findOneAndUpdate({user:req.user._id},
+        {$pull:{education:{_id:educationId}}},
+        {
+            new:true,
+            runValidators:true,
+            context:"query"
+        }
+    ).populate("user","fullname email")
+    if(!education) throw new ApiError(404,"Education not found")
+    res.status(200).json(new ApiResponse(200,education,"Education removed successfully"))
+})
+const removeSkill = asyncHandler(async(req,res)=>{
+    let skillToRemove = req.params.skill || req.params.skills || req.query.skill || req.query.skills || req.body.skill || req.body.skills;
+    // helpful debug when request isn't providing body (DELETE bodies can be skipped by some clients)
+    if(!skillToRemove && Object.keys(req.body || {}).length === 0){
+     console.log("removeSkill: no body provided; check Content-Type and that client sends body for DELETE");
+    }
+    if(!skillToRemove) throw new ApiError(400, "Skill to remove is required (send as param, query or body)");
+    if(!Array.isArray(skillToRemove)) skillToRemove = [skillToRemove];
+    skillToRemove = skillToRemove.map(s => String(s).trim()).filter(Boolean);
+    if (skillToRemove.length === 0) throw new ApiError(400, "No valid skills provided");
+    const  profile = await Profile.findOneAndUpdate(
+        {user:req.user._id},
+        {$pullAll:{skills:skillToRemove}},
+        {new:true,
+            runValidators:true,
+            context:"query"
+        }).populate("user","fullname email")
+
+   if(!profile) throw new ApiError(404,"Profile not found")
+   res.status(200).json(new ApiResponse(200,profile,"Skills removed successfully"))
+
+})
+export {createOrUpdateProfile,getProfile,changeExperience,
+    addSkills,addEducation,removeExperience,removeEducation,
+    removeSkill
+
+
+}
