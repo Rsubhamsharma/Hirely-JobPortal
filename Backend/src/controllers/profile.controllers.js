@@ -285,9 +285,153 @@ const removeSkill = asyncHandler(async(req,res)=>{
    res.status(200).json(new ApiResponse(200,profile,"Skills removed successfully"))
 
 })
+
+const changeEducation = asyncHandler(async (req, res) => {
+    const { educationId } = req.params;
+    const { institution, degree, fieldOfStudy, startDate, endDate } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(educationId)) {
+        throw new ApiError(400, "Invalid Education ID format");
+    }
+
+    const updates = {};
+    if (institution !== undefined) updates["education.$.institution"] = institution;
+    if (degree !== undefined) updates["education.$.degree"] = degree;
+    if (fieldOfStudy !== undefined) updates["education.$.fieldOfStudy"] = fieldOfStudy;
+    if (startDate !== undefined) updates["education.$.startDate"] = startDate;
+    if (endDate !== undefined) updates["education.$.endDate"] = endDate;
+
+    if (Object.keys(updates).length === 0) {
+        throw new ApiError(400, "No update fields provided");
+    }
+
+    const profile = await Profile.findOneAndUpdate(
+        { user: req.user._id, "education._id": educationId },
+        { $set: updates },
+        {
+            new: true,
+            runValidators: true,
+            context: "query"
+        }
+    ).populate("user", "fullname email role");
+
+    if (!profile) {
+        throw new ApiError(404, "Education entry not found in this profile");
+    }
+
+    res.status(200).json(new ApiResponse(200, profile, "Education updated successfully"));
+});
+
+const getProfileById = asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+        throw new ApiError(400, "Invalid User ID format");
+    }
+
+    const profile = await Profile.findOne({ user: userId }).populate("user", "fullname email role");
+
+    if (!profile) {
+        throw new ApiError(404, "Profile not found for the given user ID");
+    }
+
+    res.status(200).json(new ApiResponse(200, profile, "Profile fetched successfully"));
+})
+const uploadResume = asyncHandler(async (req, res) => {
+  // Accept file upload (req.file) OR an external resume URL (req.body.resume)
+  const bodyResume = req.body?.resume;
+  const file = req.file; // multer.single('resume') -> req.file
+
+  if (!file && !bodyResume) {
+    throw new ApiError(400, "Resume is required (file upload or resume URL)");
+  }
+
+  const normalizeUrl = (u) => {
+    if (!u) return null;
+    let urlString = String(u).trim();
+    if (!urlString.startsWith("http://") && !urlString.startsWith("https://")) {
+      urlString = "https://" + urlString;
+    }
+    try {
+      new URL(urlString); // will throw if invalid
+      return urlString;
+    } catch (err) {
+      return null;
+    }
+  };
+
+  // If file uploaded -> validate & upload to cloud
+  let resumeUrl = null;
+
+  if (file) {
+    // Validate MIME and size (example: allow pdf, doc, docx; size <= 5 MB)
+    const allowedMimes = [
+      "application/pdf",
+      "application/msword", // .doc
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .docx
+    ];
+    const maxSizeBytes = 5 * 1024 * 1024; // 5 MB
+
+    if (!allowedMimes.includes(file.mimetype)) {
+      throw new ApiError(400, "Invalid file type. Allowed: pdf, doc, docx");
+    }
+    if (file.size && file.size > maxSizeBytes) {
+      throw new ApiError(400, "File too large. Max 5 MB");
+    }
+
+    try {
+      const uploadResult = await uploadCloudinary(file.buffer, {
+        folder: "Finder/files",
+        resource_type: "auto",
+      });
+
+      if (!uploadResult?.secure_url) {
+        console.error("Cloudinary result:", uploadResult);
+        throw new ApiError(500, "Resume upload failed (cloudinary)");
+      }
+
+      resumeUrl = normalizeUrl(uploadResult.secure_url);
+      if (!resumeUrl) throw new ApiError(400, "Invalid resume URL after upload");
+    } catch (err) {
+      console.error("Resume upload error:", err);
+      // if err is ApiError let it bubble up, else wrap to avoid leaking internals
+      if (err instanceof ApiError) throw err;
+      throw new ApiError(500, "Resume upload failed");
+    }
+  } else {
+    // No file; use provided URL
+    resumeUrl = normalizeUrl(bodyResume);
+    if (!resumeUrl) throw new ApiError(400, "Invalid resume URL");
+  }
+
+  // Update profile with the resume URL
+  try {
+    const profile = await Profile.findOneAndUpdate(
+      { user: req.user._id },
+      { $set: { resume: resumeUrl } },
+      { new: true, runValidators: true, context: "query" }
+    ).populate("user", "fullname email role");
+
+    if (!profile) throw new ApiError(404, "Profile not found");
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, profile, "Resume uploaded successfully"));
+  } catch (err) {
+    console.error("Profile update error:", err);
+    // Optional: if you uploaded to cloudinary and DB update failed, you might remove the uploaded file here.
+    if (err instanceof ApiError) throw err;
+    throw new ApiError(500, "Failed to update profile with resume");
+  }
+});
+
+
 export {createOrUpdateProfile,getProfile,changeExperience,
     addSkills,addEducation,removeExperience,removeEducation,
-    removeSkill
-
+    removeSkill,
+    changeEducation,
+    getProfileById,
+    uploadResume
 
 }
