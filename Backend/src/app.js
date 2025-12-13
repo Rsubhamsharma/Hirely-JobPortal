@@ -17,9 +17,13 @@ app.use(cookieParser());
 // Route Declarations
 import userRoutes from "./routes/user.routes.js"
 import profileRoutes from "./routes/profile.routes.js"
+import jobRoutes from "./routes/job.routes.js"
+
 
 app.use("/api/v1/users",userRoutes)
 app.use("/api/v1/profile",profileRoutes)
+app.use("/api/v1/jobs",jobRoutes)
+
 
 
 export default app;

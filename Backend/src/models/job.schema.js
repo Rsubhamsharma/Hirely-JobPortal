@@ -14,13 +14,37 @@ const jobSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    experience: {
+      type: String,
+      required: true,
+    },
     location: {
       type: String,
       required: true,
     },
+    applications: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Application",
+        default: [],
+      },
+    ],
     salary: {
       type: Number,
     },
+    companydetails:{
+      type:String,
+      default:""
+    },
+    responsibilities:{
+      type:String,
+      default:""
+    },
+    skills:[{
+      type:String,
+      default:""
+    }],
+
     jobType: {
       type: String,
       enum: ["Full-time", "Part-time", "Contract", "Internship"],
@@ -28,7 +52,7 @@ const jobSchema = new mongoose.Schema(
     },
     postedBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "user",
       required: true,
     },
   },

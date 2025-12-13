@@ -46,14 +46,17 @@ userSchema.methods.generateAccessAndRefreshTokens = async function () {
   try {
     const accessToken = jwt.sign(
       { _id: this._id,
-        email:this.email
+        email:this.email,
+        role:this.role
 
       },
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
     );
     const refreshToken = jwt.sign(
-      { _id: this._id },
+      { _id: this._id,
+        role:this.role
+      },
       process.env.REFRESH_TOKEN_SECRET,
       { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
     );
