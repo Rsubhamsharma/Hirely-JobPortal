@@ -21,7 +21,10 @@ const createJob = asyncHandler(async (req,res)=>{
     jobType,
     companydetails,
     responsibilities,
-    experience
+    experience,
+    skills,
+    postedBy:req.user._id,
+    status:"Active"
 };
 
 for (const [key, value] of Object.entries(fields)) {
@@ -68,7 +71,8 @@ for (const [key, value] of Object.entries(fields)) {
         jobType,
         skills:sanitizedSkills,
         experience,
-        postedBy:req.user._id
+        postedBy:req.user._id,
+        status:"active"
     })
     if(!job) {throw new ApiError(500,"Job creation failed")}
     res.status(201).json(new ApiResponse(201,job,"Job created successfully"))
@@ -162,13 +166,30 @@ const getJobById = asyncHandler(async(req,res)=>{
     .json(new ApiResponse(200, job, "Job updated successfully"))
 })
 
-const deleteJob = asyncHandler(async(req,res)=>{
-    const {jobId}=req.params
-    if(!mongoose.Types.ObjectId.isValid(jobId)){throw new ApiError(400,"Invalid job ID format")}
-    const job = await Job.findByIdAndDelete(jobId)
-    if(!job){throw new ApiError(404,"Job not found")}
-    return res.status(200).json(new ApiResponse(200,{},"Job deleted successfully"))
+const closeJob = asyncHandler(async (req, res) => {
+  const { jobId } = req.params;
+  const userId = req.user._id;
 
+  if (!mongoose.Types.ObjectId.isValid(jobId)) {
+    throw new ApiError(400, "Invalid job ID");
+  }
 
-})
-export {createJob,getJobById,editJob,deleteJob}
+  const job = await Job.findOne({ _id: jobId, postedBy: userId });
+
+  if (!job) {
+    throw new ApiError(404, "Job not found or unauthorized");
+  }
+
+  if (job.status === "closed") {
+    throw new ApiError(400, "Job is already closed");
+  }
+
+  job.status = "closed";
+  await job.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, job, "Job closed successfully"));
+});
+
+export {createJob,getJobById,editJob,closeJob}
