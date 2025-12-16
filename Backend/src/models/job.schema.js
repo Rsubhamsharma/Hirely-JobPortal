@@ -36,6 +36,15 @@ const jobSchema = new mongoose.Schema(
       type:String,
       default:""
     },
+    status:{
+      type:String,
+      default:"active",
+      enum:["active","closed"]
+    },
+    isvisible:{
+      type:Boolean,
+      default:true
+    },
     responsibilities:{
       type:String,
       default:""
