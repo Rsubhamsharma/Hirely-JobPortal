@@ -1,7 +1,10 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { Toaster } from 'react-hot-toast';
+import { AuthProvider } from './context/AuthContext';
 
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import UserHome from "./pages/userEmployee/userHome";
 import UserDashboard from "./pages/userEmployee/UserDashboard"; // Profile dashboard
@@ -32,7 +35,8 @@ function AppWrapper() {
   const hideNavbar = hideNavbarPages.includes(location.pathname);
 
   return (
-    <>
+    <AuthProvider>
+      <Toaster position="top-right" toastOptions={{ className: 'font-sans' }} />
       {/* Show Navbar only on public pages */}
       {!hideNavbar && <Navbar />}
 
@@ -56,7 +60,8 @@ function AppWrapper() {
         <Route path="/employee/competitions" element={<Competitions />} />
         <Route path="/employee/resume" element={<Resume />} />
       </Routes>
-    </>
+      <Footer />
+    </AuthProvider>
   );
 }
 

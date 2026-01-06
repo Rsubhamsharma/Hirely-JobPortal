@@ -1,130 +1,163 @@
 import React, { useState } from "react";
-import axios from "axios";
+import api from "../api/axios";
+import toast from "react-hot-toast";
 
 function Signup({ onClose }) {
-  const [step, setStep] = useState(1);
   const [role, setRole] = useState("");
-  const [fullname, setFullname] = useState("");
-  const [email, setEmail] = useState("");
-  const [enteredOtp, setEnteredOtp] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    fullname: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
 
-  // Step 1: Select Role
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
   const handleRoleSelect = (selectedRole) => {
     setRole(selectedRole);
     setStep(2);
   };
 
-  // Step 2: Send OTP to Email (Backend will add OTP for registration)
-  const handleSendOtp = async () => {
-    if (!fullname || !email) return alert("Enter full name and email");
-
-    try {
-      // Backend will have /register-otp or similar endpoint for OTP
-      const res = await axios.post(
-        "http://localhost:8000/api/v1/user/send-signup-otp",
-        { fullname, email, role }
-      );
-
-      alert(res.data.message || "OTP sent successfully!");
-      setStep(3); // Go to OTP verification step
-    } catch (error) {
-      alert(error.response?.data?.message || "Failed to send OTP");
-    }
-  };
-
-  // Step 3: Verify OTP + Complete Signup
   const handleSignup = async () => {
-    if (!enteredOtp) return alert("Enter OTP");
-    if (!password || !confirmPassword) return alert("Enter password");
-    if (password !== confirmPassword) return alert("Passwords do not match");
+    const { fullname, email, password, confirmPassword } = formData;
+    if (!fullname || !email || !password || !confirmPassword || !role) {
+      return toast.error("All fields are required");
+    }
+    if (password !== confirmPassword) {
+      return toast.error("Passwords do not match");
+    }
 
+    setLoading(true);
     try {
-      const res = await axios.post(
-        "http://localhost:8000/api/v1/user/signup",
-        {
-          fullname,
-          email,
-          role,
-          password,
-          otp: enteredOtp,
-        }
-      );
+      const res = await api.post("/users/register", {
+        fullname,
+        email,
+        role,
+        password,
+      });
 
-      alert(res.data.message || "Signup successful!");
-      onClose(); // Close modal
+      if (res.data.success) {
+        toast.success("Signup successful! Please login.");
+        onClose();
+      }
     } catch (error) {
-      alert(error.response?.data?.message || "Signup failed");
+      console.error(error);
+      toast.error(error.response?.data?.message || "Signup failed");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div style={styles.overlay}>
-      <div style={styles.card}>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/70 p-4 backdrop-blur-sm animate-fadeIn">
+      <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-2xl flex flex-col gap-5 relative overflow-hidden">
+        {/* Decorative Top Bar */}
+        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
 
-        {/* Step 1: Role Selection */}
         {step === 1 && (
           <>
-            <h2 style={styles.heading}>Select Your Role</h2>
-            <div style={styles.roleContainer}>
-              <button style={styles.roleBtn} onClick={() => handleRoleSelect("applicant")}>Applicant</button>
-              <button style={styles.roleBtn} onClick={() => handleRoleSelect("recruiter")}>Recruiter</button>
+            <div className="text-center">
+              <h2 className="text-2xl font-bold text-slate-800">Join Us</h2>
+              <p className="text-slate-500 text-sm mt-1">To get started, please select your role</p>
             </div>
-            <button style={styles.closeBtn} onClick={onClose}>Cancel</button>
+
+            <div className="flex gap-4 mt-2">
+              <button
+                className="flex-1 p-6 bg-slate-50 border-2 border-slate-100 hover:border-blue-500 hover:bg-blue-50 rounded-xl transition-all group text-left"
+                onClick={() => handleRoleSelect("applicant")}
+              >
+                <div className="text-2xl mb-2 group-hover:scale-110 transition-transform origin-left">👨‍💻</div>
+                <div className="font-bold text-slate-800 group-hover:text-blue-700">Applicant</div>
+                <div className="text-xs text-slate-500 mt-1">I want to find a job</div>
+              </button>
+
+              <button
+                className="flex-1 p-6 bg-slate-50 border-2 border-slate-100 hover:border-blue-500 hover:bg-blue-50 rounded-xl transition-all group text-left"
+                onClick={() => handleRoleSelect("recruiter")}
+              >
+                <div className="text-2xl mb-2 group-hover:scale-110 transition-transform origin-left">🏢</div>
+                <div className="font-bold text-slate-800 group-hover:text-blue-700">Recruiter</div>
+                <div className="text-xs text-slate-500 mt-1">I want to hire talent</div>
+              </button>
+            </div>
+
+            <button
+              className="mt-2 p-3 text-slate-500 text-sm hover:text-slate-800 transition-colors font-medium border border-transparent hover:bg-slate-50 rounded-lg"
+              onClick={onClose}
+            >
+              Cancel
+            </button>
           </>
         )}
 
-        {/* Step 2: Enter Details */}
         {step === 2 && (
           <>
-            <h2 style={styles.heading}>Enter Your Details</h2>
-            <input
-              type="text"
-              placeholder="Full Name"
-              value={fullname}
-              onChange={(e) => setFullname(e.target.value)}
-              style={styles.input}
-            />
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              style={styles.input}
-            />
-            <button style={styles.signupBtn} onClick={handleSendOtp}>Send OTP</button>
-            <button style={styles.closeBtn} onClick={onClose}>Cancel</button>
-          </>
-        )}
+            <div className="text-center mb-2">
+              <h2 className="text-2xl font-bold text-slate-800">Create Account</h2>
+              <p className="text-slate-500 text-sm mt-1">Registering as <span className="font-medium text-blue-600 capitalize">{role}</span></p>
+            </div>
 
-        {/* Step 3: Verify OTP + Set Password */}
-        {step === 3 && (
-          <>
-            <h2 style={styles.heading}>Verify OTP & Set Password</h2>
-            <input
-              type="text"
-              placeholder="Enter OTP"
-              value={enteredOtp}
-              onChange={(e) => setEnteredOtp(e.target.value)}
-              style={styles.input}
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              style={styles.input}
-            />
-            <input
-              type="password"
-              placeholder="Confirm Password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              style={styles.input}
-            />
-            <button style={styles.signupBtn} onClick={handleSignup}>Create Account</button>
-            <button style={styles.closeBtn} onClick={onClose}>Cancel</button>
+            <div className="space-y-3">
+              <input
+                name="fullname"
+                type="text"
+                placeholder="Full Name"
+                value={formData.fullname}
+                onChange={handleChange}
+                className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all hover:bg-white"
+              />
+              <input
+                name="email"
+                type="email"
+                placeholder="Email Address"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all hover:bg-white"
+              />
+              <input
+                name="password"
+                type="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all hover:bg-white"
+              />
+              <input
+                name="confirmPassword"
+                type="password"
+                placeholder="Confirm Password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all hover:bg-white"
+              />
+            </div>
+
+            <button
+              className="w-full p-3.5 mt-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 active:scale-[0.98] transition-all shadow-md hover:shadow-lg disabled:opacity-70"
+              onClick={handleSignup}
+              disabled={loading}
+            >
+              {loading ? "Creating Account..." : "Sign Up"}
+            </button>
+
+            <div className="flex gap-2">
+              <button
+                className="flex-1 p-3 text-slate-500 text-sm hover:text-slate-800 transition-colors font-medium border border-transparent hover:bg-slate-50 rounded-lg"
+                onClick={() => setStep(1)}
+              >
+                Back
+              </button>
+              <button
+                className="flex-1 p-3 text-slate-500 text-sm hover:text-slate-800 transition-colors font-medium border border-transparent hover:bg-slate-50 rounded-lg"
+                onClick={onClose}
+              >
+                Cancel
+              </button>
+            </div>
           </>
         )}
 
@@ -132,61 +165,5 @@ function Signup({ onClose }) {
     </div>
   );
 }
-
-// Styles
-const styles = {
-  overlay: {
-    position: "fixed",
-    inset: 0,
-    background: "rgba(0,0,0,0.6)",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 1000,
-  },
-  card: {
-    width: "420px",
-    background: "#fff",
-    padding: "28px",
-    borderRadius: "12px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "12px",
-  },
-  heading: { textAlign: "center", fontSize: "22px" },
-  input: {
-    width: "100%",
-    padding: "12px",
-    borderRadius: "8px",
-    border: "1px solid #ccc",
-    fontSize: "15px",
-  },
-  roleContainer: { display: "flex", gap: "12px", marginTop: "15px" },
-  roleBtn: {
-    flex: 1,
-    padding: "12px",
-    background: "#1d3557",
-    color: "#fff",
-    borderRadius: "8px",
-    border: "none",
-    cursor: "pointer",
-  },
-  signupBtn: {
-    width: "100%",
-    padding: "12px",
-    background: "#1d3557",
-    color: "#fff",
-    border: "none",
-    borderRadius: "8px",
-    cursor: "pointer",
-  },
-  closeBtn: {
-    padding: "10px",
-    background: "transparent",
-    border: "1px solid #1d3557",
-    borderRadius: "8px",
-    cursor: "pointer",
-  },
-};
 
 export default Signup;

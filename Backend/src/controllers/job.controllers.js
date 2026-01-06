@@ -1,18 +1,18 @@
-import {asyncHandler} from "../utils/asyncHandler.js";
-import {ApiError} from "../utils/ApiError.js";
-import {uploadCloudinary} from "../utils/cloudianry.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiError } from "../utils/ApiError.js";
+import { uploadCloudinary } from "../utils/cloudianry.js";
 import Job from "../models/job.schema.js"
-import {ApiResponse} from "../utils/ApiResponse.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 import User from "../models/user.schema.js";
 import mongoose from "mongoose";
 
-const createJob = asyncHandler(async (req,res)=>{
-    const user = req.user
-    if(user?.role!=="recruiter"){
-        throw new ApiError(403,"Only recruiters can create jobs")
-    }
-    const {title,description,company,location,salary,jobType,companydetails,responsibilities,skills,experience}=req.body
-    const fields = {
+const createJob = asyncHandler(async (req, res) => {
+  const user = req.user
+  if (user?.role !== "recruiter") {
+    throw new ApiError(403, "Only recruiters can create jobs")
+  }
+  const { title, description, company, location, salary, jobType, companydetails, responsibilities, skills, experience } = req.body
+  const fields = {
     title,
     description,
     company,
@@ -23,71 +23,72 @@ const createJob = asyncHandler(async (req,res)=>{
     responsibilities,
     experience,
     skills,
-    postedBy:req.user._id,
-    status:"Active"
-};
+    postedBy: req.user._id,
+    status: "Active"
+  };
 
-for (const [key, value] of Object.entries(fields)) {
+  for (const [key, value] of Object.entries(fields)) {
 
     // If field is missing entirely
     if (value === undefined || value === null) {
-        throw new ApiError(400, `${key} is required`);
+      throw new ApiError(400, `${key} is required`);
     }
 
     // If field is a string, check trimmed empty
     if (typeof value === "string" && value.trim() === "") {
-        throw new ApiError(400, `${key} cannot be empty`);
+      throw new ApiError(400, `${key} cannot be empty`);
     }
 
     // If field is an array, check non-empty
     if (Array.isArray(value) && value.length === 0) {
-        throw new ApiError(400, `${key} must have at least one item`);
+      throw new ApiError(400, `${key} must have at least one item`);
     }
 
     // If it's a number, ensure it's valid
     if (typeof value === "number" && isNaN(value)) {
-        throw new ApiError(400, `${key} must be a valid number`);
+      throw new ApiError(400, `${key} must be a valid number`);
     }
-}
+  }
 
-   
-    if(isNaN(salary)){
-        throw new ApiError(400,"Salary must be a number")
-    }
-    if(!Array.isArray(skills)){throw new ApiError(400,"Skills must be an array")}
-    if(skills.length===0){throw new ApiError(400,"Skills array cannot be empty")}
-    const sanitizedSkills = skills.filter(
-     s => typeof s === "string" && s.trim() !== ""
-                )
 
-    const job = await Job.create({
-        title,
-        description,
-        company,
-        location,
-        salary,
-        companydetails,
-        responsibilities,
-        jobType,
-        skills:sanitizedSkills,
-        experience,
-        postedBy:req.user._id,
-        status:"active"
-    })
-    if(!job) {throw new ApiError(500,"Job creation failed")}
-    res.status(201).json(new ApiResponse(201,job,"Job created successfully"))
+  if (isNaN(salary)) {
+    throw new ApiError(400, "Salary must be a number")
+  }
+  if (!Array.isArray(skills)) { throw new ApiError(400, "Skills must be an array") }
+  if (skills.length === 0) { throw new ApiError(400, "Skills array cannot be empty") }
+  const sanitizedSkills = skills.filter(
+    s => typeof s === "string" && s.trim() !== ""
+  )
+
+  const job = await Job.create({
+    title,
+    description,
+    company,
+    location,
+    salary,
+    companydetails,
+    responsibilities,
+    jobType,
+    skills: sanitizedSkills,
+    experience,
+    postedBy: req.user._id,
+    status: "active"
+  })
+  if (!job) { throw new ApiError(500, "Job creation failed") }
+  res.status(201).json(new ApiResponse(201, job, "Job created successfully"))
 
 })
-const getJobById = asyncHandler(async(req,res)=>{
-    const {jobId}=req.params
-    if(!mongoose.Types.ObjectId.isValid(jobId)){throw new ApiError(400,"Invalid job ID format")
-    }
-    const job = await Job.findById(jobId).populate("postedBy","fullname email")
-    if(!job){throw new ApiError(404,"Job not found")}
-    return res.status(200).json(new ApiResponse(200,job,"Job fetched successfully"))
+const getJobById = asyncHandler(async (req, res) => {
+  const { jobId } = req.params
+  if (!mongoose.Types.ObjectId.isValid(jobId)) {
+    throw new ApiError(400, "Invalid job ID format")
+  }
+  const job = await Job.findById(jobId).populate("postedBy", "fullname email")
+  if (!job) { throw new ApiError(404, "Job not found") }
+  return res.status(200).json(new ApiResponse(200, job, "Job fetched successfully"))
 })
 
-    const editJob = asyncHandler(async (req, res) => {
+const editJob = asyncHandler(async (req, res) => {
   const { jobId } = req.params
   const user = req.user
 
@@ -121,14 +122,14 @@ const getJobById = asyncHandler(async(req,res)=>{
       if (typeof val === "string") {
         const trimmed = val.trim()
         if (trimmed !== "") updates[field] = trimmed
-      } 
+      }
       else if (Array.isArray(val)) {
         const cleaned = val
           .map(v => String(v).trim())
           .filter(Boolean)
 
         if (cleaned.length > 0) updates[field] = cleaned
-      } 
+      }
       else if (val !== undefined) {
         updates[field] = val
       }
@@ -151,7 +152,7 @@ const getJobById = asyncHandler(async(req,res)=>{
 
   if (!job) throw new ApiError(404, "Job not found")
 
-  
+
   if (job.postedBy.toString() !== user._id.toString()) {
     throw new ApiError(403, "You can update only your own jobs")
   }
@@ -192,4 +193,25 @@ const closeJob = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, job, "Job closed successfully"));
 });
 
-export {createJob,getJobById,editJob,closeJob}
+const getAllJobs = asyncHandler(async (req, res) => {
+  // Optionally add filters (e.g., ?search=developer)
+  const { search, location, jobType } = req.query;
+
+  const query = { status: "active" }; // Only fetch active jobs
+
+  if (search) {
+    query.title = { $regex: search, $options: "i" };
+  }
+  if (location) {
+    query.location = { $regex: location, $options: "i" };
+  }
+  if (jobType) {
+    query.jobType = jobType;
+  }
+
+  const jobs = await Job.find(query).populate("postedBy", "fullname email profileimage company");
+
+  return res.status(200).json(new ApiResponse(200, jobs, "Jobs fetched successfully"));
+});
+
+export { createJob, getJobById, editJob, closeJob, getAllJobs }
