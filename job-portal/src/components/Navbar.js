@@ -5,12 +5,9 @@ import { Link, NavLink } from "react-router-dom";
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  // const location = useLocation();
+
   const { user, logout } = useAuth(); // Get user and logout from context
 
-  // const isActive = (path) => location.pathname === path;
-
-  // ... NavLink helper
 
   return (
     <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm">

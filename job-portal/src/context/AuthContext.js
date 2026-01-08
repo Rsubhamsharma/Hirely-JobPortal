@@ -1,13 +1,18 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import api from '../api/axios';
+import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+
 
 const AuthContext = createContext();
+
 
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate()
 
     const checkAuthStatus = async () => {
         try {
@@ -41,6 +46,9 @@ export const AuthProvider = ({ children }) => {
         try {
             await api.post('/users/logout');
             setUser(null);
+            
+            toast.success("Logged out successfully")
+            navigate("/")
         } catch (err) {
             console.error("Logout failed", err);
         }

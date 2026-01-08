@@ -29,7 +29,7 @@ function UserHome() {
 
   const handleLogout = async () => {
     await logout();
-    navigate("/login");
+    
   };
 
   const SidebarItem = ({ to, icon, label, active }) => (

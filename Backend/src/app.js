@@ -18,11 +18,13 @@ app.use(cookieParser());
 import userRoutes from "./routes/user.routes.js"
 import profileRoutes from "./routes/profile.routes.js"
 import jobRoutes from "./routes/job.routes.js"
+import competitionRoutes  from "./routes/competition.routes.js"
 
 
 app.use("/api/v1/users", userRoutes)
 app.use("/api/v1/profile", profileRoutes)
 app.use("/api/v1/jobs", jobRoutes)
+app.use("/api/v1/competitions",competitionRoutes)   
 
 import { errorHandler } from "./middlewares/error.middleware.js";
 app.use(errorHandler);
