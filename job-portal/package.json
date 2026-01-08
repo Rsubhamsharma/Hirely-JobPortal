@@ -11,9 +11,10 @@
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
     "react-error-boundary": "^6.0.2",
+    "react-hook-form": "^7.70.0",
     "react-hot-toast": "^2.6.0",
     "react-router-dom": "^7.10.1",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^5.0.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

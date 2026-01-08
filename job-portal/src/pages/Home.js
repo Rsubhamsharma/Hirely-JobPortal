@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function Home() {
   const stats = [
@@ -6,12 +7,13 @@ function Home() {
     { label: "Companies", value: "850+" },
     { label: "Candidates", value: "15k+" },
   ];
+  const { user } = useAuth();
   return (
     <div className="flex flex-col min-h-screen bg-white">
 
-      {/* Hero Section */}
+
       <section className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 py-32 overflow-hidden">
-        {/* Abstract shapes/blobs */}
+
         <div className="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 right-0 translate-x-1/2 translate-y-1/2 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl"></div>
 
@@ -25,6 +27,8 @@ function Home() {
             Your next big career move starts here.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            {/* {user?.role !== "recruiter" && (
+              <> */}
             <Link
               to="/employee/jobs"
               className="px-8 py-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-500/30 transform hover:-translate-y-1"
@@ -37,6 +41,8 @@ function Home() {
             >
               Join as Recruiter
             </Link>
+            {/* </>
+            )} */}
           </div>
         </div>
       </section>
@@ -84,18 +90,24 @@ function Home() {
       </section>
 
       {/* Call to Action */}
-      <section className="py-20 bg-slate-900 sm:mx-6 lg:mx-12 rounded-3xl mb-20">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Ready to start your journey?</h2>
-          <p className="text-slate-400 mb-10 text-lg">Join thousands of professionals who have found their dream companies.</p>
-          <Link
-            to="/signup"
-            className="inline-block px-10 py-4 bg-white text-slate-900 font-bold rounded-lg hover:bg-blue-50 transition-colors shadow-lg"
-          >
-            Create Your Account
-          </Link>
-        </div>
-      </section>
+      {
+        user?.role !== "recruiter" && (
+          <>
+            <section className="py-20 bg-slate-900 sm:mx-6 lg:mx-12 rounded-3xl mb-20">
+              <div className="max-w-4xl mx-auto px-4 text-center">
+                <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Ready to start your journey?</h2>
+                <p className="text-slate-400 mb-10 text-lg">Join thousands of professionals who have found their dream companies.</p>
+                <Link
+                  to="/signup"
+                  className="inline-block px-10 py-4 bg-white text-slate-900 font-bold rounded-lg hover:bg-blue-50 transition-colors shadow-lg"
+                >
+                  Create Your Account
+                </Link>
+              </div>
+            </section>
+          </>
+        )
+      }
 
     </div>
 

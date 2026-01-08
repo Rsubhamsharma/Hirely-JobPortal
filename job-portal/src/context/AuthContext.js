@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
         try {
             // Backend verify endpoint. Using /users/profile as verification as discussed if no dedicated check-auth exists
             // If profile fetch succeeds, we are logged in.
-            const res = await api.get('/profile/me');
+            const res = await api.get('/users/profile');
             if (res.data.success) {
                 // Correctly set profile data. 
                 // Note: The backend profile endpoint returns profile data. 
@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }) => {
             }
         } catch (error) {
             // 401/403 means not logged in
-            // console.log("Authorization check failed (safe to ignore if not logged in):", error.message);
+            // console.log("Authorization check failed:", error.response?.status, error.message);
             setUser(null);
         } finally {
             setLoading(false);

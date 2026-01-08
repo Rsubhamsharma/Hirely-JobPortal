@@ -33,16 +33,17 @@ function UserDashboard() {
         }
       })
       .catch((err) => {
-        console.error("Error fetching profile:", err);
+        toast.error("Error fetching profile:", err);
         // Ensure that failure to fetch profile (e.g. not logged in) doesn't span generic errors too intrusively if it's expected
       });
   }, []);
 
   const handleChange = (e) => {
+    e.preventDefault();
     const { name, value, files } = e.target;
     setFormData({
       ...formData,
-      [name]: files ? files[0] : value,
+      [name]: files ? files : value,
     });
   };
 
@@ -55,9 +56,7 @@ function UserDashboard() {
         if (formData[key]) data.append(key, formData[key]);
       });
 
-      const res = await api.put("/profile/me", data, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const res = await api.put("/profile/me", data);
       toast.success(res.data.message || "Profile updated successfully!", { id: loadingToast });
     } catch (err) {
       console.error("Error saving profile:", err);
@@ -107,9 +106,9 @@ function UserDashboard() {
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
 
           <div className="relative group">
-            {formData.profilePic ? (
+            {formData.profileimage ? (
               <img
-                src={typeof formData.profilePic === "string" ? formData.profilePic : URL.createObjectURL(formData.profilePic)}
+                src={typeof formData.profileimage === "string" ? formData.profileimage : URL.createObjectURL(formData.profileimage)}
                 alt="Profile"
                 className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
               />
@@ -120,7 +119,7 @@ function UserDashboard() {
             )}
             <label className="absolute bottom-0 right-0 p-2 bg-blue-600 text-white rounded-full cursor-pointer shadow-lg hover:bg-blue-700 transition-all">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-              <input type="file" name="profilePic" onChange={handleChange} className="hidden" />
+              <input type="file" name="profileimage" onChange={handleChange} className="hidden" />
             </label>
           </div>
 

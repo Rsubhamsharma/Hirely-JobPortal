@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import api from "../api/axios";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom"
 
 function Login({ onClose }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
-
+  const navigate = useNavigate();
   const handleLogin = async () => {
     if (!email || !password) {
       toast.error("Please enter both email and password");
@@ -22,7 +23,9 @@ function Login({ onClose }) {
       if (res.data.success) {
         toast.success("Login successful!");
         login(res.data.data.user);
-        onClose();
+        if (onClose) onClose();
+        navigate("/employee/home");
+
         // window.location.reload(); // AuthContext update should handle this, or we rely on state
       } else {
         toast.error(res.data.message || "Invalid credentials");
@@ -34,12 +37,22 @@ function Login({ onClose }) {
       setLoading(false);
     }
   };
+  const handleClose = () => {
+    try {
+      navigate("/")
+
+
+    } catch (error) {
+      console.log(error)
+
+    }
+  }
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/70 p-4 backdrop-blur-sm animate-fadeIn">
       <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-2xl flex flex-col gap-5 relative overflow-hidden">
 
-        {/* Decorative Top Bar */}
+
         <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
 
         <div className="text-center mb-2">
@@ -85,7 +98,7 @@ function Login({ onClose }) {
 
         <button
           className="w-full p-3 text-slate-500 text-sm hover:text-slate-800 transition-colors font-medium border border-transparent hover:bg-slate-50 rounded-lg"
-          onClick={onClose}
+          onClick={handleClose}
         >
           Cancel
         </button>

@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import api from "../api/axios";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 function Signup({ onClose }) {
+  const navigate = useNavigate();
   const [role, setRole] = useState("");
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -21,6 +23,16 @@ function Signup({ onClose }) {
     setRole(selectedRole);
     setStep(2);
   };
+  const handleClose = () => {
+    try {
+      navigate("/")
+
+
+    } catch (error) {
+      console.log(error)
+
+    }
+  }
 
   const handleSignup = async () => {
     const { fullname, email, password, confirmPassword } = formData;
@@ -42,7 +54,8 @@ function Signup({ onClose }) {
 
       if (res.data.success) {
         toast.success("Signup successful! Please login.");
-        onClose();
+        if (onClose) onClose();
+        navigate("/login");
       }
     } catch (error) {
       console.error(error);
@@ -87,7 +100,7 @@ function Signup({ onClose }) {
 
             <button
               className="mt-2 p-3 text-slate-500 text-sm hover:text-slate-800 transition-colors font-medium border border-transparent hover:bg-slate-50 rounded-lg"
-              onClick={onClose}
+              onClick={handleClose}
             >
               Cancel
             </button>
@@ -153,7 +166,7 @@ function Signup({ onClose }) {
               </button>
               <button
                 className="flex-1 p-3 text-slate-500 text-sm hover:text-slate-800 transition-colors font-medium border border-transparent hover:bg-slate-50 rounded-lg"
-                onClick={onClose}
+                onClick={handleClose}
               >
                 Cancel
               </button>
