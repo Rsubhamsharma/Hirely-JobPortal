@@ -1,15 +1,85 @@
 import React, { useEffect, useState } from "react";
+import { useAuth } from "../../context/AuthContext";
 import api from "../../api/axios";
 import Navbar from "../../components/Navbar";
+import toast from "react-hot-toast";
 
 function Jobs() {
+  const { user } = useAuth(); // Get logged-in user with role
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showForm, setShowForm] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  // Form state with all required fields from createJob controller
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    company: "",
+    location: "",
+    salary: "",
+    jobType: "Full-time",
+    companydetails: "",
+    responsibilities: "",
+    skills: "",
+    experience: ""
+  });
 
   useEffect(() => {
     fetchJobs();
   }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handlePostJob = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+
+    try {
+      // Convert skills from comma-separated string to array
+      const skillsArray = formData.skills.split(",").map(s => s.trim()).filter(Boolean);
+
+      const res = await api.post("/jobs/postjob", {
+        title: formData.title,
+        description: formData.description,
+        company: formData.company,
+        location: formData.location,
+        salary: Number(formData.salary),
+        jobType: formData.jobType,
+        companydetails: formData.companydetails,
+        responsibilities: formData.responsibilities,
+        skills: skillsArray,
+        experience: formData.experience
+      });
+
+      if (res.data.success) {
+        toast.success("Job posted successfully!");
+        setShowForm(false);
+        setFormData({
+          title: "",
+          description: "",
+          company: "",
+          location: "",
+          salary: "",
+          jobType: "Full-time",
+          companydetails: "",
+          responsibilities: "",
+          skills: "",
+          experience: ""
+        });
+        fetchJobs(); // Refresh the jobs list
+      }
+    } catch (error) {
+      console.error("Error posting job:", error);
+      toast.error(error.response?.data?.message || "Failed to post job");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const fetchJobs = async () => {
     try {
@@ -29,9 +99,239 @@ function Jobs() {
     job.company?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Recruiter View - Post Jobs
+  if (user?.role === "recruiter") {
+    return (
+      <div className="min-h-screen bg-slate-50 font-sans">
+        <Navbar />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="mb-10 text-center">
+            <h1 className="text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">
+              Post <span className="text-blue-600">Jobs</span>
+            </h1>
+            <p className="text-lg text-slate-500 mb-8 max-w-2xl mx-auto">
+              Create job listings to find the perfect candidates for your company.
+            </p>
+            <button
+              className="px-8 py-4 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl"
+              onClick={() => setShowForm(true)}
+            >
+              + Post a New Job
+            </button>
+          </div>
+
+          {/* Job Posting Form Modal */}
+          {showForm && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+                  <h2 className="text-2xl font-bold text-slate-900">Post a New Job</h2>
+                  <button
+                    onClick={() => setShowForm(false)}
+                    className="text-slate-400 hover:text-slate-600 text-2xl"
+                  >
+                    ×
+                  </button>
+                </div>
+                <form onSubmit={handlePostJob} className="p-6 space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Job Title *</label>
+                      <input
+                        type="text"
+                        name="title"
+                        value={formData.title}
+                        onChange={handleInputChange}
+                        className="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                        placeholder="e.g. Senior React Developer"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Company Name *</label>
+                      <input
+                        type="text"
+                        name="company"
+                        value={formData.company}
+                        onChange={handleInputChange}
+                        className="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                        placeholder="e.g. Tech Corp"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Location *</label>
+                      <input
+                        type="text"
+                        name="location"
+                        value={formData.location}
+                        onChange={handleInputChange}
+                        className="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                        placeholder="e.g. Mumbai, India"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Salary (₹/year) *</label>
+                      <input
+                        type="number"
+                        name="salary"
+                        value={formData.salary}
+                        onChange={handleInputChange}
+                        className="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                        placeholder="e.g. 1200000"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Job Type *</label>
+                      <select
+                        name="jobType"
+                        value={formData.jobType}
+                        onChange={handleInputChange}
+                        className="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                        required
+                      >
+                        <option value="Full-time">Full-time</option>
+                        <option value="Part-time">Part-time</option>
+                        <option value="Contract">Contract</option>
+                        <option value="Internship">Internship</option>
+                        <option value="Remote">Remote</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Experience Required *</label>
+                      <input
+                        type="text"
+                        name="experience"
+                        value={formData.experience}
+                        onChange={handleInputChange}
+                        className="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                        placeholder="e.g. 3-5 years"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Job Description *</label>
+                    <textarea
+                      name="description"
+                      value={formData.description}
+                      onChange={handleInputChange}
+                      rows="3"
+                      className="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"
+                      placeholder="Describe the role and what the candidate will be doing..."
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Company Details *</label>
+                    <textarea
+                      name="companydetails"
+                      value={formData.companydetails}
+                      onChange={handleInputChange}
+                      rows="2"
+                      className="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"
+                      placeholder="Brief description about your company..."
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Responsibilities *</label>
+                    <textarea
+                      name="responsibilities"
+                      value={formData.responsibilities}
+                      onChange={handleInputChange}
+                      rows="3"
+                      className="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"
+                      placeholder="List the key responsibilities for this role..."
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Skills Required * (comma-separated)</label>
+                    <input
+                      type="text"
+                      name="skills"
+                      value={formData.skills}
+                      onChange={handleInputChange}
+                      className="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                      placeholder="e.g. React, Node.js, MongoDB, TypeScript"
+                      required
+                    />
+                  </div>
+
+                  <div className="flex gap-3 pt-4">
+                    <button
+                      type="button"
+                      onClick={() => setShowForm(false)}
+                      className="flex-1 py-3 border border-slate-200 text-slate-700 font-semibold rounded-lg hover:bg-slate-50 transition-all"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={submitting}
+                      className="flex-1 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {submitting ? "Posting..." : "Post Job"}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {/* Show recruiter's posted jobs */}
+          <div className="mt-12">
+            <h2 className="text-2xl font-bold text-slate-800 mb-6">Your Posted Jobs</h2>
+            {loading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="h-48 bg-white rounded-xl shadow-sm animate-pulse border border-slate-100"></div>
+                ))}
+              </div>
+            ) : jobs.filter(job => job.postedBy?._id === user?._id).length === 0 ? (
+              <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-slate-300">
+                <div className="text-6xl mb-4">📋</div>
+                <h3 className="text-xl font-bold text-slate-800">No jobs posted yet</h3>
+                <p className="text-slate-500 mt-2">Start by posting your first job listing</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {jobs.filter(job => job.postedBy?._id === user?._id).map((job) => (
+                  <div key={job._id} className="bg-white rounded-xl shadow-sm border border-slate-100 p-6 hover:shadow-xl transition-all">
+                    <h3 className="text-xl font-bold text-slate-900">{job.title}</h3>
+                    <p className="text-slate-500 text-sm mt-1">{job.company}</p>
+                    <p className="text-slate-600 text-sm mt-2">{job.location}</p>
+                    <span className={`inline-block mt-3 px-3 py-1 rounded-full text-xs font-semibold ${job.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                      {job.status}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Applicant View - Find Jobs
   return (
     <div className="min-h-screen bg-slate-50 font-sans">
       <Navbar />
+
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header & Search */}
