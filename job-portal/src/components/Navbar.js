@@ -26,9 +26,11 @@ function Navbar() {
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
             <NavLink to="/">Home</NavLink>
-            <NavLink to="/employee/jobs">Find Jobs</NavLink>
-            {/* Removed broken companies link */}
+            {user.role === 'applicant' && <NavLink to="/employee/jobs">Find Jobs</NavLink>}
+            {user.role === 'recruiter' && <NavLink to="/employee/jobs">POst Jobs</NavLink>}
+
             {user && <NavLink to="/employee/profile">Dashboard</NavLink>}
+            {user && <NavLink to="/employee/competitions">Competitions</NavLink>}
           </div>
 
           {/* CTA Button */}

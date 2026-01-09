@@ -39,7 +39,7 @@ function UserDashboard() {
   }, []);
 
   const handleChange = (e) => {
-    e.preventDefault();
+
     const { name, value, files } = e.target;
     setFormData({
       ...formData,

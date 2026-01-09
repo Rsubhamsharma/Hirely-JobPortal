@@ -83,7 +83,7 @@ const getJobById = asyncHandler(async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(jobId)) {
     throw new ApiError(400, "Invalid job ID format")
   }
-  const job = await Job.findById(jobId).populate("postedBy", "fullname email")
+  const job = await Job.findById(jobId).populate("postedBy", "fullname email role")
   if (!job) { throw new ApiError(404, "Job not found") }
   return res.status(200).json(new ApiResponse(200, job, "Job fetched successfully"))
 })
@@ -148,7 +148,7 @@ const editJob = asyncHandler(async (req, res) => {
     updates.salary = n
   }
 
-  const job = await Job.findById(jobId)
+  const job = await Job.findById(jobId).populate("postedBy", "fullname email role")
 
   if (!job) throw new ApiError(404, "Job not found")
 
@@ -175,7 +175,7 @@ const closeJob = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid job ID");
   }
 
-  const job = await Job.findOne({ _id: jobId, postedBy: userId });
+  const job = await Job.findOne({ _id: jobId, postedBy: userId }).populate("postedBy", "fullname email role");
 
   if (!job) {
     throw new ApiError(404, "Job not found or unauthorized");

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link} from "react-router-dom";
 import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 
@@ -7,7 +7,7 @@ function UserHome() {
   const [latestJobs, setLatestJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
+ 
 
   useEffect(() => {
     fetchLatestJobs();
