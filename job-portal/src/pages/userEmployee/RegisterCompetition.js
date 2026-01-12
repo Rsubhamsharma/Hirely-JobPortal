@@ -1,55 +1,30 @@
-import React, { useState, useEffect } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
-import api from '../../api/axios'
-import { useAuth } from '../../context/AuthContext'
-import toast from 'react-hot-toast'
-import Navbar from '../../components/Navbar'
+import React, { useEffect } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import toast from 'react-hot-toast';
+import Navbar from '../../components/Navbar';
+import { useCompetition, useRegisterCompetition, isUserRegistered } from "../../hooks/useCompetitions";
 
 const RegisterCompetition = () => {
     const { competitionId } = useParams()
     const navigate = useNavigate()
     const { user } = useAuth()
 
-    const [competition, setCompetition] = useState(null)
-    const [loading, setLoading] = useState(true)
-    const [registering, setRegistering] = useState(false)
-    const [alreadyRegistered, setAlreadyRegistered] = useState(false)
+    const { data: competition, isLoading: loading, error } = useCompetition(competitionId);
+    const registerMutation = useRegisterCompetition();
 
     useEffect(() => {
-        fetchCompetition()
-    }, [competitionId])
-
-    const fetchCompetition = async () => {
-        try {
-            const response = await api.get(`/competitions/${competitionId}`)
-            if (response.data.success) {
-                setCompetition(response.data.data)
-                // Check if user is already registered
-                if (response.data.data.applicants?.includes(user?._id)) {
-                    setAlreadyRegistered(true)
-                }
-            }
-        } catch (error) {
-            toast.error("Failed to fetch competition details")
+        if (error) {
+            toast.error(error.response?.data?.message || "Failed to fetch competition details")
             navigate('/employee/competitions')
-        } finally {
-            setLoading(false)
         }
-    }
+    }, [error, navigate]);
+
+    const alreadyRegistered = isUserRegistered(competition, user?._id);
+    const registering = registerMutation.isPending;
 
     const handleRegister = async () => {
-        setRegistering(true)
-        try {
-            const response = await api.post(`/competitions/register/${competitionId}`)
-            if (response.data.success) {
-                toast.success(response.data.message || "Successfully registered!")
-                setAlreadyRegistered(true)
-            }
-        } catch (error) {
-            toast.error(error.response?.data?.message || "Registration failed")
-        } finally {
-            setRegistering(false)
-        }
+        registerMutation.mutate(competitionId);
     }
 
     if (loading) {
@@ -126,8 +101,8 @@ const RegisterCompetition = () => {
                         <div className="flex justify-between items-start">
                             <div>
                                 <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-3 ${competition.status === 'active'
-                                        ? 'bg-green-400/20 text-green-100'
-                                        : 'bg-red-400/20 text-red-100'
+                                    ? 'bg-green-400/20 text-green-100'
+                                    : 'bg-red-400/20 text-red-100'
                                     }`}>
                                     {competition.status === 'active' ? '● Active' : '● Closed'}
                                 </span>

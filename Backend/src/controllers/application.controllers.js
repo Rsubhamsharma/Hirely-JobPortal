@@ -145,6 +145,8 @@ const getMyApplications = asyncHandler(async (req, res) => {
     );
 });
 
+import { sendStatusUpdateEmail } from "../services/emailService.js";
+
 /**
  * Update application status (Recruiter only)
  * PATCH /applications/:applicationId/status
@@ -181,6 +183,11 @@ const updateApplicationStatus = asyncHandler(async (req, res) => {
     await application.save();
 
     await application.populate("applicant", "fullname email");
+
+    // Send status update email (async)
+    sendStatusUpdateEmail(application.applicant, application.job, status).catch(err =>
+        console.error("Failed to send status update email:", err)
+    );
 
     return res.status(200).json(
         new ApiResponse(200, application, "Application status updated successfully")

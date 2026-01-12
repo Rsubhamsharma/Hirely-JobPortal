@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px; }
+        .header { background: #4f46e5; color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { padding: 30px; }
+        .footer { text-align: center; padding: 20px; font-size: 12px; color: #777; }
+        .btn { display: inline-block; padding: 12px 24px; background: #4f46e5; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 20px; }
+        .details { background: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Registration Confirmed!</h1>
+        </div>
+        <div class="content">
+            <p>Hello {{userName}},</p>
+            <p>You have successfully registered for <strong>{{competitionTitle}}</strong>!</p>
+            
+            <div class="details">
+                <h3>Competition Details:</h3>
+                <p>📅 <strong>Date:</strong> {{competitionDate}}</p>
+                <p>🏆 <strong>Prize Pool:</strong> {{competitionPrize}}</p>
+                <p>👤 <strong>Organizer:</strong> {{organizerName}}</p>
+            </div>
+            
+            <p>Make sure to mark your calendar. We look forward to seeing your performance!</p>
+            
+            <a href="{{platformUrl}}" class="btn">View Competition Details</a>
+        </div>
+        <div class="footer">
+            <p>&copy; 2026 Competition Platform. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

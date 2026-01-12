@@ -1,36 +1,25 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 import Navbar from "../../components/Navbar";
 import toast from "react-hot-toast";
+import { useCompetition, isUserRegistered } from "../../hooks/useCompetitions";
+import CompetitionDetailSkeleton from "../../components/skeletons/CompetitionDetailSkeleton";
 
 function CompetitionDetail() {
     const { competitionId } = useParams();
     const { user } = useAuth();
     const navigate = useNavigate();
 
-
-    const [competition, setCompetition] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [status, setStatus] = useState("Not Registered");
-    const fetchCompetitionDetails = useCallback(async () => {
-        try {
-            const res = await api.get(`/competitions/${competitionId}`);
-            if (res.data.success) {
-                setCompetition(res.data.data);
-                setStatus(res.data.data.applicants?.includes(user._id) ? "Registered" : "Not Registered");
-            }
-        } catch (error) {
-            toast.error("Failed to load competition details");
-        } finally {
-            setLoading(false);
-        }
-    }, [competitionId]);
+    const { data: competition, isLoading: loading, error } = useCompetition(competitionId);
 
     useEffect(() => {
-        fetchCompetitionDetails();
-    }, [fetchCompetitionDetails]);
+        if (error) {
+            toast.error(error.response?.data?.message || "Failed to load competition details");
+        }
+    }, [error]);
+
+    const status = isUserRegistered(competition, user?._id) ? "Registered" : "Not Registered";
 
     const getStatusColor = (status) => {
         switch (status) {
@@ -62,13 +51,7 @@ function CompetitionDetail() {
         return (
             <div className="min-h-screen bg-slate-50">
                 <Navbar />
-                <div className="max-w-4xl mx-auto px-4 py-12">
-                    <div className="animate-pulse space-y-4">
-                        <div className="h-8 bg-slate-200 rounded w-3/4"></div>
-                        <div className="h-4 bg-slate-200 rounded w-1/2"></div>
-                        <div className="h-64 bg-slate-200 rounded"></div>
-                    </div>
-                </div>
+                <CompetitionDetailSkeleton />
             </div>
         );
     }
@@ -127,6 +110,7 @@ function CompetitionDetail() {
                                 <div className="flex-shrink-0">
                                     {status === "Not Registered" &&
                                         <button
+                                            onClick={() => navigate(`/employee/competitions/register/${competitionId}`)}
                                             className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                                         >
                                             Register Now

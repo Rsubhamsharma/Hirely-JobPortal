@@ -1,18 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import api from '../../api/axios.js'
-import Navbar from "../../components/Navbar.js";
-import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
+import Navbar from "../../components/Navbar";
+import { Plus, Edit2, Trash2, Calendar, Trophy, Users, Search, Filter, MoreVertical, X, CheckCircle2, Clock } from "lucide-react";
+import toast from "react-hot-toast";
+import { useCompetitions, useCreateCompetition, useUpdateCompetition, useDeleteCompetition, isUserRegistered } from "../../hooks/useCompetitions";
+import CompetitionListSkeleton from "../../components/skeletons/CompetitionListSkeleton";
 
-function Competitions() {
+const Competitions = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  // State for competitions data
-  const [competitions, setCompetitions] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // React Query hooks
+  const { data: competitions = [], isLoading: loading, error: queryError, refetch } = useCompetitions();
+  const createMutation = useCreateCompetition();
+  const updateMutation = useUpdateCompetition();
+  const deleteMutation = useDeleteCompetition();
+
   const [error, setError] = useState(null);
+
+  // Sync query error to local error state if needed
+  useEffect(() => {
+    if (queryError) {
+      setError(queryError.response?.data?.message || "Failed to fetch competitions");
+    }
+  }, [queryError]);
 
   // State for create/edit form
   const [showForm, setShowForm] = useState(false);
@@ -24,27 +36,12 @@ function Competitions() {
   });
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [submitting, setSubmitting] = useState(false);
 
-  // Fetch all competitions on component mount
-  useEffect(() => {
-    fetchCompetitions();
-  }, []);
+  const submitting = createMutation.isPending || updateMutation.isPending;
 
   // GET - Fetch all competitions
-  const fetchCompetitions = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await api.get("/competitions");
-      setCompetitions(response.data.data);
-    } catch (err) {
-
-      setError(err.response?.data?.message || "Failed to fetch competitions");
-      setCompetitions([]);
-    } finally {
-      setLoading(false);
-    }
+  const fetchCompetitions = () => {
+    refetch();
   };
 
   // GET - Fetch single competition by ID
@@ -55,53 +52,23 @@ function Competitions() {
   // POST - Create new competition
   const createCompetition = async (e) => {
     e.preventDefault();
-    try {
-
-      setSubmitting(true);
-      const response = await api.post("/competitions/create", formData);
-      setCompetitions(prev => [...prev, response.data.data]);
-      resetForm();
-      toast.success("Competition created successfully!");
-    } catch (err) {
-
-      toast.error(err.response?.data?.message || "Failed to create competition");
-    } finally {
-      setSubmitting(false);
-    }
+    createMutation.mutate(formData, {
+      onSuccess: () => resetForm()
+    });
   };
 
   // PATCH - Update existing competition
   const updateCompetition = async (e) => {
     e.preventDefault();
-    try {
-      setSubmitting(true);
-      const response = await api.patch(`/competitions/${editingId}`, formData);
-      setCompetitions(competitions.map(comp =>
-        comp._id === editingId ? response.data.data : comp
-      ));
-      resetForm();
-      toast.success("Competition updated successfully!");
-    } catch (err) {
-
-      toast.error(err.response?.data?.message || "Failed to update competition");
-    } finally {
-      setSubmitting(false);
-    }
+    updateMutation.mutate({ competitionId: editingId, formData }, {
+      onSuccess: () => resetForm()
+    });
   };
 
   // DELETE - Remove competition
   const deleteCompetition = async (competitionId) => {
-
-    try {
-      setLoading(true)
-      await api.delete(`/competitions/${competitionId}`);
-
-      setCompetitions(competitions.filter(comp => comp._id !== competitionId));
-      setTimeout(() => { setLoading(false) }, 1000)
-
-    } catch (err) {
-
-      toast.error(err.response?.data?.message || "Failed to delete competition");
+    if (window.confirm("Are you sure you want to delete this competition?")) {
+      deleteMutation.mutate(competitionId);
     }
   };
 
@@ -135,12 +102,7 @@ function Competitions() {
   // Loading state
   if (loading) {
     return (
-      <div className="flex bg-slate-50 min-h-screen p-8 items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-900 mx-auto mb-4"></div>
-          <p className="text-slate-600">Loading competitions...</p>
-        </div>
-      </div>
+      <CompetitionListSkeleton />
     );
   }
 
@@ -327,7 +289,7 @@ function Competitions() {
                       </>
                     )}
                     {user?.role === 'applicant' && (
-                      comp.applicants?.includes(user?._id) ? (
+                      isUserRegistered(comp, user?._id) ? (
                         <span className="px-6 py-2 bg-green-100 text-green-700 rounded-lg font-medium flex items-center gap-1">
                           ✅ Registered
                         </span>

@@ -6,24 +6,27 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { application } from "express";
+import { getIO } from "../socket/socket.js";
+import { sendCompetitionRegistrationEmail } from "../services/emailService.js";
 
 
 const createCompetiton = asyncHandler(async (req, res) => {
     const { title, date, prize, status } = req.body
-    if ([title, date, status].some((field) => field?.trim() == "")) {
-        throw new ApiError(400, "All fields are required")
+    if ([title, date, prize].some((field) => field?.trim() === "")) {
+        throw new ApiError(400, "all fields are required ")
     }
-    const competition = await competitionsSchema.create({
-        title,
-        organizer: req.user._id,
-        date,
-        prize,
-        status
+    const competition = await competitionsSchema.create({ title, date, prize, status, organizer: req.user._id })
+    if (!competition) {
+        throw new ApiError(500, "something went wrong while creating competition  ")
+    }
 
-    })
-    return res.status(200).json(new ApiResponse(200, competition, "competition created successfully"))
-}
-)
+    // Emit real-time update
+    const io = getIO();
+    io.emit("competition_updated", { type: "create", competitionId: competition._id });
+
+    return res.status(200).json(new ApiResponse(200, competition, "competition created successfully "))
+})
+
 const getCompetitionById = asyncHandler(async (req, res) => {
     const { competitionId } = req.params
     if (!mongoose.isValidObjectId(competitionId)) {
@@ -33,11 +36,17 @@ const getCompetitionById = asyncHandler(async (req, res) => {
     const competition = await competitionsSchema.findById(competitionId)
         .populate("organizer", "fullname email role")
         .populate("applicants", "fullname email")
-    if (!competition) {
-        throw new ApiError(404, "Competition not found ")
-    }
-    return res.status(200).json(new ApiResponse(200, competition, "competition fetched successfully"))
+    const isRegistered = competition.applicants.some(
+        (applicant) => applicant._id.toString() === req.user._id.toString()
+    );
 
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            { ...competition.toObject(), isRegistered },
+            "competition fetched successfully"
+        )
+    )
 })
 const updateCompetition = asyncHandler(async (req, res) => {
     const { competitionId } = req.params
@@ -59,7 +68,10 @@ const updateCompetition = asyncHandler(async (req, res) => {
     if (!competition) {
         throw new ApiError(404, "Competition not found")
     }
-    return res.status(200).json(new ApiResponse(200, competition, "competition updated successfully"))
+    // Emit real-time update
+    getIO().emit("competition_updated", { type: "update", competitionId });
+
+    return res.status(200).json(new ApiResponse(200, competition, "Competition updated successfully"))
 })
 const deleteCompetition = asyncHandler(async (req, res) => {
     const { competitionId } = req.params
@@ -68,6 +80,10 @@ const deleteCompetition = asyncHandler(async (req, res) => {
     }
     const competition = await competitionsSchema.findByIdAndDelete(competitionId).populate("organizer", "fullname email role ")
     if (!competition) throw new ApiError(404, "Competiton not found")
+
+    // Emit real-time update
+    getIO().emit("competition_updated", { type: "delete", competitionId });
+
     return res.status(200).json(new ApiResponse(200, {}, "Competition deleted successfully"))
 })
 const getAllCompetitions = asyncHandler(async (req, res) => {
@@ -75,7 +91,14 @@ const getAllCompetitions = asyncHandler(async (req, res) => {
     if (competitions.length === 0) {
         throw new ApiError(404, "Competitions not found or no competitions available ")
     }
-    return res.status(200).json(new ApiResponse(200, competitions, "Competitions fetched successfully "))
+    const competitionsWithStatus = competitions.map(comp => {
+        const isRegistered = comp.applicants.some(
+            (applicantId) => applicantId.toString() === req.user._id.toString()
+        );
+        return { ...comp.toObject(), isRegistered };
+    });
+
+    return res.status(200).json(new ApiResponse(200, competitionsWithStatus, "Competitions fetched successfully "))
 })
 
 const RegisterCompetition = asyncHandler(async (req, res) => {
@@ -85,7 +108,7 @@ const RegisterCompetition = asyncHandler(async (req, res) => {
     }
 
     // Check if already registered
-    const existingCompetition = await competitionsSchema.findById(competitionId)
+    const existingCompetition = await competitionsSchema.findById(competitionId).populate("organizer", "fullname email")
     if (!existingCompetition) {
         throw new ApiError(404, "Competition not found")
     }
@@ -100,6 +123,14 @@ const RegisterCompetition = asyncHandler(async (req, res) => {
         { $addToSet: { applicants: req.user._id } },
         { new: true }
     ).populate("organizer", "fullname email role")
+
+    // Send confirmation email (async, don't block response)
+    sendCompetitionRegistrationEmail(req.user, competition).catch(err =>
+        console.error("Failed to send registration email:", err)
+    );
+
+    // Emit real-time update for applicant list sync
+    getIO().emit("competition_updated", { type: "registration", competitionId });
 
     return res.status(200).json(new ApiResponse(200, competition, "Successfully registered for competition"))
 })

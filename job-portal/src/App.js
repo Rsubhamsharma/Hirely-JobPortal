@@ -1,7 +1,11 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { Toaster } from 'react-hot-toast';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from './lib/queryClient';
 import { AuthProvider } from './context/AuthContext';
+import { SocketProvider } from './context/SocketContext';
+import { useSocketEvents } from './hooks/useSocketEvents';
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
@@ -16,10 +20,16 @@ import MyApplications from "./pages/userEmployee/MyApplications";
 import Competitions from "./pages/userEmployee/Competitions";
 import CompetitionDetail from "./pages/userEmployee/CompetitionDetail";
 import RegisterCompetition from "./pages/userEmployee/RegisterCompetition";
+import Messages from "./pages/userEmployee/Messages";
 import Resume from "./pages/userEmployee/Resume";
 import ProtectedRoute from "./components/ProtectedRoute";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+
+const SocketEventManager = () => {
+  useSocketEvents();
+  return null;
+};
 
 function AppWrapper() {
   const location = useLocation();
@@ -34,78 +44,88 @@ function AppWrapper() {
   const hideNavbar = hideNavbarPrefixes.some(prefix => location.pathname.startsWith(prefix));
 
   return (
-    <AuthProvider>
-      <Toaster position="top-right" toastOptions={{ className: 'font-sans' }} />
-      {!hideNavbar && <Navbar />}
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <SocketProvider>
+          <SocketEventManager />
+          <Toaster position="top-right" toastOptions={{ className: 'font-sans' }} />
+          {!hideNavbar && <Navbar />}
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
 
-        <Route path="/employee/profile" element={
-          <ProtectedRoute>
-            <UserDashboard />
-          </ProtectedRoute>
-        } />
-        <Route path="/employee/internships" element={
-          <ProtectedRoute>
-            <Internships />
-          </ProtectedRoute>
-        } />
-        <Route path="/employee/jobs" element={
-          <ProtectedRoute>
-            <Jobs />
-          </ProtectedRoute>
-        } />
-        <Route path="/employee/jobs/:jobId" element={
-          <ProtectedRoute>
-            <JobDetail />
-          </ProtectedRoute>
-        } />
-        <Route path="/employee/jobs/:jobId/applications" element={
-          <ProtectedRoute>
-            <JobApplications />
-          </ProtectedRoute>
-        } />
-        <Route path="/employee/my-applications" element={
-          <ProtectedRoute>
-            <MyApplications />
-          </ProtectedRoute>
-        } />
-        <Route path="/employee/competitions" element={
-          <ProtectedRoute>
-            <Competitions />
-          </ProtectedRoute>
-        } />
-        <Route path="/employee/competitions/:competitionId" element={
-          <ProtectedRoute>
-            <CompetitionDetail />
-          </ProtectedRoute>
-        } />
-        <Route path="/employee/resume" element={
-          <ProtectedRoute>
-            <Resume />
-          </ProtectedRoute>
-        } />
-        <Route path="/about" element={
-          <ProtectedRoute>
-            <About />
-          </ProtectedRoute>
-        } />
-        <Route path="/contact" element={
-          <ProtectedRoute>
-            <Contact />
-          </ProtectedRoute>
-        } />
-        <Route path="/employee/competitions/register/:competitionId" element={
-          <ProtectedRoute>
-            <RegisterCompetition />
-          </ProtectedRoute>
-        } />
-      </Routes>
-      <Footer />
-    </AuthProvider>
+            <Route path="/employee/profile" element={
+              <ProtectedRoute>
+                <UserDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/employee/internships" element={
+              <ProtectedRoute>
+                <Internships />
+              </ProtectedRoute>
+            } />
+            <Route path="/employee/jobs" element={
+              <ProtectedRoute>
+                <Jobs />
+              </ProtectedRoute>
+            } />
+            <Route path="/employee/jobs/:jobId" element={
+              <ProtectedRoute>
+                <JobDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/employee/jobs/:jobId/applications" element={
+              <ProtectedRoute>
+                <JobApplications />
+              </ProtectedRoute>
+            } />
+            <Route path="/employee/my-applications" element={
+              <ProtectedRoute>
+                <MyApplications />
+              </ProtectedRoute>
+            } />
+            <Route path="/employee/competitions" element={
+              <ProtectedRoute>
+                <Competitions />
+              </ProtectedRoute>
+            } />
+            <Route path="/employee/competitions/:competitionId" element={
+              <ProtectedRoute>
+                <CompetitionDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/employee/messages" element={
+              <ProtectedRoute>
+                <Messages />
+              </ProtectedRoute>
+            } />
+            <Route path="/employee/resume" element={
+              <ProtectedRoute>
+                <Resume />
+              </ProtectedRoute>
+            } />
+            <Route path="/about" element={
+              <ProtectedRoute>
+                <About />
+              </ProtectedRoute>
+            } />
+            <Route path="/contact" element={
+              <ProtectedRoute>
+                <Contact />
+              </ProtectedRoute>
+            } />
+            <Route path="/employee/competitions/register/:competitionId" element={
+              <ProtectedRoute>
+                <RegisterCompetition />
+              </ProtectedRoute>
+            } />
+          </Routes>
+          <Footer />
+        </SocketProvider>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
 
