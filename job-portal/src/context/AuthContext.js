@@ -1,67 +1,124 @@
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
 
-const AuthContext = createContext();
+const AuthContext = createContext(null);
 
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error('useAuth must be used within an AuthProvider');
+    }
+    return context;
+};
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
-    const checkAuthStatus = async () => {
+    // Check authentication status on mount
+    const checkAuthStatus = useCallback(async () => {
+        console.log("=== AUTH CHECK STARTING ===");
         try {
-            // Backend verify endpoint. Using /users/profile as verification as discussed if no dedicated check-auth exists
-            // If profile fetch succeeds, we are logged in.
+            // The backend uses HTTP-only cookies for authentication
+            // Cookies are automatically sent with withCredentials: true in axios config
             const res = await api.get('/users/profile');
-            if (res.data.success) {
-                // Correctly set profile data. 
-                // Note: The backend profile endpoint returns profile data. 
-                // We might want to store user info separately if possible, but for now this confirms auth.
-                setUser(res.data.data);
+
+            console.log("Auth check response:", res);
+            console.log("Auth check res.data:", res.data);
+            console.log("Auth check res.data.data:", res.data?.data);
+
+            // Backend returns: { statusCode, data: user, message, success }
+            if (res.data.success && res.data.data) {
+                const userData = res.data.data;
+                console.log('Auth check successful, user:', userData);
+                console.log('User role:', userData.role);
+                console.log('User fullname:', userData.fullname);
+                setUser(userData);
+            } else {
+                console.log('Auth check failed: no user data in response');
+                console.log('Response was:', res.data);
+                setUser(null);
             }
         } catch (error) {
-            // 401/403 means not logged in
-            // console.log("Authorization check failed:", error.response?.status, error.message);
+            // 401/403 means not logged in - this is expected for unauthenticated users
+            console.log("=== AUTH CHECK ERROR ===");
+            console.log("Error status:", error.response?.status);
+            console.log("Error message:", error.message);
+            console.log("Error response data:", error.response?.data);
+
+            if (error.response?.status === 401 || error.response?.status === 403) {
+                console.log('User not authenticated (401/403)');
+            } else {
+                console.error('Auth check error:', error.message);
+            }
             setUser(null);
         } finally {
+            console.log("=== AUTH CHECK COMPLETE ===");
             setLoading(false);
         }
-    };
+    }, []);
 
     useEffect(() => {
         checkAuthStatus();
+    }, [checkAuthStatus]);
+
+    // Login function - called after successful login API call
+    // The backend sets HTTP-only cookies, we just need to store user data
+    const login = useCallback((userData) => {
+        console.log('Login called with user data:', userData);
+        setUser(userData);
     }, []);
 
-    const login = (userData) => {
-        setUser(userData);
-        console.log(user)
-    };
-
-    const logout = async () => {
+    // Logout function
+    const logout = useCallback(async () => {
         try {
+            setLoading(true);
             await api.post('/users/logout');
             setUser(null);
-            
-            toast.success("Logged out successfully")
-            navigate("/")
+            toast.success("Logged out successfully");
+            navigate("/");
         } catch (err) {
-            console.error("Logout failed", err);
+            console.error("Logout failed:", err);
+            // Even if logout API fails, clear local state
+            setUser(null);
+            toast.error("Logout encountered an issue");
+            navigate("/");
         }
-    };
+        finally {
+            setLoading(false);
+        }
+    }, [navigate]);
+
+    // Refresh user data from backend
+    const refreshUser = useCallback(async () => {
+        try {
+            const res = await api.get('/users/profile');
+            if (res.data.success && res.data.data) {
+                setUser(res.data.data);
+                return res.data.data;
+            }
+        } catch (error) {
+            console.error('Failed to refresh user:', error);
+            setUser(null);
+        }
+        return null;
+    }, []);
+
 
     // Memoize the value to prevent unnecessary re-renders of consumers
     const value = useMemo(() => ({
         user,
+        loading,
         login,
         logout,
-        loading
-    }), [user, loading]);
+        refreshUser,
+        isAuthenticated: !!user
+    }), [user, loading, login, logout, refreshUser]);
 
     return (
         <AuthContext.Provider value={value}>

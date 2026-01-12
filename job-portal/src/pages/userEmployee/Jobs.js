@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../api/axios";
 import Navbar from "../../components/Navbar";
@@ -6,6 +7,7 @@ import toast from "react-hot-toast";
 
 function Jobs() {
   const { user } = useAuth(); // Get logged-in user with role
+  const navigate = useNavigate();
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -311,12 +313,35 @@ function Jobs() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {jobs.filter(job => job.postedBy?._id === user?._id).map((job) => (
                   <div key={job._id} className="bg-white rounded-xl shadow-sm border border-slate-100 p-6 hover:shadow-xl transition-all">
-                    <h3 className="text-xl font-bold text-slate-900">{job.title}</h3>
-                    <p className="text-slate-500 text-sm mt-1">{job.company}</p>
-                    <p className="text-slate-600 text-sm mt-2">{job.location}</p>
-                    <span className={`inline-block mt-3 px-3 py-1 rounded-full text-xs font-semibold ${job.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                      {job.status}
-                    </span>
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="text-xl font-bold text-slate-900">{job.title}</h3>
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${job.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                        {job.status}
+                      </span>
+                    </div>
+                    <p className="text-slate-500 text-sm">{job.company}</p>
+                    <p className="text-slate-600 text-sm mt-1">📍 {job.location}</p>
+
+                    <div className="flex items-center gap-2 mt-3 text-sm text-slate-500">
+                      <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded font-medium">
+                        {job.applications?.length || 0} Applications
+                      </span>
+                    </div>
+
+                    <div className="flex gap-2 mt-4">
+                      <button
+                        onClick={() => navigate(`/employee/jobs/${job._id}`)}
+                        className="flex-1 py-2 bg-slate-100 text-slate-700 font-medium rounded-lg hover:bg-slate-200 transition-colors text-sm"
+                      >
+                        View Job
+                      </button>
+                      <button
+                        onClick={() => navigate(`/employee/jobs/${job._id}/applications`)}
+                        className="flex-1 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                      >
+                        View Applications
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -403,7 +428,10 @@ function Jobs() {
                   )}
                 </div>
 
-                <button className="w-full py-2.5 bg-slate-50 text-slate-700 font-semibold rounded-lg hover:bg-blue-600 hover:text-white transition-all border border-slate-200 hover:border-blue-600">
+                <button
+                  onClick={() => navigate(`/employee/jobs/${job._id}`)}
+                  className="w-full py-2.5 bg-slate-50 text-slate-700 font-semibold rounded-lg hover:bg-blue-600 hover:text-white transition-all border border-slate-200 hover:border-blue-600"
+                >
                   View Details
                 </button>
               </div>

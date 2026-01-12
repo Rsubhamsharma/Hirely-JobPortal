@@ -5,6 +5,7 @@ import competitionsSchema from "../models/competitions.schema.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { application } from "express";
 
 
 const createCompetiton = asyncHandler(async (req, res) => {
@@ -29,7 +30,9 @@ const getCompetitionById = asyncHandler(async (req, res) => {
 
         throw new ApiError(400, "Invalid Id")
     }
-    const competition = await competitionsSchema.findById(competitionId).populate("organizer", "fullname email role ")
+    const competition = await competitionsSchema.findById(competitionId)
+        .populate("organizer", "fullname email role")
+        .populate("applicants", "fullname email")
     if (!competition) {
         throw new ApiError(404, "Competition not found ")
     }
@@ -75,5 +78,50 @@ const getAllCompetitions = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, competitions, "Competitions fetched successfully "))
 })
 
+const RegisterCompetition = asyncHandler(async (req, res) => {
+    const { competitionId } = req.params
+    if (!mongoose.isValidObjectId(competitionId)) {
+        throw new ApiError(400, "Invalid competition Id")
+    }
 
-export { createCompetiton, getCompetitionById, updateCompetition, deleteCompetition, getAllCompetitions }
+    // Check if already registered
+    const existingCompetition = await competitionsSchema.findById(competitionId)
+    if (!existingCompetition) {
+        throw new ApiError(404, "Competition not found")
+    }
+
+    if (existingCompetition.applicants.includes(req.user._id)) {
+        throw new ApiError(400, "You have already registered for this competition")
+    }
+
+    // Use $addToSet to add user to applicants array (prevents duplicates)
+    const competition = await competitionsSchema.findByIdAndUpdate(
+        competitionId,
+        { $addToSet: { applicants: req.user._id } },
+        { new: true }
+    ).populate("organizer", "fullname email role")
+
+    return res.status(200).json(new ApiResponse(200, competition, "Successfully registered for competition"))
+})
+
+const getRegisteredApplicants = asyncHandler(async (req, res) => {
+    const { competitionId } = req.params
+    if (!mongoose.isValidObjectId(competitionId)) {
+        throw new ApiError(400, "Invalid competition Id")
+    }
+
+    const competition = await competitionsSchema.findById(competitionId)
+        .populate("organizer", "fullname email role")
+        .populate("applicants", "fullname email")
+
+    if (!competition) {
+        throw new ApiError(404, "Competition not found")
+    }
+
+    return res.status(200).json(new ApiResponse(200, competition, "Competition applicants fetched successfully"))
+})
+
+export {
+    createCompetiton, getCompetitionById, updateCompetition, deleteCompetition,
+    getAllCompetitions, RegisterCompetition, getRegisteredApplicants
+}

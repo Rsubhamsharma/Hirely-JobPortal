@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import api from '../../api/axios.js'
 import Navbar from "../../components/Navbar.js";
 import toast from "react-hot-toast";
+import { useAuth } from "../../context/AuthContext";
 
 function Competitions() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
   // State for competitions data
   const [competitions, setCompetitions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -34,7 +39,7 @@ function Competitions() {
       const response = await api.get("/competitions");
       setCompetitions(response.data.data);
     } catch (err) {
-      console.error("Error fetching competitions:", err);
+
       setError(err.response?.data?.message || "Failed to fetch competitions");
       setCompetitions([]);
     } finally {
@@ -43,27 +48,22 @@ function Competitions() {
   };
 
   // GET - Fetch single competition by ID
-  const fetchCompetitionById = async (competitionId) => {
-    try {
-      const response = await api.get(`/competitions/${competitionId}`);
-      return response.data.data;
-    } catch (err) {
-      console.error("Error fetching competition:", err);
-      throw err;
-    }
-  };
+
+  const userRole = user?.role;
+
 
   // POST - Create new competition
   const createCompetition = async (e) => {
     e.preventDefault();
     try {
+
       setSubmitting(true);
       const response = await api.post("/competitions/create", formData);
       setCompetitions(prev => [...prev, response.data.data]);
       resetForm();
       toast.success("Competition created successfully!");
     } catch (err) {
-      console.error("Error creating competition:", err);
+
       toast.error(err.response?.data?.message || "Failed to create competition");
     } finally {
       setSubmitting(false);
@@ -82,7 +82,7 @@ function Competitions() {
       resetForm();
       toast.success("Competition updated successfully!");
     } catch (err) {
-      console.error("Error updating competition:", err);
+
       toast.error(err.response?.data?.message || "Failed to update competition");
     } finally {
       setSubmitting(false);
@@ -100,7 +100,7 @@ function Competitions() {
       setTimeout(() => { setLoading(false) }, 1000)
 
     } catch (err) {
-      console.error("Error deleting competition:", err);
+
       toast.error(err.response?.data?.message || "Failed to delete competition");
     }
   };
@@ -151,12 +151,15 @@ function Competitions() {
         <div className="max-w-6xl mx-auto w-full">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-3xl font-bold text-slate-800">Competitions</h2>
-            <button
-              onClick={() => setShowForm(true)}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
-            >
-              + Create Competition
-            </button>
+            {
+              userRole !== "applicant" &&
+              <button
+                onClick={() => setShowForm(true)}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
+              >
+                + Create Competition
+              </button>
+            }
           </div>
 
           {/* Error Message */}
@@ -259,10 +262,10 @@ function Competitions() {
               </div>
             ) : (
               competitions.map((comp) => (
-                <div key={comp._id} className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4">
-                  <div className="flex-1">
+                <div key={comp._id} className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 hover:shadow-lg transition-shadow flex flex-col md:flex-row justify-between items-center gap-4">
+                  <div className="flex-1 cursor-pointer" onClick={() => navigate(`/employee/competitions/${comp._id}`)}>
                     <div className="flex items-center gap-3 mb-1">
-                      <h3 className="text-xl font-bold text-slate-900">{comp.title}</h3>
+                      <h3 className="text-xl font-bold text-slate-900 hover:text-blue-600 transition-colors">{comp.title}</h3>
                       {comp.status === "active" && (
                         <span className="animate-pulse bg-red-100 text-red-600 text-xs px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
                           ● Live
@@ -295,22 +298,52 @@ function Competitions() {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <button
-                      onClick={() => handleEdit(comp)}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                      onClick={() => navigate(`/employee/competitions/${comp._id}`)}
+                      className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
                     >
-                      Edit
+                      View Details
                     </button>
-                    <button
-                      onClick={() => deleteCompetition(comp._id)}
-                      className="px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
-                    >
-                      Delete
-                    </button>
-                    {comp.organizer?.role === 'applicant' && <button className="px-6 py-2 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 transition-colors">
-                      Register
-                    </button>}
+                    {user?.role === 'recruiter' && comp.organizer?._id === user?._id && (
+                      <>
+                        <button
+                          onClick={() => handleEdit(comp)}
+                          className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => deleteCompetition(comp._id)}
+                          className="px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
+                        >
+                          Delete
+                        </button>
+                        {user.role === "recruiter" && comp.organizer?._id === user?._id &&
+                          <span className="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg font-medium">
+                            👥 {comp.applicants?.length || 0} Registered
+                          </span>
+                        }
+                      </>
+                    )}
+                    {user?.role === 'applicant' && (
+                      comp.applicants?.includes(user?._id) ? (
+                        <span className="px-6 py-2 bg-green-100 text-green-700 rounded-lg font-medium flex items-center gap-1">
+                          ✅ Registered
+                        </span>
+                      ) : comp.status === 'active' ? (
+                        <button
+                          onClick={() => navigate(`/employee/competitions/register/${comp._id}`)}
+                          className="px-6 py-2 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 transition-colors"
+                        >
+                          Register
+                        </button>
+                      ) : (
+                        <span className="px-4 py-2 bg-red-100 text-red-700 rounded-lg font-medium">
+                          Closed
+                        </span>
+                      )
+                    )}
                   </div>
                 </div>
               ))

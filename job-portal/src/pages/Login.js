@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import api from "../api/axios";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom"
+import { NavLink, useNavigate } from "react-router-dom"
 
 function Login({ onClose }) {
   const [email, setEmail] = useState("");
@@ -22,16 +22,18 @@ function Login({ onClose }) {
 
       if (res.data.success) {
         toast.success("Login successful!");
-        login(res.data.data.user);
-        if (onClose) onClose();
-        navigate("/employee/home");
 
-        // window.location.reload(); // AuthContext update should handle this, or we rely on state
+        // The backend returns: { statusCode, data: { user, accessToken, refreshToken }, message, success }
+        const userData = res.data.data.user;
+
+        login(userData);
+        if (onClose) onClose();
+        navigate("/");
       } else {
         toast.error(res.data.message || "Invalid credentials");
       }
     } catch (err) {
-      console.error(err);
+
       toast.error(err.response?.data?.message || "Invalid credentials");
     } finally {
       setLoading(false);
@@ -43,14 +45,14 @@ function Login({ onClose }) {
 
 
     } catch (error) {
-      console.log(error)
+      toast.error("Error logging out");
 
     }
   }
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/70 p-4 backdrop-blur-sm animate-fadeIn">
-      <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-2xl flex flex-col gap-5 relative overflow-hidden">
+    <div className="fixed inset-0  z-[100] flex items-center justify-center bg-slate-900/70 p-4 backdrop-blur-sm animate-fadeIn">
+      <div className="w-full max-w-md bg-white p-8 pb-12 rounded-2xl shadow-2xl   flex flex-col gap-5 relative overflow-hidden">
 
 
         <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
@@ -58,6 +60,9 @@ function Login({ onClose }) {
         <div className="text-center mb-2">
           <h2 className="text-2xl font-bold text-slate-800">Welcome Back</h2>
           <p className="text-slate-500 text-sm mt-1">Please enter your details to sign in</p>
+        </div>
+        <div className="absolute bottom-7 w-full h-1.5 left-20 ">
+          Don&apos;t have an account ?  <NavLink to="/signup" className='text-blue-600 font-medium hover:underline'>Register Now</NavLink>
         </div>
 
         <div className="space-y-4">
@@ -97,7 +102,7 @@ function Login({ onClose }) {
         </button>
 
         <button
-          className="w-full p-3 text-slate-500 text-sm hover:text-slate-800 transition-colors font-medium border border-transparent hover:bg-slate-50 rounded-lg"
+          className="w-full p-3 bg-gray-300 text-slate-500 text-sm hover:text-slate-800 transition-colors font-medium border border-transparent hover:bg-slate-50 rounded-lg"
           onClick={handleClose}
         >
           Cancel

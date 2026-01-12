@@ -1,13 +1,10 @@
 import { useAuth } from "../context/AuthContext";
-// ... existing imports
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-
-  const { user, logout } = useAuth(); // Get user and logout from context
-
+  const { user, logout } = useAuth();
 
   return (
     <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm">
@@ -24,22 +21,69 @@ function Navbar() {
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-8">
-            <NavLink to="/">Home</NavLink>
-            {user.role === 'applicant' && <NavLink to="/employee/jobs">Find Jobs</NavLink>}
-            {user.role === 'recruiter' && <NavLink to="/employee/jobs">POst Jobs</NavLink>}
+          <div className="hidden md:flex items-center space-x-6">
+            {user && (
+              <NavLink
+                to="/"
+                className={({ isActive }) =>
+                  `text-sm font-medium transition-colors ${isActive ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600'}`
+                }
+              >
+                Home
+              </NavLink>
+            )}
 
-            {user && <NavLink to="/employee/profile">Dashboard</NavLink>}
-            {user && <NavLink to="/employee/competitions">Competitions</NavLink>}
+            {/* Role-based navigation */}
+            {user?.role === 'applicant' && (
+              <NavLink
+                to="/employee/jobs"
+                className={({ isActive }) =>
+                  `text-sm font-medium transition-colors ${isActive ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600'}`
+                }
+              >
+                Find Jobs
+              </NavLink>
+            )}
+            {user?.role === 'applicant' && (
+              <NavLink
+                to="/employee/my-applications"
+                className={({ isActive }) =>
+                  `text-sm font-medium transition-colors ${isActive ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600'}`
+                }
+              >
+                My Applications
+              </NavLink>
+            )}
+            {user?.role === 'recruiter' && (
+              <NavLink
+                to="/employee/jobs"
+                className={({ isActive }) =>
+                  `text-sm font-medium transition-colors ${isActive ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600'}`
+                }
+              >
+                Post Jobs
+              </NavLink>
+            )}
+
+            {user && (
+              <NavLink
+                to="/employee/competitions"
+                className={({ isActive }) =>
+                  `text-sm font-medium transition-colors ${isActive ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600'}`
+                }
+              >
+                Competitions
+              </NavLink>
+            )}
           </div>
 
-          {/* CTA Button */}
-          <div className="hidden md:flex items-center gap-4">
+          {/* Right Section - Profile & Auth */}
+          <div className="hidden md:flex items-center gap-3">
             {!user ? (
               <>
                 <Link
                   to="/login"
-                  className="px-5 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
                 >
                   Login
                 </Link>
@@ -47,16 +91,32 @@ function Navbar() {
                   to="/signup"
                   className="px-5 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                 >
-                  Register
+                  Get Started
                 </Link>
               </>
             ) : (
-              <button
-                onClick={logout}
-                className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full transition-all"
-              >
-                Logout
-              </button>
+              <div className="flex items-center gap-3">
+                {/* Profile Button */}
+                <Link
+                  to="/employee/profile"
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 transition-all group"
+                >
+                  <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-sm shadow-md">
+                    {user?.fullname?.[0]?.toUpperCase() || "U"}
+                  </div>
+                  <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900 max-w-[100px] truncate">
+                    {user?.fullname?.split(" ")[0] || "Profile"}
+                  </span>
+                </Link>
+
+                {/* Logout Button */}
+                <button
+                  onClick={logout}
+                  className="px-4 py-2 text-sm font-medium text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                >
+                  Logout
+                </button>
+              </div>
             )}
           </div>
 
@@ -64,7 +124,7 @@ function Navbar() {
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-500 hover:text-gray-900 focus:outline-none"
+              className="text-gray-500 hover:text-gray-900 focus:outline-none p-2"
             >
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 {isOpen ? (
@@ -81,20 +141,82 @@ function Navbar() {
       {/* Mobile Menu */}
       {isOpen && (
         <div className="md:hidden bg-white border-t border-gray-100">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 flex flex-col items-center">
-            <Link to="/" className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md">Home</Link>
-            {user && <Link to="/employee/jobs" className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md">Find Jobs</Link>}
-            {user && <Link to="/employee/profile" className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md">Dashboard</Link>}
-
-            {!user ? (
+          <div className="px-4 pt-2 pb-4 space-y-1">
+            {user && (
               <>
-                <Link to="/login" className="block w-full text-center mt-4 px-5 py-3 text-base font-medium text-white bg-blue-600 rounded-lg">Login</Link>
-                <Link to="/signup" className="block w-full text-center mt-4 px-5 py-3 text-base font-medium text-white bg-blue-600 rounded-lg">Register</Link>
+                <Link
+                  to="/"
+                  className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Home
+                </Link>
+                <Link
+                  to="/employee/jobs"
+                  className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md"
+                  onClick={() => setIsOpen(false)}
+                >
+                  {user?.role === 'recruiter' ? 'Post Jobs' : 'Find Jobs'}
+                </Link>
+                {user?.role === 'applicant' && (
+                  <Link
+                    to="/employee/my-applications"
+                    className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    My Applications
+                  </Link>
+                )}
+                <Link
+                  to="/employee/competitions"
+                  className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Competitions
+                </Link>
+                <Link
+                  to="/employee/profile"
+                  className="flex items-center gap-2 px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-xs">
+                    {user?.fullname?.[0]?.toUpperCase() || "U"}
+                  </div>
+                  My Profile
+                </Link>
               </>
-            ) : (
-              <button onClick={logout} className="block w-full text-center mt-4 px-5 py-3 text-base font-medium text-gray-700 bg-gray-100 rounded-lg">Logout</button>
             )}
 
+            <div className="pt-3 border-t border-gray-100 mt-3">
+              {!user ? (
+                <>
+                  <Link
+                    to="/login"
+                    className="block w-full text-center px-5 py-3 text-base font-medium text-blue-600 bg-blue-50 rounded-lg mb-2"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/signup"
+                    className="block w-full text-center px-5 py-3 text-base font-medium text-white bg-blue-600 rounded-lg"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Get Started
+                  </Link>
+                </>
+              ) : (
+                <button
+                  onClick={() => {
+                    logout();
+                    setIsOpen(false);
+                  }}
+                  className="block w-full text-center px-5 py-3 text-base font-medium text-red-600 bg-red-50 rounded-lg"
+                >
+                  Logout
+                </button>
+              )}
+            </div>
           </div>
         </div>
       )}

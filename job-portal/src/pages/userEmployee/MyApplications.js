@@ -1,0 +1,294 @@
+import React, { useState, useEffect, useCallback } from "react";
+import { Link } from "react-router-dom";
+import api from "../../api/axios";
+import Navbar from "../../components/Navbar";
+import { useAuth } from "../../context/AuthContext";
+import toast from "react-hot-toast";
+
+function MyApplications() {
+    const { user } = useAuth();
+    const [applications, setApplications] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [filter, setFilter] = useState("all");
+
+    const fetchApplications = useCallback(async () => {
+        try {
+            const res = await api.get("/applications/my");
+            if (res.data.success) {
+                setApplications(res.data.data || []);
+            }
+        } catch (error) {
+            toast.error("Failed to fetch applications");
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchApplications();
+    }, [fetchApplications]);
+
+    // Calculate analytics
+    const analytics = {
+        total: applications.length,
+        pending: applications.filter(app => app.status === "Pending").length,
+        viewed: applications.filter(app => app.status === "Viewed").length,
+        shortlisted: applications.filter(app => app.status === "Shortlisted").length,
+        rejected: applications.filter(app => app.status === "Rejected").length,
+        hired: applications.filter(app => app.status === "Hired").length,
+    };
+
+    // Calculate success rate
+    const successRate = analytics.total > 0
+        ? Math.round(((analytics.shortlisted + analytics.hired) / analytics.total) * 100)
+        : 0;
+
+    // Filter applications
+    const filteredApplications = filter === "all"
+        ? applications
+        : applications.filter(app => app.status === filter);
+
+    const getStatusColor = (status) => {
+        switch (status) {
+            case "Pending": return "bg-yellow-100 text-yellow-700";
+            case "Viewed": return "bg-blue-100 text-blue-700";
+            case "Shortlisted": return "bg-green-100 text-green-700";
+            case "Rejected": return "bg-red-100 text-red-700";
+            case "Hired": return "bg-purple-100 text-purple-700";
+            default: return "bg-slate-100 text-slate-700";
+        }
+    };
+
+    const getStatusIcon = (status) => {
+        switch (status) {
+            case "Pending": return "⏳";
+            case "Viewed": return "👁️";
+            case "Shortlisted": return "⭐";
+            case "Rejected": return "❌";
+            case "Hired": return "🎉";
+            default: return "📄";
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-slate-50">
+                <Navbar />
+                <div className="max-w-7xl mx-auto px-4 py-12">
+                    <div className="animate-pulse space-y-6">
+                        <div className="h-8 bg-slate-200 rounded w-1/3"></div>
+                        <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+                            {[...Array(6)].map((_, i) => (
+                                <div key={i} className="h-24 bg-slate-200 rounded-xl"></div>
+                            ))}
+                        </div>
+                        <div className="h-64 bg-slate-200 rounded-xl"></div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="min-h-screen bg-slate-50">
+            <Navbar />
+
+            <div className="max-w-7xl mx-auto px-4 py-8">
+                {/* Header */}
+                <div className="mb-8">
+                    <h1 className="text-3xl font-bold text-slate-900">My Applications</h1>
+                    <p className="text-slate-500 mt-1">Track all your job applications in one place</p>
+                </div>
+
+                {/* Analytics Cards */}
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+                    <div
+                        onClick={() => setFilter("all")}
+                        className={`bg-white p-4 rounded-xl shadow-sm border-2 cursor-pointer transition-all hover:shadow-md ${filter === "all" ? "border-blue-500" : "border-transparent"}`}
+                    >
+                        <div className="text-3xl font-bold text-slate-900">{analytics.total}</div>
+                        <div className="text-sm text-slate-500 font-medium">Total</div>
+
+                    </div>
+
+                    <div
+                        onClick={() => setFilter("Pending")}
+                        className={`bg-white p-4 rounded-xl shadow-sm border-2 cursor-pointer transition-all hover:shadow-md ${filter === "Pending" ? "border-yellow-500" : "border-transparent"}`}
+                    >
+                        <div className="text-3xl font-bold text-yellow-600">{analytics.pending}</div>
+                        <div className="text-sm text-slate-500 font-medium">Pending</div>
+
+                    </div>
+
+                    <div
+                        onClick={() => setFilter("Viewed")}
+                        className={`bg-white p-4 rounded-xl shadow-sm border-2 cursor-pointer transition-all hover:shadow-md ${filter === "Viewed" ? "border-blue-500" : "border-transparent"}`}
+                    >
+                        <div className="text-3xl font-bold text-blue-600">{analytics.viewed}</div>
+                        <div className="text-sm text-slate-500 font-medium">Viewed</div>
+
+                    </div>
+
+                    <div
+                        onClick={() => setFilter("Shortlisted")}
+                        className={`bg-white p-4 rounded-xl shadow-sm border-2 cursor-pointer transition-all hover:shadow-md ${filter === "Shortlisted" ? "border-green-500" : "border-transparent"}`}
+                    >
+                        <div className="text-3xl font-bold text-green-600">{analytics.shortlisted}</div>
+                        <div className="text-sm text-slate-500 font-medium">Shortlisted</div>
+
+                    </div>
+
+                    <div
+                        onClick={() => setFilter("Rejected")}
+                        className={`bg-white p-4 rounded-xl shadow-sm border-2 cursor-pointer transition-all hover:shadow-md ${filter === "Rejected" ? "border-red-500" : "border-transparent"}`}
+                    >
+                        <div className="text-3xl font-bold text-red-600">{analytics.rejected}</div>
+                        <div className="text-sm text-slate-500 font-medium">Rejected</div>
+
+                    </div>
+
+                    <div
+                        onClick={() => setFilter("Hired")}
+                        className={`bg-white p-4 rounded-xl shadow-sm border-2 cursor-pointer transition-all hover:shadow-md ${filter === "Hired" ? "border-purple-500" : "border-transparent"}`}
+                    >
+                        <div className="text-3xl font-bold text-purple-600">{analytics.hired}</div>
+                        <div className="text-sm text-slate-500 font-medium">Hired</div>
+
+                    </div>
+                </div>
+
+                {/* Success Rate Card */}
+                <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 mb-8 text-white shadow-xl">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div>
+                            <h3 className="text-lg font-semibold opacity-90">Application Success Rate</h3>
+                            <p className="text-sm opacity-75">Based on shortlisted and hired applications</p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <div className="text-5xl font-bold">{successRate}%</div>
+                            <div className="w-24 h-24 relative">
+                                <svg className="w-24 h-24 transform -rotate-90">
+                                    <circle
+                                        cx="48"
+                                        cy="48"
+                                        r="40"
+                                        stroke="rgba(255,255,255,0.2)"
+                                        strokeWidth="8"
+                                        fill="none"
+                                    />
+                                    <circle
+                                        cx="48"
+                                        cy="48"
+                                        r="40"
+                                        stroke="white"
+                                        strokeWidth="8"
+                                        fill="none"
+                                        strokeDasharray={`${successRate * 2.51} 251`}
+                                        strokeLinecap="round"
+                                    />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Applications List */}
+                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+                        <h2 className="text-xl font-bold text-slate-900">
+                            {filter === "all" ? "All Applications" : `${filter} Applications`}
+                            <span className="ml-2 text-sm font-normal text-slate-500">
+                                ({filteredApplications.length})
+                            </span>
+                        </h2>
+                        {filter !== "all" && (
+                            <button
+                                onClick={() => setFilter("all")}
+                                className="text-sm text-blue-600 hover:underline"
+                            >
+                                Show All
+                            </button>
+                        )}
+                    </div>
+
+                    {filteredApplications.length === 0 ? (
+                        <div className="p-12 text-center">
+                            <div className="text-6xl mb-4">📭</div>
+                            <h3 className="text-xl font-semibold text-slate-800 mb-2">No applications found</h3>
+                            <p className="text-slate-500 mb-6">
+                                {filter === "all"
+                                    ? "You haven't applied to any jobs yet. Start exploring opportunities!"
+                                    : `No ${filter.toLowerCase()} applications.`}
+                            </p>
+                            {filter === "all" && (
+                                <Link
+                                    to="/employee/jobs"
+                                    className="inline-block px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                                >
+                                    Browse Jobs
+                                </Link>
+                            )}
+                        </div>
+                    ) : (
+                        <div className="divide-y divide-slate-100">
+                            {filteredApplications.map((app) => (
+                                <div key={app._id} className="p-6 hover:bg-slate-50 transition-colors">
+                                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <Link
+                                                    to={`/employee/jobs/${app.job?._id}`}
+                                                    className="text-lg font-semibold text-slate-900 hover:text-blue-600 transition-colors"
+                                                >
+                                                    {app.job?.title || "Job Title"}
+                                                </Link>
+                                                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(app.status)}`}>
+                                                    {getStatusIcon(app.status)} {app.status}
+                                                </span>
+                                            </div>
+                                            <p className="text-slate-600 font-medium">{app.job?.company || "Company"}</p>
+                                            <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-slate-500">
+                                                <span className="flex items-center gap-1">
+                                                    📍 {app.job?.location || "Location"}
+                                                </span>
+                                                <span className="flex items-center gap-1">
+                                                    💰 ₹{app.job?.salary?.toLocaleString() || "N/A"}
+                                                </span>
+                                                <span className="flex items-center gap-1">
+                                                    📅 Applied {new Date(app.createdAt).toLocaleDateString()}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <Link
+                                                to={`/employee/jobs/${app.job?._id}`}
+                                                className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
+                                            >
+                                                View Job
+                                            </Link>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                {/* Tips Section */}
+                {applications.length > 0 && analytics.rejected > analytics.shortlisted && (
+                    <div className="mt-8 bg-amber-50 border border-amber-200 rounded-2xl p-6">
+                        <h3 className="text-lg font-semibold text-amber-800 mb-2">💡 Tips to Improve</h3>
+                        <ul className="text-amber-700 space-y-2">
+                            <li>• Make sure your resume is up-to-date and tailored for each job</li>
+                            <li>• Write personalized cover letters highlighting relevant experience</li>
+                            <li>• Complete your profile to 100% for better visibility</li>
+                            <li>• Apply to jobs that match your skills and experience level</li>
+                        </ul>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
+export default MyApplications;

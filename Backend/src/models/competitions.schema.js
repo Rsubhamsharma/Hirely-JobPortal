@@ -2,27 +2,32 @@ import mongoose from "mongoose";
 
 const competitionsSchema = mongoose.Schema(
     {
-        title :{
-            type:String,
-            required:true
+        title: {
+            type: String,
+            required: true
         },
-        organizer:{
-            type:mongoose.Schema.Types.ObjectId,
-            ref:"user"
-          
+        organizer: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "user"
+
         },
-        date:{
-            type:String,
-             required:true
+        date: {
+            type: String,
+            required: true
         },
-        prize:{
-            type:String
-        
+        prize: {
+            type: String
+
         },
-        status:{
-            type:String,
-            required:true
-        }
+        status: {
+            type: String,
+            required: true
+        },
+        applicants: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "user"
+        }]
+
     }
 )
-export default mongoose.model("competition",competitionsSchema)
+export default mongoose.model("competition", competitionsSchema)

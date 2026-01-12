@@ -7,7 +7,7 @@ import User from "../models/user.schema.js";
 import mongoose from "mongoose";
 
 const createOrUpdateProfile = asyncHandler(async (req, res) => {
-    const { phoneNumber, profilesummary, skills, experience, education, portfolio, github, linkedin } = req.body
+    const { phoneNumber, profilesummary, skills, experience, education, portfolio, github, linkedin, profileimage, resume } = req.body
     const updates = {}
     const isValidPhone = p => {
         const cleaned = String(p).replace(/\s+/g, "");
@@ -130,10 +130,14 @@ const createOrUpdateProfile = asyncHandler(async (req, res) => {
 })
 
 const getProfile = asyncHandler(async (req, res) => {
-    const profile = await Profile.findOne({ user: req.user._id }).populate("user", "fullname email role")
+    let profile = await Profile.findOne({ user: req.user._id }).populate("user", "fullname email role")
+
+    // If no profile exists, create an empty one for the user
     if (!profile) {
-        throw new ApiError(404, "Profile not found")
+        profile = await Profile.create({ user: req.user._id });
+        profile = await Profile.findOne({ user: req.user._id }).populate("user", "fullname email role");
     }
+
     res.status(200).json(new ApiResponse(200, profile, "Profile fetched successfully"))
 
 })

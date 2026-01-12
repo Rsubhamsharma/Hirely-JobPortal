@@ -7,11 +7,15 @@ import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import UserHome from "./pages/userEmployee/userHome";
 import UserDashboard from "./pages/userEmployee/UserDashboard";
 import Internships from "./pages/userEmployee/Internships";
 import Jobs from "./pages/userEmployee/Jobs";
+import JobDetail from "./pages/userEmployee/JobDetail";
+import JobApplications from "./pages/userEmployee/JobApplications";
+import MyApplications from "./pages/userEmployee/MyApplications";
 import Competitions from "./pages/userEmployee/Competitions";
+import CompetitionDetail from "./pages/userEmployee/CompetitionDetail";
+import RegisterCompetition from "./pages/userEmployee/RegisterCompetition";
 import Resume from "./pages/userEmployee/Resume";
 import ProtectedRoute from "./components/ProtectedRoute";
 import About from "./pages/About";
@@ -20,19 +24,14 @@ import Contact from "./pages/Contact";
 function AppWrapper() {
   const location = useLocation();
 
-  // Pages where Navbar should not appear
-  const hideNavbarPages = [
+  // Pages where Navbar should not appear (the component has its own navbar)
+  const hideNavbarPrefixes = [
     "/login",
     "/signup",
-    "/employee/home",
-    "/employee/internships",
-    "/employee/jobs",
-    "/employee/competitions",
-    "/employee/resume",
-    "/employee/profile",
+    "/employee/"
   ];
 
-  const hideNavbar = hideNavbarPages.includes(location.pathname);
+  const hideNavbar = hideNavbarPrefixes.some(prefix => location.pathname.startsWith(prefix));
 
   return (
     <AuthProvider>
@@ -44,11 +43,6 @@ function AppWrapper() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        <Route path="/employee/home" element={
-          <ProtectedRoute>
-            <UserHome />
-          </ProtectedRoute>
-        } />
         <Route path="/employee/profile" element={
           <ProtectedRoute>
             <UserDashboard />
@@ -64,9 +58,29 @@ function AppWrapper() {
             <Jobs />
           </ProtectedRoute>
         } />
+        <Route path="/employee/jobs/:jobId" element={
+          <ProtectedRoute>
+            <JobDetail />
+          </ProtectedRoute>
+        } />
+        <Route path="/employee/jobs/:jobId/applications" element={
+          <ProtectedRoute>
+            <JobApplications />
+          </ProtectedRoute>
+        } />
+        <Route path="/employee/my-applications" element={
+          <ProtectedRoute>
+            <MyApplications />
+          </ProtectedRoute>
+        } />
         <Route path="/employee/competitions" element={
           <ProtectedRoute>
             <Competitions />
+          </ProtectedRoute>
+        } />
+        <Route path="/employee/competitions/:competitionId" element={
+          <ProtectedRoute>
+            <CompetitionDetail />
           </ProtectedRoute>
         } />
         <Route path="/employee/resume" element={
@@ -82,6 +96,11 @@ function AppWrapper() {
         <Route path="/contact" element={
           <ProtectedRoute>
             <Contact />
+          </ProtectedRoute>
+        } />
+        <Route path="/employee/competitions/register/:competitionId" element={
+          <ProtectedRoute>
+            <RegisterCompetition />
           </ProtectedRoute>
         } />
       </Routes>
