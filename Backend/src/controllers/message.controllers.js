@@ -170,3 +170,35 @@ export const markMessagesAsRead = asyncHandler(async (req, res) => {
         new ApiResponse(200, null, "Messages marked as read")
     );
 });
+
+/**
+ * Delete a conversation and all its messages
+ */
+export const deleteConversation = asyncHandler(async (req, res) => {
+    const { conversationId } = req.params;
+    const userId = req.user._id;
+
+    // Verify user is a participant
+    const conversation = await Conversation.findById(conversationId);
+    if (!conversation) {
+        throw new ApiError(404, "Conversation not found");
+    }
+
+    const isParticipant = conversation.participants.some(
+        p => p.toString() === userId.toString()
+    );
+
+    if (!isParticipant) {
+        throw new ApiError(403, "You are not authorized to delete this conversation");
+    }
+
+    // Delete all messages in the conversation
+    await Message.deleteMany({ conversationId });
+
+    // Delete the conversation
+    await Conversation.findByIdAndDelete(conversationId);
+
+    return res.status(200).json(
+        new ApiResponse(200, null, "Conversation deleted successfully")
+    );
+});

@@ -22,43 +22,26 @@ export const AuthProvider = ({ children }) => {
 
     // Check authentication status on mount
     const checkAuthStatus = useCallback(async () => {
-        console.log("=== AUTH CHECK STARTING ===");
         try {
             // The backend uses HTTP-only cookies for authentication
             // Cookies are automatically sent with withCredentials: true in axios config
             const res = await api.get('/users/profile');
 
-            console.log("Auth check response:", res);
-            console.log("Auth check res.data:", res.data);
-            console.log("Auth check res.data.data:", res.data?.data);
-
             // Backend returns: { statusCode, data: user, message, success }
             if (res.data.success && res.data.data) {
                 const userData = res.data.data;
-                console.log('Auth check successful, user:', userData);
-                console.log('User role:', userData.role);
-                console.log('User fullname:', userData.fullname);
                 setUser(userData);
             } else {
-                console.log('Auth check failed: no user data in response');
-                console.log('Response was:', res.data);
                 setUser(null);
             }
         } catch (error) {
             // 401/403 means not logged in - this is expected for unauthenticated users
-            console.log("=== AUTH CHECK ERROR ===");
-            console.log("Error status:", error.response?.status);
-            console.log("Error message:", error.message);
-            console.log("Error response data:", error.response?.data);
-
             if (error.response?.status === 401 || error.response?.status === 403) {
-                console.log('User not authenticated (401/403)');
             } else {
                 console.error('Auth check error:', error.message);
             }
             setUser(null);
         } finally {
-            console.log("=== AUTH CHECK COMPLETE ===");
             setLoading(false);
         }
     }, []);

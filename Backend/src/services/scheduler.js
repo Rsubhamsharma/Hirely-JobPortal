@@ -12,8 +12,6 @@ import { sendEmail } from './emailService.js';
 export const initScheduler = () => {
     // 0 10 * * * - Every day at 10:00 AM
     cron.schedule('0 10 * * *', async () => {
-        console.log('Running competition reminder cron job...');
-
         try {
             const now = new Date();
             const threeDaysFromNow = new Date(now.getTime() + (3 * 24 * 60 * 60 * 1000));

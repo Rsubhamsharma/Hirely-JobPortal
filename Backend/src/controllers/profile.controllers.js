@@ -431,6 +431,42 @@ const uploadResume = asyncHandler(async (req, res) => {
     }
 });
 
+// Delete profile photo
+const deleteProfilePhoto = asyncHandler(async (req, res) => {
+    const profile = await Profile.findOneAndUpdate(
+        { user: req.user._id },
+        { $unset: { profileimage: "" } },
+        { new: true, runValidators: true }
+    ).populate("user", "fullname email role");
+
+    if (!profile) {
+        throw new ApiError(404, "Profile not found");
+    }
+
+    res.status(200).json(new ApiResponse(200, profile, "Profile photo deleted successfully"));
+});
+
+// Update user fullname
+const updateUserName = asyncHandler(async (req, res) => {
+    const { fullname } = req.body;
+
+    if (!fullname || fullname.trim() === "") {
+        throw new ApiError(400, "Fullname is required");
+    }
+
+    const user = await User.findByIdAndUpdate(
+        req.user._id,
+        { $set: { fullname: fullname.trim() } },
+        { new: true, runValidators: true }
+    ).select("-password -refreshToken");
+
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    res.status(200).json(new ApiResponse(200, user, "Name updated successfully"));
+});
+
 
 export {
     createOrUpdateProfile, getProfile, changeExperience,
@@ -438,6 +474,8 @@ export {
     removeSkill,
     changeEducation,
     getProfileById,
-    uploadResume
+    uploadResume,
+    deleteProfilePhoto,
+    updateUserName
 
 }

@@ -18,25 +18,25 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["applicant", "recruiter","admin"],
+      enum: ["applicant", "recruiter", "admin"],
     },
     refreshToken: {
       type: String,
     },
-    profile:{
-      type:mongoose.Schema.Types.ObjectId,
-      ref:"profile"
+    profile: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "profile"
     },
     //password reset token and expiry 
-    resetotphash:{
-      type:String
+    resetotphash: {
+      type: String
     },
-    resetotpexpiry:{
-      type:Date
+    resetotpexpiry: {
+      type: Date
     },
-    resetotpattempts:{
-      type:Number,
-      default:0
+    resetotpattempts: {
+      type: Number,
+      default: 0
     }
   },
   { timestamps: true }
@@ -45,17 +45,19 @@ const userSchema = new mongoose.Schema(
 userSchema.methods.generateAccessAndRefreshTokens = async function () {
   try {
     const accessToken = jwt.sign(
-      { _id: this._id,
-        email:this.email,
-        role:this.role
+      {
+        _id: this._id,
+        email: this.email,
+        role: this.role
 
       },
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
     );
     const refreshToken = jwt.sign(
-      { _id: this._id,
-        role:this.role
+      {
+        _id: this._id,
+        role: this.role
       },
       process.env.REFRESH_TOKEN_SECRET,
       { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
@@ -66,18 +68,19 @@ userSchema.methods.generateAccessAndRefreshTokens = async function () {
 
     return { accessToken, refreshToken };
   } catch (error) {
-    console.log(error);
+    console.error("Error generating tokens:", error);
+    throw error;
   }
 };
-userSchema.pre("save", async function (next){
-  if(!this.isModified("password")){
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) {
     return next()
   }
-  this.password=await bcrypt.hash(this.password,10)
+  this.password = await bcrypt.hash(this.password, 10)
   next()
 })
-userSchema.methods.isPasswordCorrect = async function(password){
-  return await bcrypt.compare(password,this.password)
+userSchema.methods.isPasswordCorrect = async function (password) {
+  return await bcrypt.compare(password, this.password)
 }
 
 const User = mongoose.model("user", userSchema);

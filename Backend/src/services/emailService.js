@@ -1,19 +1,13 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
 dotenv.config();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 // Create transporter
 const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: process.env.SMTP_PORT,
-    secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
+    secure: process.env.SMTP_SECURE === 'true',
     auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS
@@ -21,90 +15,81 @@ const transporter = nodemailer.createTransport({
 });
 
 /**
- * Load and render HTML template
+ * Send email with HTML content
  */
-const renderTemplate = (templateName, data) => {
-    const templatePath = path.join(__dirname, '../templates', `${templateName}.html`);
-    let template = fs.readFileSync(templatePath, 'utf8');
-
-    // Replace placeholders like {{name}} with real data
-    Object.keys(data).forEach(key => {
-        const regex = new RegExp(`{{${key}}}`, 'g');
-        template = template.replace(regex, data[key]);
-    });
-
-    return template;
-};
-
-/**
- * Interface for sending emails
- */
-export const sendEmail = async ({ to, subject, templateName, data, textFallback }) => {
+export const sendEmail = async ({ to, subject, html, text }) => {
     try {
-        const html = renderTemplate(templateName, data);
-
         const mailOptions = {
-            from: `"${process.env.SMTP_FROM_NAME || 'Platform Name'}" <${process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER}>`,
+            from: `"${process.env.SMTP_FROM_NAME || 'JobPortal'}" <${process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER}>`,
             to,
             subject,
             html,
-            text: textFallback || subject
+            text: text || subject
         };
 
         const info = await transporter.sendMail(mailOptions);
-        console.log(`Email sent: ${info.messageId}`);
         return info;
     } catch (error) {
-        console.error('Email sending failed:', error);
+        console.error('Email sending failed:', error.message);
         throw error;
     }
 };
 
 /**
- * Specific email workflows
+ * Competition Registration Email
  */
-
-// 1. Competition Registration Confirmation
 export const sendCompetitionRegistrationEmail = async (user, competition) => {
+    const html = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #2563eb;">Registration Confirmed!</h2>
+            <p>Hi ${user.fullname},</p>
+            <p>You have successfully registered for <strong>${competition.title}</strong>.</p>
+            <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                <p><strong>Competition Details:</strong></p>
+                <p>📅 Date: ${new Date(competition.date).toLocaleDateString()}</p>
+                <p>🏆 Prize: ${competition.prize || 'TBA'}</p>
+            </div>
+            <p>Good luck!</p>
+            <p style="color: #6b7280; font-size: 12px;">This is an automated email from JobPortal.</p>
+        </div>
+    `;
+
     return sendEmail({
         to: user.email,
         subject: `Registration Confirmed: ${competition.title}`,
-        templateName: 'competition-registration',
-        data: {
-            userName: user.fullname,
-            competitionTitle: competition.title,
-            competitionDate: new Date(competition.date).toLocaleDateString(),
-            competitionPrize: competition.prize || 'TBA',
-            organizerName: competition.organizer?.fullname || 'Organizer',
-            platformUrl: `${process.env.CORS_ORIGIN}/employee/competitions/${competition._id}`
-        }
+        html,
+        text: `You have successfully registered for ${competition.title}. Date: ${new Date(competition.date).toLocaleDateString()}`
     });
 };
 
-// 2. Application Status Update
-export const sendStatusUpdateEmail = async (user, competition, status) => {
-    let statusText = status.charAt(0).toUpperCase() + status.slice(1);
+/**
+ * Application Status Update Email
+ */
+export const sendStatusUpdateEmail = async (user, job, status) => {
+    const statusMessages = {
+        'Viewed': 'Your application has been viewed by the recruiter.',
+        'Shortlisted': 'Congratulations! You have been shortlisted.',
+        'Rejected': 'Thank you for your interest. We will not be moving forward at this time.',
+        'Hired': 'Congratulations! You have been selected for the position!'
+    };
+
+    const html = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #2563eb;">Application Status Update</h2>
+            <p>Hi ${user.fullname},</p>
+            <p>Your application for <strong>${job.title}</strong> has been updated.</p>
+            <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                <p><strong>Status:</strong> ${status}</p>
+                <p>${statusMessages[status] || 'Your application status has been updated.'}</p>
+            </div>
+            <p>Best regards,<br>JobPortal Team</p>
+        </div>
+    `;
 
     return sendEmail({
         to: user.email,
-        subject: `Update on your application: ${competition.title}`,
-        templateName: 'status-update',
-        data: {
-            userName: user.fullname,
-            competitionTitle: competition.title,
-            status: statusText,
-            statusClass: status.toLowerCase(),
-            message: getStatusMessage(status),
-            platformUrl: `${process.env.CORS_ORIGIN}/employee/competitions/${competition._id}`
-        }
+        subject: `Application Update: ${job.title}`,
+        html,
+        text: `Your application for ${job.title} status: ${status}`
     });
-};
-
-const getStatusMessage = (status) => {
-    switch (status.toLowerCase()) {
-        case 'shortlisted': return 'Congratulations! You have been shortlisted for the next round.';
-        case 'accepted': return 'Great news! Your application has been accepted.';
-        case 'rejected': return 'Thank you for your interest. Unfortunately, we will not be moving forward with your application at this time.';
-        default: return `Your application status has been updated to: ${status}`;
-    }
 };

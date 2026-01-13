@@ -37,7 +37,7 @@ export const initSocket = (server) => {
     });
 
     io.on("connection", (socket) => {
-        console.log(`User connected: ${socket.user.fullname} (${socket.id})`);
+
 
         // Join personal room for notifications
         socket.join(socket.user._id.toString());
@@ -45,7 +45,7 @@ export const initSocket = (server) => {
         // Join conversation room
         socket.on("join_conversation", (conversationId) => {
             socket.join(conversationId);
-            console.log(`User ${socket.user._id} joined conversation ${conversationId}`);
+
         });
 
         // Handle typing indicators
@@ -57,7 +57,7 @@ export const initSocket = (server) => {
         });
 
         socket.on("disconnect", () => {
-            console.log(`User disconnected: ${socket.id}`);
+
         });
     });
 

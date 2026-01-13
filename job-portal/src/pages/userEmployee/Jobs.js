@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../api/axios";
 import Navbar from "../../components/Navbar";
@@ -8,11 +8,14 @@ import toast from "react-hot-toast";
 function Jobs() {
   const { user } = useAuth(); // Get logged-in user with role
   const navigate = useNavigate();
+  const location = useLocation();
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [editingJobId, setEditingJobId] = useState(null);
 
   // Form state with all required fields from createJob controller
   const [formData, setFormData] = useState({
@@ -32,6 +35,30 @@ function Jobs() {
     fetchJobs();
   }, []);
 
+  // Handle edit mode from navigation state
+  useEffect(() => {
+    if (location.state?.editMode && location.state?.jobData) {
+      const job = location.state.jobData;
+      setEditMode(true);
+      setEditingJobId(job._id);
+      setFormData({
+        title: job.title || "",
+        description: job.description || "",
+        company: job.company || "",
+        location: job.location || "",
+        salary: job.salary || "",
+        jobType: job.jobType || "Full-time",
+        companydetails: job.companydetails || "",
+        responsibilities: job.responsibilities || "",
+        skills: Array.isArray(job.skills) ? job.skills.join(", ") : "",
+        experience: job.experience || ""
+      });
+      setShowForm(true);
+      // Clear the navigation state to prevent re-triggering
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state?.editMode]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -45,7 +72,7 @@ function Jobs() {
       // Convert skills from comma-separated string to array
       const skillsArray = formData.skills.split(",").map(s => s.trim()).filter(Boolean);
 
-      const res = await api.post("/jobs/postjob", {
+      const jobData = {
         title: formData.title,
         description: formData.description,
         company: formData.company,
@@ -56,11 +83,23 @@ function Jobs() {
         responsibilities: formData.responsibilities,
         skills: skillsArray,
         experience: formData.experience
-      });
+      };
+
+      let res;
+      if (editMode && editingJobId) {
+        // Update existing job
+        res = await api.patch(`/jobs/job/${editingJobId}`, jobData);
+        toast.success("Job updated successfully!");
+      } else {
+        // Create new job
+        res = await api.post("/jobs/postjob", jobData);
+        toast.success("Job posted successfully!");
+      }
 
       if (res.data.success) {
-        toast.success("Job posted successfully!");
         setShowForm(false);
+        setEditMode(false);
+        setEditingJobId(null);
         setFormData({
           title: "",
           description: "",
@@ -76,8 +115,8 @@ function Jobs() {
         fetchJobs(); // Refresh the jobs list
       }
     } catch (error) {
-      console.error("Error posting job:", error);
-      toast.error(error.response?.data?.message || "Failed to post job");
+      console.error("Error saving job:", error);
+      toast.error(error.response?.data?.message || `Failed to ${editMode ? 'update' : 'post'} job`);
     } finally {
       setSubmitting(false);
     }
@@ -116,7 +155,24 @@ function Jobs() {
             </p>
             <button
               className="px-8 py-4 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl"
-              onClick={() => setShowForm(true)}
+              onClick={() => {
+                // Reset edit mode and clear form before opening
+                setEditMode(false);
+                setEditingJobId(null);
+                setFormData({
+                  title: "",
+                  description: "",
+                  company: "",
+                  location: "",
+                  salary: "",
+                  jobType: "Full-time",
+                  companydetails: "",
+                  responsibilities: "",
+                  skills: "",
+                  experience: ""
+                });
+                setShowForm(true);
+              }}
             >
               + Post a New Job
             </button>
@@ -127,9 +183,28 @@ function Jobs() {
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
               <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
                 <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-                  <h2 className="text-2xl font-bold text-slate-900">Post a New Job</h2>
+                  <h2 className="text-2xl font-bold text-slate-900">
+                    {editMode ? "Edit Job" : "Post a New Job"}
+                  </h2>
                   <button
-                    onClick={() => setShowForm(false)}
+                    onClick={() => {
+                      setShowForm(false);
+                      setEditMode(false);
+                      setEditingJobId(null);
+                      // Reset form data when closing
+                      setFormData({
+                        title: "",
+                        description: "",
+                        company: "",
+                        location: "",
+                        salary: "",
+                        jobType: "Full-time",
+                        companydetails: "",
+                        responsibilities: "",
+                        skills: "",
+                        experience: ""
+                      });
+                    }}
                     className="text-slate-400 hover:text-slate-600 text-2xl"
                   >
                     ×
@@ -276,7 +351,24 @@ function Jobs() {
                   <div className="flex gap-3 pt-4">
                     <button
                       type="button"
-                      onClick={() => setShowForm(false)}
+                      onClick={() => {
+                        setShowForm(false);
+                        setEditMode(false);
+                        setEditingJobId(null);
+                        // Reset form data when canceling
+                        setFormData({
+                          title: "",
+                          description: "",
+                          company: "",
+                          location: "",
+                          salary: "",
+                          jobType: "Full-time",
+                          companydetails: "",
+                          responsibilities: "",
+                          skills: "",
+                          experience: ""
+                        });
+                      }}
                       className="flex-1 py-3 border border-slate-200 text-slate-700 font-semibold rounded-lg hover:bg-slate-50 transition-all"
                     >
                       Cancel
@@ -286,7 +378,7 @@ function Jobs() {
                       disabled={submitting}
                       className="flex-1 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      {submitting ? "Posting..." : "Post Job"}
+                      {submitting ? (editMode ? "Updating..." : "Posting...") : (editMode ? "Update Job" : "Post Job")}
                     </button>
                   </div>
                 </form>

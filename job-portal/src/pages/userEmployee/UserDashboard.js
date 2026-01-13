@@ -38,7 +38,7 @@ const InputGroup = ({ label, name, type = "text", placeholder, value, onChange, 
 );
 
 function UserDashboard() {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const formRef = useRef(null);
 
   // Form state matching the backend profile schema
@@ -57,6 +57,9 @@ function UserDashboard() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [profileProgress, setProfileProgress] = useState(0);
+  const [editingName, setEditingName] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [showDeletePhotoModal, setShowDeletePhotoModal] = useState(false);
 
   useEffect(() => {
     fetchProfile();
@@ -162,6 +165,38 @@ function UserDashboard() {
     }
   };
 
+  const handleDeletePhoto = async () => {
+    try {
+      await api.delete("/profile/me/photo");
+      setProfileImagePreview("");
+      await refreshUser();
+      await fetchProfile();
+      setShowDeletePhotoModal(false);
+      toast.success("Profile photo deleted successfully");
+    } catch (err) {
+      console.error("Error deleting photo:", err);
+      toast.error(err.response?.data?.message || "Failed to delete photo");
+      setShowDeletePhotoModal(false);
+    }
+  };
+
+  const handleUpdateName = async () => {
+    if (!newName.trim()) {
+      toast.error("Name cannot be empty");
+      return;
+    }
+
+    try {
+      await api.put("/profile/me/name", { fullname: newName });
+      await refreshUser();
+      setEditingName(false);
+      toast.success("Name updated successfully");
+    } catch (err) {
+      console.error("Error updating name:", err);
+      toast.error(err.response?.data?.message || "Failed to update name");
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50">
@@ -201,17 +236,65 @@ function UserDashboard() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
               <input type="file" accept="image/*" onChange={handleProfileImageChange} className="hidden" />
             </label>
+            {profileImagePreview && (
+              <button
+                onClick={() => setShowDeletePhotoModal(true)}
+                className="mt-2 text-red-600 hover:text-red-700 text-sm font-medium transition-colors"
+                title="Delete profile photo"
+              >
+                Delete Photo
+              </button>
+            )}
           </div>
 
           <div className="flex-1 text-center md:text-left w-full">
-            <h1 className="text-3xl font-bold text-slate-900 mb-2 flex items-center justify-center md:justify-start gap-2">
-              {user?.fullname || "Your Name"}
-              {profileProgress === 100 && (
-                <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-bold border border-blue-200">
-                  COMPLETE
-                </span>
-              )}
-            </h1>
+            {!editingName ? (
+              <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
+                <h1 className="text-3xl font-bold text-slate-900">
+                  {user?.fullname || "Your Name"}
+                </h1>
+                <button
+                  onClick={() => {
+                    setNewName(user?.fullname || "");
+                    setEditingName(true);
+                  }}
+                  className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                  title="Edit name"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                  </svg>
+                </button>
+                {profileProgress === 100 && (
+                  <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-bold border border-blue-200">
+                    COMPLETE
+                  </span>
+                )}
+              </div>
+            ) : (
+              <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
+                <input
+                  type="text"
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  className="text-2xl font-bold text-slate-900 border-2 border-blue-500 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter your name"
+                  autoFocus
+                />
+                <button
+                  onClick={handleUpdateName}
+                  className="px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={() => setEditingName(false)}
+                  className="px-3 py-1.5 bg-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-300 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
             <p className="text-slate-500 mb-4">{user?.email}</p>
 
             <div className="max-w-md">
@@ -331,6 +414,39 @@ function UserDashboard() {
           </div>
         </form>
       </div>
+
+      {/* Delete Photo Confirmation Modal */}
+      {showDeletePhotoModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 transform transition-all">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">Delete Profile Photo?</h3>
+              <p className="text-slate-600 mb-6">
+                Are you sure you want to delete your profile photo? This action cannot be undone.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowDeletePhotoModal(false)}
+                  className="flex-1 px-4 py-2.5 border-2 border-slate-200 text-slate-700 font-semibold rounded-lg hover:bg-slate-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeletePhoto}
+                  className="flex-1 px-4 py-2.5 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -19,7 +19,7 @@ export const SocketProvider = ({ children }) => {
             });
 
             newSocket.on('connect', () => {
-                console.log('Socket connected:', newSocket.id);
+
             });
 
             newSocket.on('online_users', (users) => {

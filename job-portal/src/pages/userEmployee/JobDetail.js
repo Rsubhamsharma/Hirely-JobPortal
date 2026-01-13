@@ -182,6 +182,26 @@ function JobDetail() {
                                 )}
                             </div>
                         )}
+
+                        {/* Edit Job Button for Recruiters */}
+                        {user?.role === "recruiter" && job.postedBy?._id === user?._id && (
+                            <div className="flex-shrink-0">
+                                <button
+                                    onClick={() => {
+                                        // Navigate to Jobs page with job data for editing
+                                        navigate('/employee/jobs', {
+                                            state: {
+                                                editMode: true,
+                                                jobData: job
+                                            }
+                                        });
+                                    }}
+                                    className="px-8 py-3 bg-slate-800 text-white font-semibold rounded-xl hover:bg-slate-900 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                                >
+                                    Edit Job
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     {/* Job Meta */}

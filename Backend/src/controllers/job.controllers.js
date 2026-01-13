@@ -153,7 +153,7 @@ const editJob = asyncHandler(async (req, res) => {
   if (!job) throw new ApiError(404, "Job not found")
 
 
-  if (job.postedBy.toString() !== user._id.toString()) {
+  if (job.postedBy._id.toString() !== user._id.toString()) {
     throw new ApiError(403, "You can update only your own jobs")
   }
 

@@ -157,7 +157,17 @@ function Signup({ onClose }) {
               {loading ? "Creating Account..." : "Sign Up"}
             </button>
 
-            <div className="flex gap-2">
+            <div className="text-center text-sm text-slate-600 mt-2">
+              Already have an account?{" "}
+              <button
+                onClick={() => navigate("/login")}
+                className="text-blue-600 font-medium hover:underline"
+              >
+                Login here
+              </button>
+            </div>
+
+            <div className="flex gap-2 mt-2">
               <button
                 className="flex-1 p-3 text-slate-500 text-sm hover:text-slate-800 transition-colors font-medium border border-transparent hover:bg-slate-50 rounded-lg"
                 onClick={() => setStep(1)}

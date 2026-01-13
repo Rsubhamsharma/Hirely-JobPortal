@@ -11,7 +11,7 @@ export function useSocketEvents() {
         if (!socket) return;
 
         const handleCompetitionUpdate = (data) => {
-            console.log('Real-time update received:', data);
+
 
             // Invalidate the generic list
             queryClient.invalidateQueries({ queryKey: competitionKeys.lists() });

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
 import { useSocket } from '../../context/SocketContext';
@@ -9,6 +9,7 @@ import Navbar from '../../components/Navbar'
 const Messages = () => {
     const { user } = useAuth();
     const { socket } = useSocket();
+    const navigate = useNavigate();
     const [conversations, setConversations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeConversation, setActiveConversation] = useState(null);
@@ -121,9 +122,20 @@ const Messages = () => {
             <Navbar />
             <div className="min-h-screen bg-slate-50">
                 <div className="max-w-6xl mx-auto px-4 py-8">
-                    <div className="mb-8">
-                        <h1 className="text-3xl font-bold text-slate-900">Messages</h1>
-                        <p className="text-slate-600 mt-1">Your conversations with recruiters and applicants</p>
+                    <div className="mb-8 flex items-center gap-4">
+                        <button
+                            onClick={() => navigate(-1)}
+                            className="p-2 hover:bg-slate-200 rounded-lg transition-colors"
+                            title="Go back"
+                        >
+                            <svg className="w-6 h-6 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+                        <div>
+                            <h1 className="text-3xl font-bold text-slate-900">Messages</h1>
+                            <p className="text-slate-600 mt-1">Your conversations with recruiters and applicants</p>
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px]">
@@ -167,35 +179,60 @@ const Messages = () => {
                                             const hasUnread = unreadCount > 0;
 
                                             return (
-                                                <button
-                                                    key={conv._id}
-                                                    onClick={() => setActiveConversation(conv._id)}
-                                                    className={`w-full p-4 text-left hover:bg-slate-50 transition-colors relative ${activeConversation === conv._id
-                                                        ? 'bg-blue-50 border-l-4 border-blue-600'
-                                                        : hasUnread
-                                                            ? 'bg-blue-50/50 border-l-4 border-blue-400'
-                                                            : ''
-                                                        }`}
-                                                >
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold relative">
-                                                            {other?.fullname?.[0]?.toUpperCase() || '?'}
-                                                            {hasUnread && (
-                                                                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1">
-                                                                    {unreadCount > 99 ? '99+' : unreadCount}
-                                                                </span>
-                                                            )}
+                                                <div key={conv._id} className="relative">
+                                                    <button
+                                                        onClick={() => setActiveConversation(conv._id)}
+                                                        className={`w-full p-4 text-left hover:bg-slate-50 transition-colors relative ${activeConversation === conv._id
+                                                            ? 'bg-blue-50 border-l-4 border-blue-600'
+                                                            : hasUnread
+                                                                ? 'bg-blue-50/50 border-l-4 border-blue-400'
+                                                                : ''
+                                                            }`}
+                                                    >
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold relative">
+                                                                {other?.fullname?.[0]?.toUpperCase() || '?'}
+                                                                {hasUnread && (
+                                                                    <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1">
+                                                                        {unreadCount > 99 ? '99+' : unreadCount}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            <div className="flex-1 min-w-0">
+                                                                <p className={`font-medium truncate ${hasUnread ? 'text-slate-900' : 'text-slate-800'}`}>
+                                                                    {other?.fullname || 'Unknown'}
+                                                                </p>
+                                                                <p className={`text-xs truncate ${hasUnread ? 'text-slate-700 font-medium' : 'text-slate-500'}`}>
+                                                                    {conv.lastMessage?.content || 'Start chatting...'}
+                                                                </p>
+                                                            </div>
+                                                            <button
+                                                                onClick={async (e) => {
+                                                                    e.stopPropagation();
+                                                                    if (window.confirm("Delete this conversation? This action cannot be undone.")) {
+                                                                        try {
+                                                                            await api.delete(`/messages/${conv._id}`);
+                                                                            fetchConversations();
+                                                                            if (activeConversation === conv._id) {
+                                                                                setActiveConversation(null);
+                                                                            }
+                                                                            toast.success("Conversation deleted");
+                                                                        } catch (err) {
+                                                                            console.error("Error deleting conversation:", err);
+                                                                            toast.error("Failed to delete conversation");
+                                                                        }
+                                                                    }
+                                                                }}
+                                                                className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                                                title="Delete conversation"
+                                                            >
+                                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                                </svg>
+                                                            </button>
                                                         </div>
-                                                        <div className="flex-1 min-w-0">
-                                                            <p className={`font-medium truncate ${hasUnread ? 'text-slate-900' : 'text-slate-800'}`}>
-                                                                {other?.fullname || 'Unknown'}
-                                                            </p>
-                                                            <p className={`text-xs truncate ${hasUnread ? 'text-slate-700 font-medium' : 'text-slate-500'}`}>
-                                                                {conv.lastMessage?.content || 'Start chatting...'}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </button>
+                                                    </button>
+                                                </div>
                                             );
                                         })}
                                     </div>
