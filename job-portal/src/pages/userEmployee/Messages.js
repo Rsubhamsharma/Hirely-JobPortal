@@ -18,6 +18,8 @@ const Messages = () => {
     const [newMessage, setNewMessage] = useState('');
     const [sending, setSending] = useState(false);
     const messagesEndRef = useRef(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [conversationToDelete, setConversationToDelete] = useState(null);
 
     // Fetch all conversations
     useEffect(() => {
@@ -117,6 +119,27 @@ const Messages = () => {
         return conv.participants?.find(p => p._id !== user?._id);
     };
 
+    // Handle delete conversation
+    const handleDeleteConversation = async () => {
+        if (!conversationToDelete) return;
+
+        try {
+            await api.delete(`/messages/${conversationToDelete}`);
+            fetchConversations();
+            if (activeConversation === conversationToDelete) {
+                setActiveConversation(null);
+            }
+            setShowDeleteModal(false);
+            setConversationToDelete(null);
+            toast.success("Conversation deleted");
+        } catch (err) {
+            console.error("Error deleting conversation:", err);
+            toast.error("Failed to delete conversation");
+            setShowDeleteModal(false);
+            setConversationToDelete(null);
+        }
+    };
+
     return (
         <>
             <Navbar />
@@ -180,9 +203,9 @@ const Messages = () => {
 
                                             return (
                                                 <div key={conv._id} className="relative">
-                                                    <button
+                                                    <div
                                                         onClick={() => setActiveConversation(conv._id)}
-                                                        className={`w-full p-4 text-left hover:bg-slate-50 transition-colors relative ${activeConversation === conv._id
+                                                        className={`w-full p-4 cursor-pointer hover:bg-slate-50 transition-colors relative ${activeConversation === conv._id
                                                             ? 'bg-blue-50 border-l-4 border-blue-600'
                                                             : hasUnread
                                                                 ? 'bg-blue-50/50 border-l-4 border-blue-400'
@@ -207,21 +230,10 @@ const Messages = () => {
                                                                 </p>
                                                             </div>
                                                             <button
-                                                                onClick={async (e) => {
+                                                                onClick={(e) => {
                                                                     e.stopPropagation();
-                                                                    if (window.confirm("Delete this conversation? This action cannot be undone.")) {
-                                                                        try {
-                                                                            await api.delete(`/messages/${conv._id}`);
-                                                                            fetchConversations();
-                                                                            if (activeConversation === conv._id) {
-                                                                                setActiveConversation(null);
-                                                                            }
-                                                                            toast.success("Conversation deleted");
-                                                                        } catch (err) {
-                                                                            console.error("Error deleting conversation:", err);
-                                                                            toast.error("Failed to delete conversation");
-                                                                        }
-                                                                    }
+                                                                    setConversationToDelete(conv._id);
+                                                                    setShowDeleteModal(true);
                                                                 }}
                                                                 className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                                                                 title="Delete conversation"
@@ -231,7 +243,7 @@ const Messages = () => {
                                                                 </svg>
                                                             </button>
                                                         </div>
-                                                    </button>
+                                                    </div>
                                                 </div>
                                             );
                                         })}
@@ -334,6 +346,42 @@ const Messages = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Delete Conversation Confirmation Modal */}
+            {showDeleteModal && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 transform transition-all">
+                        <div className="text-center">
+                            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                            </div>
+                            <h3 className="text-xl font-bold text-slate-900 mb-2">Delete Conversation?</h3>
+                            <p className="text-slate-600 mb-6">
+                                Are you sure you want to delete this conversation? All messages will be permanently removed. This action cannot be undone.
+                            </p>
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => {
+                                        setShowDeleteModal(false);
+                                        setConversationToDelete(null);
+                                    }}
+                                    className="flex-1 px-4 py-2.5 border-2 border-slate-200 text-slate-700 font-semibold rounded-lg hover:bg-slate-50 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleDeleteConversation}
+                                    className="flex-1 px-4 py-2.5 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors"
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     );
 };
