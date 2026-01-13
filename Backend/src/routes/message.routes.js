@@ -5,7 +5,8 @@ import {
     sendMessage,
     getMessages,
     getMyConversations,
-    getUnreadCount
+    getUnreadCount,
+    markMessagesAsRead
 } from "../controllers/message.controllers.js";
 
 const router = Router();
@@ -17,5 +18,6 @@ router.get("/unread-count", getUnreadCount);
 router.post("/conversation/:applicationId", getOrCreateConversation);
 router.get("/:conversationId", getMessages);
 router.post("/:conversationId/send", sendMessage);
+router.post("/:conversationId/mark-read", markMessagesAsRead);
 
 export default router;

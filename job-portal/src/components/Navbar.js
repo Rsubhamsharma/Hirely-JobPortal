@@ -2,11 +2,13 @@ import { useAuth } from "../context/AuthContext";
 import { useState, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
 import api from "../api/axios";
+import { useSocket } from "../context/SocketContext";
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const { user, logout } = useAuth();
+  const { socket } = useSocket();
 
   // Fetch unread message count
   useEffect(() => {
@@ -17,6 +19,27 @@ function Navbar() {
       return () => clearInterval(interval);
     }
   }, [user]);
+
+  // Listen for new messages via socket to update count in real-time
+  useEffect(() => {
+    if (socket) {
+      const handleNewMessage = () => {
+        fetchUnreadCount();
+      };
+
+      const handleMessagesRead = () => {
+        fetchUnreadCount();
+      };
+
+      socket.on('new_message', handleNewMessage);
+      socket.on('messages_read', handleMessagesRead);
+
+      return () => {
+        socket.off('new_message', handleNewMessage);
+        socket.off('messages_read', handleMessagesRead);
+      };
+    }
+  }, [socket]);
 
   const fetchUnreadCount = async () => {
     try {

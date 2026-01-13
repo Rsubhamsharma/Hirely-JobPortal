@@ -38,6 +38,7 @@ const Messages = () => {
     useEffect(() => {
         if (activeConversation) {
             fetchMessages(activeConversation);
+            markAsRead(activeConversation);
         }
     }, [activeConversation]);
 
@@ -50,6 +51,16 @@ const Messages = () => {
             toast.error('Failed to load messages');
         } finally {
             setMessagesLoading(false);
+        }
+    };
+
+    const markAsRead = async (convId) => {
+        try {
+            await api.post(`/messages/${convId}/mark-read`);
+            // Refresh conversations to update unread counts
+            fetchConversations();
+        } catch (error) {
+            console.error('Failed to mark as read:', error);
         }
     };
 
@@ -78,28 +89,23 @@ const Messages = () => {
         };
     }, [socket, activeConversation]);
 
-    // Scroll to bottom when messages change
-    useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages]);
-
     // Send a message
     const handleSendMessage = async (e) => {
         e.preventDefault();
         if (!newMessage.trim() || !activeConversation) return;
 
         setSending(true);
+        const messageContent = newMessage;
+        setNewMessage(''); // Clear input immediately for better UX
+
         try {
-            const response = await api.post(`/messages/${activeConversation}/send`, {
-                content: newMessage
+            await api.post(`/messages/${activeConversation}/send`, {
+                content: messageContent
             });
-            if (response.data.success) {
-                // Add message to local state immediately
-                setMessages(prev => [...prev, response.data.data]);
-                setNewMessage('');
-            }
+            // Don't add to local state - socket will handle it to avoid duplicates
         } catch (error) {
             toast.error('Failed to send message');
+            setNewMessage(messageContent); // Restore message on error
         } finally {
             setSending(false);
         }
@@ -157,22 +163,34 @@ const Messages = () => {
                                     <div className="divide-y divide-slate-100">
                                         {conversations.map((conv) => {
                                             const other = getOtherParticipant(conv);
+                                            const unreadCount = conv.unreadCount?.get?.(user?._id) || conv.unreadCount?.[user?._id] || 0;
+                                            const hasUnread = unreadCount > 0;
+
                                             return (
                                                 <button
                                                     key={conv._id}
                                                     onClick={() => setActiveConversation(conv._id)}
-                                                    className={`w-full p-4 text-left hover:bg-slate-50 transition-colors ${activeConversation === conv._id ? 'bg-blue-50 border-l-4 border-blue-600' : ''
+                                                    className={`w-full p-4 text-left hover:bg-slate-50 transition-colors relative ${activeConversation === conv._id
+                                                        ? 'bg-blue-50 border-l-4 border-blue-600'
+                                                        : hasUnread
+                                                            ? 'bg-blue-50/50 border-l-4 border-blue-400'
+                                                            : ''
                                                         }`}
                                                 >
                                                     <div className="flex items-center gap-3">
-                                                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
+                                                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold relative">
                                                             {other?.fullname?.[0]?.toUpperCase() || '?'}
+                                                            {hasUnread && (
+                                                                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1">
+                                                                    {unreadCount > 99 ? '99+' : unreadCount}
+                                                                </span>
+                                                            )}
                                                         </div>
                                                         <div className="flex-1 min-w-0">
-                                                            <p className="font-medium text-slate-800 truncate">
+                                                            <p className={`font-medium truncate ${hasUnread ? 'text-slate-900' : 'text-slate-800'}`}>
                                                                 {other?.fullname || 'Unknown'}
                                                             </p>
-                                                            <p className="text-xs text-slate-500 truncate">
+                                                            <p className={`text-xs truncate ${hasUnread ? 'text-slate-700 font-medium' : 'text-slate-500'}`}>
                                                                 {conv.lastMessage?.content || 'Start chatting...'}
                                                             </p>
                                                         </div>

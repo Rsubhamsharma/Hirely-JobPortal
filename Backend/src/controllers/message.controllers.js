@@ -55,6 +55,20 @@ export const sendMessage = asyncHandler(async (req, res) => {
 
     await message.populate("senderId", "fullname email");
 
+    // Update conversation with last message and increment unread count for other participants
+    const conversation = await Conversation.findById(conversationId);
+    conversation.lastMessage = message._id;
+
+    // Increment unread count for all participants except the sender
+    conversation.participants.forEach(participantId => {
+        if (participantId.toString() !== senderId.toString()) {
+            const currentCount = conversation.unreadCount.get(participantId.toString()) || 0;
+            conversation.unreadCount.set(participantId.toString(), currentCount + 1);
+        }
+    });
+
+    await conversation.save();
+
     // Emit real-time update
     emitToConversation(conversationId, "new_message", message);
 
@@ -110,14 +124,49 @@ export const getUnreadCount = asyncHandler(async (req, res) => {
 
     const conversationIds = conversations.map(c => c._id);
 
-    // Count unread messages (messages in user's conversations that weren't sent by them and are unread)
+    // Count unread messages (messages in user's conversations that weren't sent by them and haven't been read)
     const unreadCount = await Message.countDocuments({
         conversationId: { $in: conversationIds },
         senderId: { $ne: userId },
-        read: false
+        readAt: null
     });
 
     return res.status(200).json(
         new ApiResponse(200, { unreadCount }, "Unread count fetched successfully")
+    );
+});
+
+/**
+ * Mark all messages in a conversation as read
+ */
+export const markMessagesAsRead = asyncHandler(async (req, res) => {
+    const { conversationId } = req.params;
+    const userId = req.user._id;
+
+    // Mark all unread messages in this conversation as read
+    await Message.updateMany(
+        {
+            conversationId,
+            senderId: { $ne: userId },
+            readAt: null
+        },
+        {
+            $set: { readAt: new Date() }
+        }
+    );
+
+    // Reset unread count for this user in the conversation
+    const conversation = await Conversation.findById(conversationId);
+    if (conversation) {
+        conversation.unreadCount.set(userId.toString(), 0);
+        await conversation.save();
+
+        // Emit event to user's personal room to update navbar badge
+        const { notifyUser } = await import("../socket/socket.js");
+        notifyUser(userId, "messages_read", { conversationId });
+    }
+
+    return res.status(200).json(
+        new ApiResponse(200, null, "Messages marked as read")
     );
 });
