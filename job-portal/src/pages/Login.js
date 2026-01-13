@@ -80,9 +80,17 @@ function Login({ onClose }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
-              Password
-            </label>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                Password
+              </label>
+              <NavLink
+                to="/forgot-password"
+                className="text-xs text-blue-600 hover:underline font-medium"
+              >
+                Forgot Password?
+              </NavLink>
+            </div>
             <input
               type="password"
               placeholder="••••••••"

@@ -69,7 +69,7 @@ function Home() {
             // Logged in hero
             <>
               <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-4 leading-tight">
-                Welcome back, <span className="text-blue-400">{user.fullname?.split(" ")[0]}</span>! 👋
+                Welcome back, <span className="text-blue-400">{user.fullname?.split(" ")[0]}</span>!
               </h1>
               <p className="max-w-2xl mx-auto text-xl text-slate-300 mb-8 leading-relaxed">
                 {user.role === "applicant"
@@ -148,9 +148,7 @@ function Home() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <Link to="/employee/my-applications" className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all group">
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center text-3xl group-hover:bg-blue-100 transition-colors">
-                    📝
-                  </div>
+
                   <div>
                     <div className="text-3xl font-bold text-slate-900">{appStats.total}</div>
                     <div className="text-slate-500 font-medium">Total Applications</div>
@@ -159,9 +157,7 @@ function Home() {
               </Link>
               <Link to="/employee/my-applications" className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all group">
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-yellow-50 rounded-xl flex items-center justify-center text-3xl group-hover:bg-yellow-100 transition-colors">
-                    ⏳
-                  </div>
+
                   <div>
                     <div className="text-3xl font-bold text-yellow-600">{appStats.pending}</div>
                     <div className="text-slate-500 font-medium">Pending Review</div>
@@ -170,9 +166,7 @@ function Home() {
               </Link>
               <Link to="/employee/my-applications" className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all group">
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-green-50 rounded-xl flex items-center justify-center text-3xl group-hover:bg-green-100 transition-colors">
-                    ⭐
-                  </div>
+
                   <div>
                     <div className="text-3xl font-bold text-green-600">{appStats.shortlisted}</div>
                     <div className="text-slate-500 font-medium">Shortlisted</div>
@@ -222,9 +216,9 @@ function Home() {
                       </span>
                     </div>
                     <p className="text-sm text-slate-500 mb-3">{job.company}</p>
-                    <div className="flex items-center gap-3 text-xs text-slate-500">
-                      <span>📍 {job.location || "Remote"}</span>
-                      <span>💰 ₹{job.salary?.toLocaleString() || "Competitive"}</span>
+                    <div className="flex  text-black items-center gap-3 text-xs text-slate-500">
+                      <span className="font-bold text-md"> {job.location || "Remote"}</span>
+                      <span className="font-bold text-md"> ₹{job.salary?.toLocaleString() || "Competitive"}</span>
                     </div>
                   </Link>
                 ))}

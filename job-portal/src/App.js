@@ -27,6 +27,7 @@ const Messages = lazy(() => import("./pages/userEmployee/Messages"));
 const Resume = lazy(() => import("./pages/userEmployee/Resume"));
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 
 const SocketEventManager = () => {
   useSocketEvents();
@@ -65,6 +66,7 @@ function AppWrapper() {
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
 
               <Route path="/employee/profile" element={
                 <ProtectedRoute>
