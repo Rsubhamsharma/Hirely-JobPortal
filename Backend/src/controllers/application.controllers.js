@@ -5,6 +5,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadCloudinary } from "../utils/cloudianry.js";
+import { sendJobApplicationEmail, sendStatusUpdateEmail } from "../services/emailService.js";
 
 /**
  * Apply to a job (Applicant only)
@@ -87,6 +88,11 @@ const applyToJob = asyncHandler(async (req, res) => {
     await application.populate("job", "title company location");
     await application.populate("applicant", "fullname email");
 
+    // Send application confirmation email (async, don't block response)
+    sendJobApplicationEmail(req.user, job).catch(err =>
+        console.error('Failed to send application email:', err)
+    );
+
     return res.status(201).json(
         new ApiResponse(201, application, "Application submitted successfully")
     );
@@ -144,8 +150,6 @@ const getMyApplications = asyncHandler(async (req, res) => {
         new ApiResponse(200, applications, "Your applications fetched successfully")
     );
 });
-
-import { sendStatusUpdateEmail } from "../services/emailService.js";
 
 /**
  * Update application status (Recruiter only)

@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import api from "../../api/axios";
 import Navbar from "../../components/Navbar";
 import { useAuth } from "../../context/AuthContext";
+import { StatsCardSkeleton, ApplicationCardSkeleton } from "../../components/Skeleton";
 import toast from "react-hot-toast";
 
 function MyApplications() {
@@ -18,8 +19,9 @@ function MyApplications() {
         try {
             const res = await api.post(`/messages/conversation/${applicationId}`);
             if (res.data.success) {
-                navigate('/employee/messages');
-                toast.success('Conversation started! Redirecting to messages...');
+                const conversationId = res.data.data._id;
+                navigate(`/employee/messages?conversation=${conversationId}`);
+                toast.success('Opening conversation...');
             }
         } catch (error) {
             toast.error('Failed to start conversation');
@@ -92,14 +94,22 @@ function MyApplications() {
             <div className="min-h-screen bg-slate-50">
                 <Navbar />
                 <div className="max-w-7xl mx-auto px-4 py-12">
-                    <div className="animate-pulse space-y-6">
-                        <div className="h-8 bg-slate-200 rounded w-1/3"></div>
-                        <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-                            {[...Array(6)].map((_, i) => (
-                                <div key={i} className="h-24 bg-slate-200 rounded-xl"></div>
-                            ))}
+                    <div className="mb-8">
+                        <div className="h-8 w-64 bg-slate-200 rounded mb-2 animate-pulse"></div>
+                        <div className="h-4 w-96 bg-slate-200 rounded animate-pulse"></div>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+                        {[...Array(6)].map((_, i) => (
+                            <StatsCardSkeleton key={i} />
+                        ))}
+                    </div>
+                    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                        <div className="p-6 border-b border-slate-100">
+                            <div className="h-6 w-48 bg-slate-200 rounded animate-pulse"></div>
                         </div>
-                        <div className="h-64 bg-slate-200 rounded-xl"></div>
+                        {[...Array(3)].map((_, i) => (
+                            <ApplicationCardSkeleton key={i} />
+                        ))}
                     </div>
                 </div>
             </div>

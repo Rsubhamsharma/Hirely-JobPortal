@@ -9,6 +9,7 @@ import { useSocketEvents } from './hooks/useSocketEvents';
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ScrollToTop from "./components/ScrollToTop";
 
 // Lazy load pages for better performance
 const Home = lazy(() => import("./pages/Home"));
@@ -51,6 +52,7 @@ function AppWrapper() {
       <AuthProvider>
         <SocketProvider>
           <SocketEventManager />
+          <ScrollToTop />
           <Toaster position="top-right" toastOptions={{ className: 'font-sans' }} />
           {!hideNavbar && <Navbar />}
 

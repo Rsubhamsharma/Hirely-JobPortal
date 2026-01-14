@@ -10,6 +10,8 @@ const Messages = () => {
     const { user } = useAuth();
     const { socket } = useSocket();
     const navigate = useNavigate();
+    const searchParams = new URLSearchParams(window.location.search);
+    const conversationIdFromUrl = searchParams.get('conversation');
     const [conversations, setConversations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeConversation, setActiveConversation] = useState(null);
@@ -30,6 +32,16 @@ const Messages = () => {
         try {
             const response = await api.get('/messages/conversations');
             setConversations(response.data.data || []);
+
+            // Auto-select conversation from URL parameter
+            if (conversationIdFromUrl && response.data.data) {
+                const conversationExists = response.data.data.find(c => c._id === conversationIdFromUrl);
+                if (conversationExists) {
+                    setActiveConversation(conversationIdFromUrl);
+                    // Clean up URL
+                    window.history.replaceState({}, '', '/employee/messages');
+                }
+            }
         } catch (error) {
             console.error('Failed to fetch conversations:', error);
         } finally {
