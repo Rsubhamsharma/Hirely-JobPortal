@@ -109,10 +109,10 @@ const Competitions = () => {
   return (
     <>
       <Navbar />
-      <div className="flex bg-slate-50 min-h-screen p-8">
+      <div className="flex bg-slate-50 dark:bg-slate-800 min-h-screen p-8">
         <div className="max-w-6xl mx-auto w-full">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-3xl font-bold text-slate-800">Competitions</h2>
+            <h2 className="text-3xl font-bold text-slate-800 dark:text-white">Competitions</h2>
             {
               userRole !== "applicant" &&
               <button
@@ -140,53 +140,53 @@ const Competitions = () => {
           {/* Create/Edit Form Modal */}
           {showForm && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white p-8 rounded-xl shadow-xl max-w-md w-full mx-4">
-                <h3 className="text-2xl font-bold text-slate-800 mb-6">
+              <div className="bg-white dark:bg-slate-700 p-8 rounded-xl shadow-xl max-w-md w-full mx-4">
+                <h3 className="text-2xl font-bold text-slate-800 dark:text-white mb-6">
                   {isEditing ? "Edit Competition" : "Create Competition"}
                 </h3>
                 <form onSubmit={isEditing ? updateCompetition : createCompetition}>
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">Title</label>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Title</label>
                       <input
                         type="text"
                         name="title"
                         value={formData.title}
                         onChange={handleInputChange}
                         required
-                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+                        className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
                         placeholder="Competition title"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">Date</label>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Date</label>
                       <input
                         type="date"
                         name="date"
                         value={formData.date}
                         onChange={handleInputChange}
                         required
-                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+                        className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">Prize Pool</label>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Prize Pool</label>
                       <input
                         type="text"
                         name="prize"
                         value={formData.prize}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+                        className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
                         placeholder="e.g., $10,000"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">Status</label>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Status</label>
                       <select
                         name="status"
                         value={formData.status}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+                        className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
                       >
                         <option value="active">Active</option>
                         <option value="upcoming">Upcoming</option>
@@ -198,7 +198,7 @@ const Competitions = () => {
                     <button
                       type="button"
                       onClick={resetForm}
-                      className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors"
+                      className="flex-1 px-4 py-2 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 rounded-lg font-medium hover:bg-slate-50 dark:bg-slate-800 transition-colors"
                     >
                       Cancel
                     </button>
@@ -218,16 +218,16 @@ const Competitions = () => {
           {/* Competitions List */}
           <div className="space-y-4">
             {competitions.length === 0 ? (
-              <div className="bg-white p-12 rounded-xl shadow-sm border border-slate-100 text-center">
-                <p className="text-slate-500 text-lg">No competitions available</p>
+              <div className="bg-white dark:bg-slate-700 p-12 rounded-xl shadow-sm border border-slate-200 dark:border-slate-600 text-center">
+                <p className="text-slate-500 dark:text-slate-400 text-lg">No competitions available</p>
                 <p className="text-slate-400 mt-2">Create your first competition to get started!</p>
               </div>
             ) : (
               competitions.map((comp) => (
-                <div key={comp._id} className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 hover:shadow-lg transition-shadow flex flex-col md:flex-row justify-between items-center gap-4">
+                <div key={comp._id} className="bg-white dark:bg-slate-700 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-600 hover:shadow-sm-hover transition-shadow flex flex-col md:flex-row justify-between items-center gap-4">
                   <div className="flex-1 cursor-pointer" onClick={() => navigate(`/employee/competitions/${comp._id}`)}>
                     <div className="flex items-center gap-3 mb-1">
-                      <h3 className="text-xl font-bold text-slate-900 hover:text-blue-600 transition-colors">{comp.title}</h3>
+                      <h3 className="text-xl font-bold text-slate-900 dark:text-slate-50 hover:text-blue-600 transition-colors">{comp.title}</h3>
                       {comp.status === "active" && (
                         <span className="animate-pulse bg-red-100 text-red-600 text-xs px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
                           ● Live
@@ -244,7 +244,7 @@ const Competitions = () => {
                         </span>
                       )}
                     </div>
-                    <p className="text-slate-500">
+                    <p className="text-slate-500 dark:text-slate-400">
                       Organized by {comp.organizer?.fullname || comp.organizer?.email || "Unknown"}
                     </p>
                   </div>
@@ -252,7 +252,7 @@ const Competitions = () => {
                   <div className="flex items-center gap-8">
                     <div className="text-center">
                       <p className="text-xs text-slate-400 uppercase tracking-wide font-semibold">Date</p>
-                      <p className="font-medium text-slate-700">{new Date(comp.date).toLocaleDateString()}</p>
+                      <p className="font-medium text-slate-700 dark:text-slate-200">{new Date(comp.date).toLocaleDateString()}</p>
                     </div>
                     <div className="text-center">
                       <p className="text-xs text-slate-400 uppercase tracking-wide font-semibold">Prize Pool</p>
@@ -263,7 +263,7 @@ const Competitions = () => {
                   <div className="flex items-center gap-2 flex-wrap">
                     <button
                       onClick={() => navigate(`/employee/competitions/${comp._id}`)}
-                      className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
+                      className="px-5 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-lg font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition-all  hover:shadow-sm-hover active:scale-95"
                     >
                       View Details
                     </button>
@@ -271,13 +271,13 @@ const Competitions = () => {
                       <>
                         <button
                           onClick={() => handleEdit(comp)}
-                          className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                          className="px-5 py-2.5 bg-blue-600 dark:bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-all  hover:shadow-sm-hover active:scale-95"
                         >
                           Edit
                         </button>
                         <button
                           onClick={() => deleteCompetition(comp._id)}
-                          className="px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
+                          className="px-5 py-2.5 bg-red-600 dark:bg-red-500 text-white rounded-lg font-medium hover:bg-red-700 dark:hover:bg-red-600 transition-all  hover:shadow-sm-hover active:scale-95"
                         >
                           Delete
                         </button>
@@ -317,7 +317,7 @@ const Competitions = () => {
             <button
               onClick={fetchCompetitions}
               disabled={loading}
-              className="text-slate-600 hover:text-slate-900 font-medium transition-colors disabled:opacity-50"
+              className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:text-slate-50 font-medium transition-colors disabled:opacity-50"
             >
               ↻ Refresh Competitions
             </button>

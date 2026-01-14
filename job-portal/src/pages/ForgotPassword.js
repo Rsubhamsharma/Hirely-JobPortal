@@ -127,7 +127,7 @@ function ForgotPassword() {
                             <input
                                 type="email"
                                 placeholder="name@company.com"
-                                className="w-full p-3 bg-slate-50 text-slate-900 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
+                                className="w-full p-3 bg-slate-50 text-slate-900 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all "
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
@@ -136,7 +136,7 @@ function ForgotPassword() {
 
                         <button
                             type="submit"
-                            className="w-full p-3.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-all shadow-md hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
+                            className="w-full p-3.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-all  shadow-md hover:shadow-sm-hover disabled:opacity-70 disabled:cursor-not-allowed"
                             disabled={loading}
                         >
                             {loading ? "Sending..." : "Send OTP"}
@@ -173,7 +173,7 @@ function ForgotPassword() {
                             <input
                                 type="text"
                                 placeholder="Enter 6-digit OTP"
-                                className="w-full p-3 bg-slate-50 text-slate-900 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
+                                className="w-full p-3 bg-slate-50 text-slate-900 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all "
                                 value={otp}
                                 onChange={(e) => setOtp(e.target.value)}
                                 maxLength={6}
@@ -196,7 +196,7 @@ function ForgotPassword() {
                             <input
                                 type="password"
                                 placeholder="••••••••"
-                                className="w-full p-3 bg-slate-50 text-slate-900 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
+                                className="w-full p-3 bg-slate-50 text-slate-900 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all "
                                 value={newPassword}
                                 onChange={(e) => setNewPassword(e.target.value)}
                                 required
@@ -210,7 +210,7 @@ function ForgotPassword() {
                             <input
                                 type="password"
                                 placeholder="••••••••"
-                                className="w-full p-3 bg-slate-50 text-slate-900 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
+                                className="w-full p-3 bg-slate-50 text-slate-900 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all "
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 required
@@ -219,7 +219,7 @@ function ForgotPassword() {
 
                         <button
                             type="submit"
-                            className="w-full p-3.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-all shadow-md hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
+                            className="w-full p-3.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-all  shadow-md hover:shadow-sm-hover disabled:opacity-70 disabled:cursor-not-allowed"
                             disabled={loading}
                         >
                             {loading ? "Resetting..." : "Reset Password"}

@@ -30,7 +30,7 @@ function CompetitionDetail() {
             case "completed":
                 return "bg-gray-100 text-gray-600";
             default:
-                return "bg-slate-100 text-slate-600";
+                return "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300";
         }
     };
 
@@ -49,7 +49,7 @@ function CompetitionDetail() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-slate-50">
+            <div className="min-h-screen bg-slate-50 dark:bg-slate-700 dark:bg-slate-900 transition-colors">
                 <Navbar />
                 <CompetitionDetailSkeleton />
             </div>
@@ -58,12 +58,12 @@ function CompetitionDetail() {
 
     if (!competition) {
         return (
-            <div className="min-h-screen bg-slate-50">
+            <div className="min-h-screen bg-slate-50 dark:bg-slate-700 dark:bg-slate-900 transition-colors">
                 <Navbar />
                 <div className="max-w-4xl mx-auto px-4 py-12 text-center">
                     <div className="text-6xl mb-4">😕</div>
-                    <h2 className="text-2xl font-bold text-slate-800">Competition not found</h2>
-                    <p className="text-slate-500 mt-2">This competition may have been removed or doesn't exist.</p>
+                    <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Competition not found</h2>
+                    <p className="text-slate-500 dark:text-slate-400 mt-2">This competition may have been removed or doesn't exist.</p>
                     <Link to="/employee/competitions" className="mt-6 inline-block px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
                         Browse Competitions
                     </Link>
@@ -73,14 +73,14 @@ function CompetitionDetail() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-50">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-700 dark:bg-slate-900 transition-colors">
             <Navbar />
 
             <div className="max-w-4xl mx-auto px-4 py-8">
                 {/* Back button */}
                 <button
                     onClick={() => navigate(-1)}
-                    className="flex items-center gap-2 text-slate-600 hover:text-blue-600 mb-6 transition-colors"
+                    className="flex items-center gap-2 text-slate-600 dark:text-slate-300 hover:text-blue-600 mb-6 transition-colors"
                 >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
@@ -89,7 +89,7 @@ function CompetitionDetail() {
                 </button>
 
                 {/* Competition Header */}
-                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 mb-6">
+                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-8 mb-6">
                     <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
                         <div className="flex-1">
                             <div className="flex items-center gap-3 mb-3">
@@ -97,9 +97,9 @@ function CompetitionDetail() {
                                     {getStatusLabel(competition.status)}
                                 </span>
                             </div>
-                            <h1 className="text-3xl font-bold text-slate-900 mb-2">{competition.title}</h1>
-                            <p className="text-lg text-slate-600">
-                                Organized by <span className="font-medium text-slate-800">{competition.organizer?.fullname || competition.organizer?.email || "Unknown"}</span>
+                            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">{competition.title}</h1>
+                            <p className="text-lg text-slate-600 dark:text-slate-300">
+                                Organized by <span className="font-medium text-slate-800 dark:text-white">{competition.organizer?.fullname || competition.organizer?.email || "Unknown"}</span>
                             </p>
                         </div>
 
@@ -111,14 +111,14 @@ function CompetitionDetail() {
                                     {status === "Not Registered" &&
                                         <button
                                             onClick={() => navigate(`/employee/competitions/register/${competitionId}`)}
-                                            className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                                            className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all  shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                                         >
                                             Register Now
                                         </button>
                                     }
                                     {status === "Registered" &&
                                         <button
-                                            className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                                            className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all  shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                                         >
                                             Registered
                                         </button>
@@ -128,10 +128,10 @@ function CompetitionDetail() {
                     </div>
 
                     {/* Competition Meta */}
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mt-8 pt-6 border-t border-slate-100">
-                        <div className="text-center p-4 bg-slate-50 rounded-xl">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mt-8 pt-6 border-t border-slate-100 dark:border-slate-700">
+                        <div className="text-center p-4 bg-slate-50 dark:bg-slate-700 rounded-xl">
                             <p className="text-xs text-slate-400 uppercase font-semibold mb-2">Date</p>
-                            <p className="text-2xl font-bold text-slate-800">
+                            <p className="text-2xl font-bold text-slate-800 dark:text-white">
                                 {new Date(competition.date).toLocaleDateString('en-US', {
                                     month: 'short',
                                     day: 'numeric',
@@ -155,9 +155,9 @@ function CompetitionDetail() {
                 </div>
 
                 {/* Competition Details */}
-                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 mb-6">
-                    <h2 className="text-xl font-bold text-slate-900 mb-4">About this Competition</h2>
-                    <p className="text-slate-600 leading-relaxed">
+                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-8 mb-6">
+                    <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4">About this Competition</h2>
+                    <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
                         Participate in this exciting competition organized by {competition.organizer?.fullname || "our team"}.
                         The competition is scheduled for {new Date(competition.date).toLocaleDateString('en-US', {
                             weekday: 'long',
@@ -170,19 +170,19 @@ function CompetitionDetail() {
                 </div>
 
                 {/* Organizer Info */}
-                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 mb-6">
-                    <h2 className="text-xl font-bold text-slate-900 mb-4">Organizer</h2>
+                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-8 mb-6">
+                    <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Organizer</h2>
                     <div className="flex items-center gap-4">
                         <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-2xl font-bold">
                             {competition.organizer?.fullname?.[0] || "O"}
                         </div>
                         <div>
-                            <p className="text-lg font-semibold text-slate-900">
+                            <p className="text-lg font-semibold text-slate-900 dark:text-white">
                                 {competition.organizer?.fullname || "Unknown Organizer"}
                             </p>
-                            <p className="text-slate-500">{competition.organizer?.email}</p>
+                            <p className="text-slate-500 dark:text-slate-400">{competition.organizer?.email}</p>
                             {competition.organizer?.role && (
-                                <span className="inline-block mt-1 px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-xs font-medium capitalize">
+                                <span className="inline-block mt-1 px-2 py-0.5 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded text-xs font-medium capitalize">
                                     {competition.organizer.role}
                                 </span>
                             )}
@@ -192,20 +192,20 @@ function CompetitionDetail() {
 
                 {/* Registered Applicants - Only visible to organizer */}
                 {user?.role === 'recruiter' && competition.organizer?._id === user?._id && (
-                    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8">
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-8">
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-xl font-bold text-slate-900">
+                            <h2 className="text-xl font-bold text-slate-900 dark:text-white">
                                 Registered Participants
-                                <span className="ml-2 text-sm font-normal text-slate-500">
+                                <span className="ml-2 text-sm font-normal text-slate-500 dark:text-slate-400">
                                     ({competition.applicants?.length || 0})
                                 </span>
                             </h2>
                         </div>
 
                         {!competition.applicants || competition.applicants.length === 0 ? (
-                            <div className="text-center py-8 bg-slate-50 rounded-xl">
+                            <div className="text-center py-8 bg-slate-50 dark:bg-slate-700 rounded-xl">
                                 <div className="text-4xl mb-2">👥</div>
-                                <p className="text-slate-500">No participants registered yet</p>
+                                <p className="text-slate-500 dark:text-slate-400">No participants registered yet</p>
                             </div>
                         ) : (
                             <div className="divide-y divide-slate-100">
@@ -219,14 +219,14 @@ function CompetitionDetail() {
                                                 }
                                             </div>
                                             <div>
-                                                <p className="font-medium text-slate-900">
+                                                <p className="font-medium text-slate-900 dark:text-white">
                                                     {typeof applicant === 'object'
                                                         ? applicant.fullname || "Applicant"
                                                         : `Participant ${index + 1}`
                                                     }
                                                 </p>
                                                 {typeof applicant === 'object' && applicant.email && (
-                                                    <p className="text-sm text-slate-500">{applicant.email}</p>
+                                                    <p className="text-sm text-slate-500 dark:text-slate-400">{applicant.email}</p>
                                                 )}
                                             </div>
                                         </div>

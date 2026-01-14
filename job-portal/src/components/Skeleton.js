@@ -17,7 +17,7 @@ export const Skeleton = ({ className = '', width, height }) => {
 // Job Card Skeleton
 export const JobCardSkeleton = () => {
     return (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
             <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
                     <Skeleton className="h-6 w-3/4 mb-2" />
@@ -45,7 +45,7 @@ export const JobCardSkeleton = () => {
 // Competition Card Skeleton
 export const CompetitionCardSkeleton = () => {
     return (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
             <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
                     <Skeleton className="h-6 w-2/3 mb-2" />
@@ -75,7 +75,7 @@ export const CompetitionCardSkeleton = () => {
 // Application Card Skeleton
 export const ApplicationCardSkeleton = () => {
     return (
-        <div className="p-6 border-b border-slate-100">
+        <div className="p-6 border-b border-slate-100 dark:border-slate-700">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
@@ -103,7 +103,7 @@ export const ProfileSkeleton = () => {
     return (
         <div className="min-h-screen bg-slate-50">
             <div className="max-w-4xl mx-auto px-4 py-8">
-                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8">
+                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
                     <div className="flex items-center gap-6 mb-8">
                         <Skeleton className="h-24 w-24 rounded-full" />
                         <div className="flex-1">
@@ -134,7 +134,7 @@ export const ProfileSkeleton = () => {
 // Table Skeleton
 export const TableSkeleton = ({ rows = 5 }) => {
     return (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
             <div className="p-6 border-b border-slate-100">
                 <Skeleton className="h-6 w-48" />
             </div>
@@ -158,7 +158,7 @@ export const TableSkeleton = ({ rows = 5 }) => {
 // Stats Card Skeleton
 export const StatsCardSkeleton = () => {
     return (
-        <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+        <div className="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
             <Skeleton className="h-8 w-16 mb-2" />
             <Skeleton className="h-4 w-20" />
         </div>

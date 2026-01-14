@@ -7,7 +7,7 @@ function Resume() {
         <h2 className="text-3xl font-bold text-slate-800 mb-2">My Resume</h2>
         <p className="text-slate-500 mb-8">Manage your CV and portfolio details</p>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 text-center">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center">
           <div className="w-20 h-20 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
             📄
           </div>

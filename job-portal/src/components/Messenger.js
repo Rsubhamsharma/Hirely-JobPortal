@@ -54,7 +54,7 @@ const Messenger = ({ conversationId, onClose }) => {
                     <div key={msg._id} className={`flex ${msg.senderId._id === user._id ? 'justify-end' : 'justify-start'}`}>
                         <div className={`max-w-[80%] p-3 rounded-2xl text-sm ${msg.senderId._id === user._id
                                 ? 'bg-blue-600 text-white rounded-tr-none'
-                                : 'bg-white text-slate-800 shadow-sm border border-slate-100 rounded-tl-none'
+                                : 'bg-white text-slate-800 shadow-sm border border-slate-200 rounded-tl-none'
                             }`}>
                             {msg.content}
                             <div className={`text-[9px] mt-1 ${msg.senderId._id === user._id ? 'text-blue-200' : 'text-slate-400'}`}>

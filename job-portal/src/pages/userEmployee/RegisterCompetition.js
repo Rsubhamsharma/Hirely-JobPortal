@@ -29,7 +29,7 @@ const RegisterCompetition = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-slate-50">
+            <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors">
                 <Navbar />
                 <div className="max-w-2xl mx-auto py-12 px-4">
                     <div className="animate-pulse space-y-4">
@@ -43,7 +43,7 @@ const RegisterCompetition = () => {
 
     if (!competition) {
         return (
-            <div className="min-h-screen bg-slate-50">
+            <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors">
                 <Navbar />
                 <div className="max-w-2xl mx-auto py-12 px-4 text-center">
                     <div className="text-6xl mb-4">❌</div>
@@ -59,7 +59,7 @@ const RegisterCompetition = () => {
     // Only applicants can register
     if (user?.role !== "applicant") {
         return (
-            <div className="min-h-screen bg-slate-50">
+            <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors">
                 <Navbar />
                 <div className="max-w-2xl mx-auto py-12 px-4 text-center">
                     <div className="bg-red-50 border border-red-200 rounded-2xl p-8">
@@ -79,7 +79,7 @@ const RegisterCompetition = () => {
     }
 
     return (
-        <div className="min-h-screen bg-slate-50">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors">
             <Navbar />
 
             <div className="max-w-2xl mx-auto py-12 px-4">
@@ -95,7 +95,7 @@ const RegisterCompetition = () => {
                 </button>
 
                 {/* Competition Card */}
-                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                     {/* Header */}
                     <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white">
                         <div className="flex justify-between items-start">
@@ -171,7 +171,7 @@ const RegisterCompetition = () => {
                                 <button
                                     onClick={handleRegister}
                                     disabled={registering}
-                                    className="w-full py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="w-full py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all  shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {registering ? (
                                         <span className="flex items-center justify-center gap-2">

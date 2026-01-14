@@ -7,14 +7,14 @@ import { useAuth } from "../../context/AuthContext";
 // InputGroup component defined OUTSIDE to prevent re-creation on every render
 const InputGroup = ({ label, name, type = "text", placeholder, value, onChange, options }) => (
   <div className="flex flex-col">
-    <label className="text-sm font-semibold text-slate-700 mb-1.5">{label}</label>
+    <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">{label}</label>
     {type === "select" ? (
       <div className="relative">
         <select
           name={name}
           value={value || ""}
           onChange={onChange}
-          className="w-full p-3 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none appearance-none transition-all"
+          className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none appearance-none transition-all "
         >
           {options.map((opt) => (
             <option key={opt} value={opt === options[0] ? "" : opt}>
@@ -31,7 +31,7 @@ const InputGroup = ({ label, name, type = "text", placeholder, value, onChange, 
         placeholder={placeholder}
         value={value || ""}
         onChange={onChange}
-        className="w-full p-3 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all placeholder:text-slate-400"
+        className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all  placeholder:text-slate-400"
       />
     )}
   </div>
@@ -199,7 +199,7 @@ function UserDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors">
         <Navbar />
         <div className="max-w-5xl mx-auto py-12 px-4">
           <div className="animate-pulse space-y-4">
@@ -212,12 +212,12 @@ function UserDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors">
       <Navbar />
       <div className="max-w-5xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
 
         {/* Header Section */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 mb-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-8 mb-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
 
           <div className="relative group">
@@ -232,7 +232,7 @@ function UserDashboard() {
                 {user?.fullname ? user.fullname.charAt(0).toUpperCase() : "U"}
               </div>
             )}
-            <label className="absolute bottom-0 right-0 p-2 bg-blue-600 text-white rounded-full cursor-pointer shadow-lg hover:bg-blue-700 transition-all">
+            <label className="absolute bottom-0 right-0 p-2 bg-blue-600 text-white rounded-full cursor-pointer shadow-lg hover:bg-blue-700 transition-all ">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
               <input type="file" accept="image/*" onChange={handleProfileImageChange} className="hidden" />
             </label>
@@ -250,7 +250,7 @@ function UserDashboard() {
           <div className="flex-1 text-center md:text-left w-full">
             {!editingName ? (
               <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
-                <h1 className="text-3xl font-bold text-slate-900">
+                <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
                   {user?.fullname || "Your Name"}
                 </h1>
                 <button
@@ -258,7 +258,7 @@ function UserDashboard() {
                     setNewName(user?.fullname || "");
                     setEditingName(true);
                   }}
-                  className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                  className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all "
                   title="Edit name"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -295,16 +295,16 @@ function UserDashboard() {
                 </button>
               </div>
             )}
-            <p className="text-slate-500 mb-4">{user?.email}</p>
+            <p className="text-slate-500 dark:text-slate-400 mb-4">{user?.email}</p>
 
             <div className="max-w-md">
               <div className="flex justify-between text-sm font-medium mb-1.5">
-                <span className="text-slate-600">Profile Completion</span>
+                <span className="text-slate-600 dark:text-slate-400">Profile Completion</span>
                 <span className="text-blue-600">{profileProgress}%</span>
               </div>
               <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
                 <div
-                  className="bg-blue-600 h-2.5 rounded-full transition-all duration-1000 ease-out"
+                  className="bg-blue-600 h-2.5 rounded-full transition-all  duration-1000 ease-out"
                   style={{ width: `${profileProgress}%` }}
                 ></div>
               </div>
@@ -314,8 +314,8 @@ function UserDashboard() {
 
         <form ref={formRef} onSubmit={handleSubmit} className="space-y-8">
           {/* Contact Information */}
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-            <h3 className="text-xl font-bold text-slate-800 mb-6 border-b border-slate-100 pb-4">Contact Information</h3>
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-8">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6 border-b border-slate-100 pb-4">Contact Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <InputGroup
                 label="Phone Number"
@@ -325,7 +325,7 @@ function UserDashboard() {
                 placeholder="+91 9876543210"
               />
               <div className="flex flex-col">
-                <label className="text-sm font-semibold text-slate-700 mb-1.5">Email (from account)</label>
+                <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Email (from account)</label>
                 <input
                   type="email"
                   value={user?.email || ""}
@@ -337,26 +337,26 @@ function UserDashboard() {
           </div>
 
           {/* Professional Profile */}
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-            <h3 className="text-xl font-bold text-slate-800 mb-6 border-b border-slate-100 pb-4">Professional Profile</h3>
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-8">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6 border-b border-slate-100 pb-4">Professional Profile</h3>
             <div className="space-y-6">
               <div className="flex flex-col">
-                <label className="text-sm font-semibold text-slate-700 mb-1.5">Profile Summary</label>
+                <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Profile Summary</label>
                 <textarea
                   name="profilesummary"
                   value={formData.profilesummary}
                   onChange={handleChange}
                   rows="4"
                   placeholder="Tell us about yourself, your experience, and what you're looking for..."
-                  className="w-full p-3 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all placeholder:text-slate-400 resize-none"
+                  className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all  placeholder:text-slate-400 resize-none"
                 />
               </div>
             </div>
           </div>
 
           {/* Social Links */}
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-            <h3 className="text-xl font-bold text-slate-800 mb-6 border-b border-slate-100 pb-4">Social & Portfolio Links</h3>
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-8">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6 border-b border-slate-100 pb-4">Social & Portfolio Links</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <InputGroup
                 label="Portfolio URL"
@@ -383,8 +383,8 @@ function UserDashboard() {
           </div>
 
           {/* Documents */}
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-            <h3 className="text-xl font-bold text-slate-800 mb-6 border-b border-slate-100 pb-4">Resume</h3>
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-8">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6 border-b border-slate-100 pb-4">Resume</h3>
             <div className="p-6 border-2 border-dashed border-slate-200 rounded-xl hover:bg-slate-50 transition-colors text-center cursor-pointer group">
               <input
                 type="file"
@@ -395,10 +395,10 @@ function UserDashboard() {
               />
               <label htmlFor="resume-upload" className="cursor-pointer block w-full h-full">
                 <div className="text-4xl mb-2 group-hover:scale-110 transition-transform">📄</div>
-                <div className="text-slate-900 font-medium">
+                <div className="text-slate-900 dark:text-white font-medium">
                   {resumeName || "Upload Resume"}
                 </div>
-                <div className="text-slate-500 text-sm mt-1">PDF, DOCX up to 5MB</div>
+                <div className="text-slate-500 dark:text-slate-400 text-sm mt-1">PDF, DOCX up to 5MB</div>
               </label>
             </div>
           </div>
@@ -407,7 +407,7 @@ function UserDashboard() {
             <button
               type="submit"
               disabled={saving}
-              className="px-8 py-3.5 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 hover:shadow-blue-500/30 transform hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-8 py-3.5 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 hover:shadow-blue-500/30 transform hover:-translate-y-0.5 transition-all  disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {saving ? "Saving..." : "Save Changes"}
             </button>
@@ -418,7 +418,7 @@ function UserDashboard() {
       {/* Delete Photo Confirmation Modal */}
       {showDeletePhotoModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 transform transition-all">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 transform transition-all ">
             <div className="text-center">
               <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -426,13 +426,13 @@ function UserDashboard() {
                 </svg>
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-2">Delete Profile Photo?</h3>
-              <p className="text-slate-600 mb-6">
+              <p className="text-slate-600 dark:text-slate-400 mb-6">
                 Are you sure you want to delete your profile photo? This action cannot be undone.
               </p>
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowDeletePhotoModal(false)}
-                  className="flex-1 px-4 py-2.5 border-2 border-slate-200 text-slate-700 font-semibold rounded-lg hover:bg-slate-50 transition-colors"
+                  className="flex-1 px-4 py-2.5 border border-slate-200-200 text-slate-700 font-semibold rounded-lg hover:bg-slate-50 transition-colors"
                 >
                   Cancel
                 </button>

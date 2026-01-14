@@ -2,7 +2,7 @@ import React from 'react';
 
 const SkeletonCard = () => {
     return (
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col gap-4">
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col gap-4">
             <div className="flex justify-between items-start">
                 <div className="h-4 w-24 skeleton" />
                 <div className="h-6 w-20 skeleton rounded-full" />

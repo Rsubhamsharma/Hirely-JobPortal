@@ -99,19 +99,19 @@ function JobApplications() {
             case "Shortlisted": return "bg-green-100 text-green-700 border-green-300";
             case "Rejected": return "bg-red-100 text-red-700 border-red-300";
             case "Hired": return "bg-purple-100 text-purple-700 border-purple-300";
-            default: return "bg-slate-100 text-slate-700 border-slate-300";
+            default: return "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600";
         }
     };
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-slate-50">
+            <div className="min-h-screen bg-slate-50 dark:bg-slate-700 dark:bg-slate-900 transition-colors">
                 <Navbar />
                 <div className="max-w-7xl mx-auto px-4 py-12">
                     <div className="mb-8">
                         <div className="h-8 w-64 bg-slate-200 rounded mb-2 animate-pulse"></div>
                     </div>
-                    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-8 animate-pulse">
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 mb-8 animate-pulse">
                         <div className="h-8 w-48 bg-slate-200 rounded mb-2"></div>
                         <div className="h-4 w-64 bg-slate-200 rounded"></div>
                     </div>
@@ -120,8 +120,8 @@ function JobApplications() {
                             <StatsCardSkeleton key={i} />
                         ))}
                     </div>
-                    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                        <div className="p-6 border-b border-slate-100">
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+                        <div className="p-6 border-b border-slate-100 dark:border-slate-700">
                             <div className="h-6 w-32 bg-slate-200 rounded animate-pulse"></div>
                         </div>
                         {[...Array(3)].map((_, i) => (
@@ -134,14 +134,14 @@ function JobApplications() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-50">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-700 dark:bg-slate-900 transition-colors">
             <Navbar />
 
             <div className="max-w-7xl mx-auto px-4 py-8">
                 {/* Back Button */}
                 <button
                     onClick={() => navigate(-1)}
-                    className="flex items-center gap-2 text-slate-600 hover:text-blue-600 mb-6 transition-colors"
+                    className="flex items-center gap-2 text-slate-600 dark:text-slate-300 hover:text-blue-600 mb-6 transition-colors"
                 >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
@@ -150,11 +150,11 @@ function JobApplications() {
                 </button>
 
                 {/* Job Header */}
-                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-8">
+                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 mb-8">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>
-                            <h1 className="text-2xl font-bold text-slate-900">{job?.title}</h1>
-                            <p className="text-slate-600">{job?.company} • {job?.location}</p>
+                            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{job?.title}</h1>
+                            <p className="text-slate-600 dark:text-slate-300">{job?.company} • {job?.location}</p>
                         </div>
                         <div className="flex items-center gap-3">
                             <span className={`px-3 py-1 rounded-full text-sm font-medium ${job?.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
@@ -163,7 +163,7 @@ function JobApplications() {
                             </span>
                             <Link
                                 to={`/employee/jobs/${jobId}`}
-                                className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
+                                className="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg font-medium hover:bg-slate-200 transition-colors"
                             >
                                 View Job
                             </Link>
@@ -175,47 +175,47 @@ function JobApplications() {
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
                     <div
                         onClick={() => setFilter("all")}
-                        className={`bg-white p-4 rounded-xl shadow-sm cursor-pointer transition-all hover:shadow-md border-2 ${filter === "all" ? "border-blue-500" : "border-transparent"}`}
+                        className={`bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm cursor-pointer transition-all  hover:shadow-sm-hover border-2 ${filter === "all" ? "border-blue-500" : "border-transparent"}`}
                     >
-                        <div className="text-2xl font-bold text-slate-900">{analytics.total}</div>
-                        <div className="text-sm text-slate-500">Total</div>
+                        <div className="text-2xl font-bold text-slate-900 dark:text-white">{analytics.total}</div>
+                        <div className="text-sm text-slate-500 dark:text-slate-400">Total</div>
                     </div>
                     <div
                         onClick={() => setFilter("Pending")}
-                        className={`bg-white p-4 rounded-xl shadow-sm cursor-pointer transition-all hover:shadow-md border-2 ${filter === "Pending" ? "border-yellow-500" : "border-transparent"}`}
+                        className={`bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm cursor-pointer transition-all  hover:shadow-sm-hover border-2 ${filter === "Pending" ? "border-yellow-500" : "border-transparent"}`}
                     >
                         <div className="text-2xl font-bold text-yellow-600">{analytics.pending}</div>
-                        <div className="text-sm text-slate-500">Pending</div>
+                        <div className="text-sm text-slate-500 dark:text-slate-400">Pending</div>
                     </div>
                     <div
                         onClick={() => setFilter("Shortlisted")}
-                        className={`bg-white p-4 rounded-xl shadow-sm cursor-pointer transition-all hover:shadow-md border-2 ${filter === "Shortlisted" ? "border-green-500" : "border-transparent"}`}
+                        className={`bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm cursor-pointer transition-all  hover:shadow-sm-hover border-2 ${filter === "Shortlisted" ? "border-green-500" : "border-transparent"}`}
                     >
                         <div className="text-2xl font-bold text-green-600">{analytics.shortlisted}</div>
-                        <div className="text-sm text-slate-500">Shortlisted</div>
+                        <div className="text-sm text-slate-500 dark:text-slate-400">Shortlisted</div>
                     </div>
                     <div
                         onClick={() => setFilter("Rejected")}
-                        className={`bg-white p-4 rounded-xl shadow-sm cursor-pointer transition-all hover:shadow-md border-2 ${filter === "Rejected" ? "border-red-500" : "border-transparent"}`}
+                        className={`bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm cursor-pointer transition-all  hover:shadow-sm-hover border-2 ${filter === "Rejected" ? "border-red-500" : "border-transparent"}`}
                     >
                         <div className="text-2xl font-bold text-red-600">{analytics.rejected}</div>
-                        <div className="text-sm text-slate-500">Rejected</div>
+                        <div className="text-sm text-slate-500 dark:text-slate-400">Rejected</div>
                     </div>
                     <div
                         onClick={() => setFilter("Hired")}
-                        className={`bg-white p-4 rounded-xl shadow-sm cursor-pointer transition-all hover:shadow-md border-2 ${filter === "Hired" ? "border-purple-500" : "border-transparent"}`}
+                        className={`bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm cursor-pointer transition-all  hover:shadow-sm-hover border-2 ${filter === "Hired" ? "border-purple-500" : "border-transparent"}`}
                     >
                         <div className="text-2xl font-bold text-purple-600">{analytics.hired}</div>
-                        <div className="text-sm text-slate-500">Hired</div>
+                        <div className="text-sm text-slate-500 dark:text-slate-400">Hired</div>
                     </div>
                 </div>
 
                 {/* Applications List */}
-                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                    <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-                        <h2 className="text-xl font-bold text-slate-900">
+                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+                    <div className="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                        <h2 className="text-xl font-bold text-slate-900 dark:text-white">
                             Applications
-                            <span className="ml-2 text-sm font-normal text-slate-500">
+                            <span className="ml-2 text-sm font-normal text-slate-500 dark:text-slate-400">
                                 ({filteredApplications.length})
                             </span>
                         </h2>
@@ -232,8 +232,8 @@ function JobApplications() {
                     {filteredApplications.length === 0 ? (
                         <div className="p-12 text-center">
                             <div className="text-6xl mb-4">📭</div>
-                            <h3 className="text-xl font-semibold text-slate-800 mb-2">No applications yet</h3>
-                            <p className="text-slate-500">
+                            <h3 className="text-xl font-semibold text-slate-800 dark:text-white mb-2">No applications yet</h3>
+                            <p className="text-slate-500 dark:text-slate-400">
                                 {filter === "all"
                                     ? "No one has applied to this job yet."
                                     : `No ${filter.toLowerCase()} applications.`}
@@ -242,7 +242,7 @@ function JobApplications() {
                     ) : (
                         <div className="divide-y divide-slate-100">
                             {filteredApplications.map((app) => (
-                                <div key={app._id} className="p-6 hover:bg-slate-50 transition-colors">
+                                <div key={app._id} className="p-6 hover:bg-slate-50 dark:bg-slate-700 transition-colors">
                                     <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
                                         {/* Applicant Info */}
                                         <div className="flex-1">
@@ -251,38 +251,38 @@ function JobApplications() {
                                                     {app.applicant?.fullname?.[0]?.toUpperCase() || "A"}
                                                 </div>
                                                 <div>
-                                                    <h3 className="font-semibold text-slate-900">{app.applicant?.fullname || "Applicant"}</h3>
-                                                    <p className="text-sm text-slate-500">{app.applicant?.email}</p>
+                                                    <h3 className="font-semibold text-slate-900 dark:text-white">{app.applicant?.fullname || "Applicant"}</h3>
+                                                    <p className="text-sm text-slate-500 dark:text-slate-400">{app.applicant?.email}</p>
                                                 </div>
                                             </div>
 
                                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                                                 <div>
                                                     <span className="text-slate-400">Phone</span>
-                                                    <p className="font-medium text-slate-700">{app.phone || "N/A"}</p>
+                                                    <p className="font-medium text-slate-700 dark:text-slate-200">{app.phone || "N/A"}</p>
                                                 </div>
                                                 <div>
                                                     <span className="text-slate-400">Experience</span>
-                                                    <p className="font-medium text-slate-700">{app.experience || "N/A"}</p>
+                                                    <p className="font-medium text-slate-700 dark:text-slate-200">{app.experience || "N/A"}</p>
                                                 </div>
                                                 <div>
                                                     <span className="text-slate-400">Expected Salary</span>
-                                                    <p className="font-medium text-slate-700">
+                                                    <p className="font-medium text-slate-700 dark:text-slate-200">
                                                         {app.expectedSalary ? `₹${app.expectedSalary.toLocaleString()}` : "N/A"}
                                                     </p>
                                                 </div>
                                                 <div>
                                                     <span className="text-slate-400">Applied On</span>
-                                                    <p className="font-medium text-slate-700">
+                                                    <p className="font-medium text-slate-700 dark:text-slate-200">
                                                         {new Date(app.createdAt).toLocaleDateString()}
                                                     </p>
                                                 </div>
                                             </div>
 
                                             {app.coverLetter && (
-                                                <div className="mt-4 p-4 bg-slate-50 rounded-lg">
+                                                <div className="mt-4 p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
                                                     <span className="text-xs text-slate-400 uppercase font-semibold">Cover Letter</span>
-                                                    <p className="text-slate-600 text-sm mt-1 line-clamp-3">{app.coverLetter}</p>
+                                                    <p className="text-slate-600 dark:text-slate-300 text-sm mt-1 line-clamp-3">{app.coverLetter}</p>
                                                 </div>
                                             )}
                                         </div>
@@ -299,7 +299,7 @@ function JobApplications() {
                                                 value={app.status}
                                                 onChange={(e) => updateStatus(app._id, e.target.value)}
                                                 disabled={updatingId === app._id}
-                                                className="w-full p-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none disabled:opacity-50"
+                                                className="w-full p-2 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none disabled:opacity-50"
                                             >
                                                 <option value="Pending">Set as Pending</option>
                                                 <option value="Viewed">Set as Viewed</option>

@@ -40,7 +40,7 @@ function Internships() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {internships.map((internship) => (
-            <div key={internship.id} className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow border border-slate-100">
+            <div key={internship.id} className="bg-white p-6 rounded-xl shadow-sm hover:shadow-sm-hover transition-shadow border border-slate-200">
               <div className="flex justify-between items-start">
                 <div>
                   <h3 className="text-xl font-bold text-slate-900">{internship.role}</h3>

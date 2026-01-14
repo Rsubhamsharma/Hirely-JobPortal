@@ -74,7 +74,7 @@ function MyApplications() {
             case "Shortlisted": return "bg-green-100 text-green-700";
             case "Rejected": return "bg-red-100 text-red-700";
             case "Hired": return "bg-purple-100 text-purple-700";
-            default: return "bg-slate-100 text-slate-700";
+            default: return "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200";
         }
     };
 
@@ -91,7 +91,7 @@ function MyApplications() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-slate-50">
+            <div className="min-h-screen bg-slate-50 dark:bg-slate-800 transition-colors">
                 <Navbar />
                 <div className="max-w-7xl mx-auto px-4 py-12">
                     <div className="mb-8">
@@ -103,8 +103,8 @@ function MyApplications() {
                             <StatsCardSkeleton key={i} />
                         ))}
                     </div>
-                    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                        <div className="p-6 border-b border-slate-100">
+                    <div className="bg-white dark:bg-slate-700 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-600 overflow-hidden">
+                        <div className="p-6 border-b border-slate-200 dark:border-slate-600">
                             <div className="h-6 w-48 bg-slate-200 rounded animate-pulse"></div>
                         </div>
                         {[...Array(3)].map((_, i) => (
@@ -117,14 +117,14 @@ function MyApplications() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-50">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-800 transition-colors">
             <Navbar />
 
             <div className="max-w-7xl mx-auto px-4 py-8">
                 {/* Back Button */}
                 <button
                     onClick={() => navigate(-1)}
-                    className="flex items-center gap-2 text-slate-600 hover:text-blue-600 mb-6 transition-colors"
+                    className="flex items-center gap-2 text-slate-600 dark:text-slate-300 hover:text-blue-600 mb-6 transition-colors"
                 >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
@@ -134,63 +134,63 @@ function MyApplications() {
 
                 {/* Header */}
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-slate-900">My Applications</h1>
-                    <p className="text-slate-500 mt-1">Track all your job applications in one place</p>
+                    <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-50">My Applications</h1>
+                    <p className="text-slate-500 dark:text-slate-400 mt-1">Track all your job applications in one place</p>
                 </div>
 
                 {/* Analytics Cards */}
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
                     <div
                         onClick={() => setFilter("all")}
-                        className={`bg-white p-4 rounded-xl shadow-sm border-2 cursor-pointer transition-all hover:shadow-md ${filter === "all" ? "border-blue-500" : "border-transparent"}`}
+                        className={`bg-white dark:bg-slate-700 p-4 rounded-xl shadow-sm border-2 cursor-pointer transition-all  hover:shadow-sm-hover ${filter === "all" ? "border-blue-500" : "border-transparent"}`}
                     >
-                        <div className="text-3xl font-bold text-slate-900">{analytics.total}</div>
-                        <div className="text-sm text-slate-500 font-medium">Total</div>
+                        <div className="text-3xl font-bold text-slate-900 dark:text-slate-50">{analytics.total}</div>
+                        <div className="text-sm text-slate-500 dark:text-slate-400 font-medium">Total</div>
 
                     </div>
 
                     <div
                         onClick={() => setFilter("Pending")}
-                        className={`bg-white p-4 rounded-xl shadow-sm border-2 cursor-pointer transition-all hover:shadow-md ${filter === "Pending" ? "border-yellow-500" : "border-transparent"}`}
+                        className={`bg-white dark:bg-slate-700 p-4 rounded-xl shadow-sm border-2 cursor-pointer transition-all  hover:shadow-sm-hover ${filter === "Pending" ? "border-yellow-500" : "border-transparent"}`}
                     >
                         <div className="text-3xl font-bold text-yellow-600">{analytics.pending}</div>
-                        <div className="text-sm text-slate-500 font-medium">Pending</div>
+                        <div className="text-sm text-slate-500 dark:text-slate-400 font-medium">Pending</div>
 
                     </div>
 
                     <div
                         onClick={() => setFilter("Viewed")}
-                        className={`bg-white p-4 rounded-xl shadow-sm border-2 cursor-pointer transition-all hover:shadow-md ${filter === "Viewed" ? "border-blue-500" : "border-transparent"}`}
+                        className={`bg-white dark:bg-slate-700 p-4 rounded-xl shadow-sm border-2 cursor-pointer transition-all  hover:shadow-sm-hover ${filter === "Viewed" ? "border-blue-500" : "border-transparent"}`}
                     >
                         <div className="text-3xl font-bold text-blue-600">{analytics.viewed}</div>
-                        <div className="text-sm text-slate-500 font-medium">Viewed</div>
+                        <div className="text-sm text-slate-500 dark:text-slate-400 font-medium">Viewed</div>
 
                     </div>
 
                     <div
                         onClick={() => setFilter("Shortlisted")}
-                        className={`bg-white p-4 rounded-xl shadow-sm border-2 cursor-pointer transition-all hover:shadow-md ${filter === "Shortlisted" ? "border-green-500" : "border-transparent"}`}
+                        className={`bg-white dark:bg-slate-700 p-4 rounded-xl shadow-sm border-2 cursor-pointer transition-all  hover:shadow-sm-hover ${filter === "Shortlisted" ? "border-green-500" : "border-transparent"}`}
                     >
                         <div className="text-3xl font-bold text-green-600">{analytics.shortlisted}</div>
-                        <div className="text-sm text-slate-500 font-medium">Shortlisted</div>
+                        <div className="text-sm text-slate-500 dark:text-slate-400 font-medium">Shortlisted</div>
 
                     </div>
 
                     <div
                         onClick={() => setFilter("Rejected")}
-                        className={`bg-white p-4 rounded-xl shadow-sm border-2 cursor-pointer transition-all hover:shadow-md ${filter === "Rejected" ? "border-red-500" : "border-transparent"}`}
+                        className={`bg-white dark:bg-slate-700 p-4 rounded-xl shadow-sm border-2 cursor-pointer transition-all  hover:shadow-sm-hover ${filter === "Rejected" ? "border-red-500" : "border-transparent"}`}
                     >
                         <div className="text-3xl font-bold text-red-600">{analytics.rejected}</div>
-                        <div className="text-sm text-slate-500 font-medium">Rejected</div>
+                        <div className="text-sm text-slate-500 dark:text-slate-400 font-medium">Rejected</div>
 
                     </div>
 
                     <div
                         onClick={() => setFilter("Hired")}
-                        className={`bg-white p-4 rounded-xl shadow-sm border-2 cursor-pointer transition-all hover:shadow-md ${filter === "Hired" ? "border-purple-500" : "border-transparent"}`}
+                        className={`bg-white dark:bg-slate-700 p-4 rounded-xl shadow-sm border-2 cursor-pointer transition-all  hover:shadow-sm-hover ${filter === "Hired" ? "border-purple-500" : "border-transparent"}`}
                     >
                         <div className="text-3xl font-bold text-purple-600">{analytics.hired}</div>
-                        <div className="text-sm text-slate-500 font-medium">Hired</div>
+                        <div className="text-sm text-slate-500 dark:text-slate-400 font-medium">Hired</div>
 
                     </div>
                 </div>
@@ -231,11 +231,11 @@ function MyApplications() {
                 </div>
 
                 {/* Applications List */}
-                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                    <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-                        <h2 className="text-xl font-bold text-slate-900">
+                <div className="bg-white dark:bg-slate-700 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-600 overflow-hidden">
+                    <div className="p-6 border-b border-slate-200 dark:border-slate-600 flex justify-between items-center">
+                        <h2 className="text-xl font-bold text-slate-900 dark:text-slate-50">
                             {filter === "all" ? "All Applications" : `${filter} Applications`}
-                            <span className="ml-2 text-sm font-normal text-slate-500">
+                            <span className="ml-2 text-sm font-normal text-slate-500 dark:text-slate-400">
                                 ({filteredApplications.length})
                             </span>
                         </h2>
@@ -252,8 +252,8 @@ function MyApplications() {
                     {filteredApplications.length === 0 ? (
                         <div className="p-12 text-center">
                             <div className="text-6xl mb-4">📭</div>
-                            <h3 className="text-xl font-semibold text-slate-800 mb-2">No applications found</h3>
-                            <p className="text-slate-500 mb-6">
+                            <h3 className="text-xl font-semibold text-slate-800 dark:text-white mb-2">No applications found</h3>
+                            <p className="text-slate-500 dark:text-slate-400 mb-6">
                                 {filter === "all"
                                     ? "You haven't applied to any jobs yet. Start exploring opportunities!"
                                     : `No ${filter.toLowerCase()} applications.`}
@@ -270,13 +270,13 @@ function MyApplications() {
                     ) : (
                         <div className="divide-y divide-slate-100">
                             {filteredApplications.map((app) => (
-                                <div key={app._id} className="p-6 hover:bg-slate-50 transition-colors">
+                                <div key={app._id} className="p-6 hover:bg-slate-50 dark:bg-slate-800 transition-colors">
                                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                         <div className="flex-1">
                                             <div className="flex items-center gap-3 mb-2">
                                                 <Link
                                                     to={`/employee/jobs/${app.job?._id}`}
-                                                    className="text-lg font-semibold text-slate-900 hover:text-blue-600 transition-colors"
+                                                    className="text-lg font-semibold text-slate-900 dark:text-slate-50 hover:text-blue-600 transition-colors"
                                                 >
                                                     {app.job?.title || "Job Title"}
                                                 </Link>
@@ -284,8 +284,8 @@ function MyApplications() {
                                                     {getStatusIcon(app.status)} {app.status}
                                                 </span>
                                             </div>
-                                            <p className="text-slate-600 font-medium">{app.job?.company || "Company"}</p>
-                                            <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-slate-500">
+                                            <p className="text-slate-600 dark:text-slate-300 font-medium">{app.job?.company || "Company"}</p>
+                                            <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-slate-500 dark:text-slate-400">
                                                 <span className="flex items-center gap-1">
                                                     📍 {app.job?.location || "Location"}
                                                 </span>
@@ -310,7 +310,7 @@ function MyApplications() {
                                             </button>
                                             <Link
                                                 to={`/employee/jobs/${app.job?._id}`}
-                                                className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
+                                                className="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg font-medium hover:bg-slate-200 transition-colors"
                                             >
                                                 View Job
                                             </Link>

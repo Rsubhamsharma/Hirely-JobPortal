@@ -31,7 +31,7 @@ const CompetitionDetailSkeleton = () => {
 
                 {/* Sidebar Skeleton */}
                 <div className="mt-12 lg:mt-0 space-y-8">
-                    <div className="bg-white rounded-3xl p-8 border border-slate-100 shadow-xl space-y-6">
+                    <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl space-y-6">
                         <div className="h-6 w-32 skeleton" />
                         <div className="space-y-4">
                             <div className="flex justify-between">

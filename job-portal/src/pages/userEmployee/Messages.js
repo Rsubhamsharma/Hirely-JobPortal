@@ -155,7 +155,7 @@ const Messages = () => {
     return (
         <>
             <Navbar />
-            <div className="min-h-screen bg-slate-50">
+            <div className="min-h-screen bg-slate-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-purple-900 dark:to-slate-900 transition-colors">
                 <div className="max-w-6xl mx-auto px-4 py-8">
                     <div className="mb-8 flex items-center gap-4">
                         <button
@@ -163,21 +163,21 @@ const Messages = () => {
                             className="p-2 hover:bg-slate-200 rounded-lg transition-colors"
                             title="Go back"
                         >
-                            <svg className="w-6 h-6 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-6 h-6 text-slate-700 dark:text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                             </svg>
                         </button>
                         <div>
-                            <h1 className="text-3xl font-bold text-slate-900">Messages</h1>
-                            <p className="text-slate-600 mt-1">Your conversations with recruiters and applicants</p>
+                            <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-50">Messages</h1>
+                            <p className="text-slate-600 dark:text-slate-300 mt-1">Your conversations with recruiters and applicants</p>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px]">
                         {/* Conversations List */}
-                        <div className="lg:col-span-1 bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col">
-                            <div className="p-4 border-b border-slate-100">
-                                <h2 className="font-semibold text-slate-800">Conversations</h2>
+                        <div className="lg:col-span-1 bg-white dark:bg-slate-900/50 dark:backdrop-blur-xl rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700/50 overflow-hidden flex flex-col">
+                            <div className="p-4 border-b border-slate-200 dark:border-slate-700/50">
+                                <h2 className="font-semibold text-slate-900 dark:text-slate-50">Conversations</h2>
                             </div>
 
                             <div className="flex-1 overflow-y-auto">
@@ -187,13 +187,13 @@ const Messages = () => {
                                     </div>
                                 ) : conversations.length === 0 ? (
                                     <div className="p-8 text-center">
-                                        <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <div className="w-16 h-16 bg-slate-100 dark:bg-gradient-to-br dark:from-slate-900 dark:via-purple-900 dark:to-slate-900 rounded-full flex items-center justify-center mx-auto mb-4">
                                             <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                             </svg>
                                         </div>
-                                        <h3 className="font-medium text-slate-800 mb-1">No conversations yet</h3>
-                                        <p className="text-sm text-slate-500 mb-4">
+                                        <h3 className="font-medium text-slate-900 dark:text-slate-50 mb-1">No conversations yet</h3>
+                                        <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
                                             {user?.role === 'applicant'
                                                 ? 'Go to "My Applications" and click "Message"'
                                                 : 'Go to job applications and click "Message"'
@@ -201,7 +201,7 @@ const Messages = () => {
                                         </p>
                                         <Link
                                             to={user?.role === 'applicant' ? '/employee/my-applications' : '/employee/jobs'}
-                                            className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors text-sm"
+                                            className="inline-block px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg shadow-purple-500/30 rounded-lg font-medium hover:bg-blue-700 transition-colors text-sm"
                                         >
                                             {user?.role === 'applicant' ? 'My Applications' : 'My Jobs'}
                                         </Link>
@@ -217,10 +217,10 @@ const Messages = () => {
                                                 <div key={conv._id} className="relative">
                                                     <div
                                                         onClick={() => setActiveConversation(conv._id)}
-                                                        className={`w-full p-4 cursor-pointer hover:bg-slate-50 transition-colors relative ${activeConversation === conv._id
-                                                            ? 'bg-blue-50 border-l-4 border-blue-600'
+                                                        className={`w-full p-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors relative ${activeConversation === conv._id
+                                                            ? 'bg-blue-50 dark:bg-purple-900/30 border-l-4 border-blue-600 dark:border-purple-500'
                                                             : hasUnread
-                                                                ? 'bg-blue-50/50 border-l-4 border-blue-400'
+                                                                ? 'bg-blue-50/50 dark:bg-purple-900/10 border-l-4 border-blue-400 dark:border-purple-400'
                                                                 : ''
                                                             }`}
                                                     >
@@ -234,10 +234,10 @@ const Messages = () => {
                                                                 )}
                                                             </div>
                                                             <div className="flex-1 min-w-0">
-                                                                <p className={`font-medium truncate ${hasUnread ? 'text-slate-900' : 'text-slate-800'}`}>
+                                                                <p className={`font-medium truncate ${hasUnread ? 'text-slate-900 dark:text-white' : 'text-slate-800 dark:text-slate-200'}`}>
                                                                     {other?.fullname || 'Unknown'}
                                                                 </p>
-                                                                <p className={`text-xs truncate ${hasUnread ? 'text-slate-700 font-medium' : 'text-slate-500'}`}>
+                                                                <p className={`text-xs truncate ${hasUnread ? 'text-slate-700 dark:text-slate-300 font-medium' : 'text-slate-500 dark:text-slate-400'}`}>
                                                                     {conv.lastMessage?.content || 'Start chatting...'}
                                                                 </p>
                                                             </div>
@@ -265,17 +265,17 @@ const Messages = () => {
                         </div>
 
                         {/* Chat Area */}
-                        <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col">
+                        <div className="lg:col-span-2 bg-white dark:bg-slate-900/50 dark:backdrop-blur-xl rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700/50 overflow-hidden flex flex-col">
                             {activeConversation ? (
                                 <>
                                     {/* Chat Header */}
-                                    <div className="p-4 border-b border-slate-100 bg-slate-50">
+                                    <div className="p-4 border-b border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-purple-900 dark:to-slate-900">
                                         <div className="flex items-center gap-3">
                                             <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
                                                 {getOtherParticipant(conversations.find(c => c._id === activeConversation))?.fullname?.[0]?.toUpperCase() || '?'}
                                             </div>
                                             <div>
-                                                <p className="font-medium text-slate-800">
+                                                <p className="font-medium text-slate-900 dark:text-slate-50">
                                                     {getOtherParticipant(conversations.find(c => c._id === activeConversation))?.fullname || 'Chat'}
                                                 </p>
                                                 <p className="text-xs text-green-600">● Online</p>
@@ -284,13 +284,13 @@ const Messages = () => {
                                     </div>
 
                                     {/* Messages Container */}
-                                    <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50">
+                                    <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-purple-900 dark:to-slate-900">
                                         {messagesLoading ? (
                                             <div className="text-center py-8">
                                                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
                                             </div>
                                         ) : messages.length === 0 ? (
-                                            <div className="text-center py-8 text-slate-500">
+                                            <div className="text-center py-8 text-slate-500 dark:text-slate-400">
                                                 No messages yet. Send the first message!
                                             </div>
                                         ) : (
@@ -299,8 +299,8 @@ const Messages = () => {
                                                 return (
                                                     <div key={msg._id} className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
                                                         <div className={`max-w-[70%] p-3 rounded-2xl ${isOwn
-                                                            ? 'bg-blue-600 text-white rounded-br-none'
-                                                            : 'bg-white text-slate-800 shadow-sm border border-slate-100 rounded-bl-none'
+                                                            ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg shadow-purple-500/30 rounded-br-none'
+                                                            : 'bg-white dark:bg-slate-900/50 dark:backdrop-blur-xl text-slate-900 dark:text-slate-50 shadow-sm border border-slate-200 dark:border-slate-700/50 rounded-bl-none'
                                                             }`}>
                                                             <p className="text-sm">{msg.content}</p>
                                                             <p className={`text-[10px] mt-1 ${isOwn ? 'text-blue-200' : 'text-slate-400'}`}>
@@ -315,18 +315,18 @@ const Messages = () => {
                                     </div>
 
                                     {/* Message Input */}
-                                    <form onSubmit={handleSendMessage} className="p-4 border-t border-slate-100 flex gap-3">
+                                    <form onSubmit={handleSendMessage} className="p-4 border-t border-slate-200 dark:border-slate-700/50 flex gap-3">
                                         <input
                                             type="text"
                                             value={newMessage}
                                             onChange={(e) => setNewMessage(e.target.value)}
                                             placeholder="Type a message..."
-                                            className="flex-1 px-4 py-3 bg-slate-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-800/50 dark:text-white dark:placeholder-slate-400 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400"
                                         />
                                         <button
                                             type="submit"
                                             disabled={sending || !newMessage.trim()}
-                                            className="px-6 py-3 bg-blue-600 text-white rounded-full font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                                            className="px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg shadow-purple-500/30 rounded-full font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
                                         >
                                             {sending ? (
                                                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
@@ -344,13 +344,13 @@ const Messages = () => {
                             ) : (
                                 <div className="flex-1 flex items-center justify-center">
                                     <div className="text-center">
-                                        <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <div className="w-20 h-20 bg-slate-100 dark:bg-gradient-to-br dark:from-slate-900 dark:via-purple-900 dark:to-slate-900 rounded-full flex items-center justify-center mx-auto mb-4">
                                             <svg className="w-10 h-10 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                             </svg>
                                         </div>
-                                        <h3 className="text-lg font-medium text-slate-800 mb-1">Select a conversation</h3>
-                                        <p className="text-sm text-slate-500">Choose from the list on the left to start chatting</p>
+                                        <h3 className="text-lg font-medium text-slate-900 dark:text-slate-50 mb-1">Select a conversation</h3>
+                                        <p className="text-sm text-slate-500 dark:text-slate-400">Choose from the list on the left to start chatting</p>
                                     </div>
                                 </div>
                             )}
@@ -362,15 +362,15 @@ const Messages = () => {
             {/* Delete Conversation Confirmation Modal */}
             {showDeleteModal && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 transform transition-all">
+                    <div className="bg-white dark:bg-slate-900/50 dark:backdrop-blur-xl rounded-2xl shadow-2xl w-full max-w-md p-6 transform transition-all ">
                         <div className="text-center">
                             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                 </svg>
                             </div>
-                            <h3 className="text-xl font-bold text-slate-900 mb-2">Delete Conversation?</h3>
-                            <p className="text-slate-600 mb-6">
+                            <h3 className="text-xl font-bold text-slate-900 dark:text-slate-50 mb-2">Delete Conversation?</h3>
+                            <p className="text-slate-600 dark:text-slate-300 mb-6">
                                 Are you sure you want to delete this conversation? All messages will be permanently removed. This action cannot be undone.
                             </p>
                             <div className="flex gap-3">
@@ -379,7 +379,7 @@ const Messages = () => {
                                         setShowDeleteModal(false);
                                         setConversationToDelete(null);
                                     }}
-                                    className="flex-1 px-4 py-2.5 border-2 border-slate-200 text-slate-700 font-semibold rounded-lg hover:bg-slate-50 transition-colors"
+                                    className="flex-1 px-4 py-2.5 border border-slate-200-200 dark:border-slate-700/50 text-slate-700 dark:text-slate-200 font-semibold rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                                 >
                                     Cancel
                                 </button>

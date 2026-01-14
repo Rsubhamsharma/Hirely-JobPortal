@@ -57,7 +57,7 @@ function Home() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-white">
+    <div className="flex flex-col min-h-screen bg-white dark:bg-slate-800 transition-colors">
 
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 py-24 overflow-hidden">
@@ -81,13 +81,13 @@ function Home() {
                   <>
                     <Link
                       to="/employee/jobs"
-                      className="px-8 py-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-500/30 transform hover:-translate-y-1"
+                      className="px-8 py-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-all  shadow-lg hover:shadow-blue-500/30 transform hover:-translate-y-0.5"
                     >
                       Browse Jobs
                     </Link>
                     <Link
                       to="/employee/my-applications"
-                      className="px-8 py-4 bg-white/10 backdrop-blur text-white font-bold rounded-lg hover:bg-white/20 transition-all border border-white/20"
+                      className="px-8 py-4 bg-white/10 backdrop-blur text-white font-bold rounded-lg hover:bg-white/20 transition-all  border border-white/20"
                     >
                       My Applications
                     </Link>
@@ -96,13 +96,13 @@ function Home() {
                   <>
                     <Link
                       to="/employee/jobs"
-                      className="px-8 py-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-500/30 transform hover:-translate-y-1"
+                      className="px-8 py-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-all  shadow-lg hover:shadow-blue-500/30 transform hover:-translate-y-0.5"
                     >
                       Manage Jobs
                     </Link>
                     <Link
                       to="/employee/profile"
-                      className="px-8 py-4 bg-white/10 backdrop-blur text-white font-bold rounded-lg hover:bg-white/20 transition-all border border-white/20"
+                      className="px-8 py-4 bg-white/10 backdrop-blur text-white font-bold rounded-lg hover:bg-white/20 transition-all  border border-white/20"
                     >
                       My Profile
                     </Link>
@@ -124,13 +124,13 @@ function Home() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
                   to="/login"
-                  className="px-8 py-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-500/30 transform hover:-translate-y-1"
+                  className="px-8 py-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-all  shadow-lg hover:shadow-blue-500/30 transform hover:-translate-y-0.5"
                 >
                   Get Started
                 </Link>
                 <Link
                   to="/signup"
-                  className="px-8 py-4 bg-transparent border-2 border-slate-500 text-white font-bold rounded-lg hover:bg-slate-800 hover:border-slate-400 transition-all"
+                  className="px-8 py-4 bg-transparent border border-slate-200-500 text-white font-bold rounded-lg hover:bg-slate-800 hover:border-slate-400 transition-all "
                 >
                   Join as Recruiter
                 </Link>
@@ -142,34 +142,34 @@ function Home() {
 
       {/* Quick Stats for Applicants */}
       {user?.role === "applicant" && (
-        <section className="py-12 bg-slate-50">
+        <section className="py-12 bg-slate-50 dark:bg-slate-800 transition-colors">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-2xl font-bold text-slate-900 mb-6">Your Activity</h2>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Your Activity</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Link to="/employee/my-applications" className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all group">
+              <Link to="/employee/my-applications" className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-sm-hover transition-all  group">
                 <div className="flex items-center gap-4">
 
                   <div>
-                    <div className="text-3xl font-bold text-slate-900">{appStats.total}</div>
-                    <div className="text-slate-500 font-medium">Total Applications</div>
+                    <div className="text-3xl font-bold text-slate-900 dark:text-white">{appStats.total}</div>
+                    <div className="text-slate-500 dark:text-slate-400 font-medium">Total Applications</div>
                   </div>
                 </div>
               </Link>
-              <Link to="/employee/my-applications" className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all group">
+              <Link to="/employee/my-applications" className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-sm-hover transition-all  group">
                 <div className="flex items-center gap-4">
 
                   <div>
-                    <div className="text-3xl font-bold text-yellow-600">{appStats.pending}</div>
-                    <div className="text-slate-500 font-medium">Pending Review</div>
+                    <div className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">{appStats.pending}</div>
+                    <div className="text-slate-500 dark:text-slate-400 font-medium">Pending Review</div>
                   </div>
                 </div>
               </Link>
-              <Link to="/employee/my-applications" className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all group">
+              <Link to="/employee/my-applications" className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-sm-hover transition-all  group">
                 <div className="flex items-center gap-4">
 
                   <div>
-                    <div className="text-3xl font-bold text-green-600">{appStats.shortlisted}</div>
-                    <div className="text-slate-500 font-medium">Shortlisted</div>
+                    <div className="text-3xl font-bold text-green-600 dark:text-green-400">{appStats.shortlisted}</div>
+                    <div className="text-slate-500 dark:text-slate-400 font-medium">Shortlisted</div>
                   </div>
                 </div>
               </Link>
@@ -180,13 +180,13 @@ function Home() {
 
       {/* Recent Jobs Section (for logged in users) */}
       {user && (
-        <section className="py-12 bg-white">
+        <section className="py-12 bg-white dark:bg-slate-800 transition-colors">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-slate-900">
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
                 {user.role === "applicant" ? "Latest Opportunities" : "Recent Job Postings"}
               </h2>
-              <Link to="/employee/jobs" className="text-blue-600 font-medium hover:underline">
+              <Link to="/employee/jobs" className="text-blue-600 dark:text-blue-400 font-medium hover:underline">
                 View All →
               </Link>
             </div>
@@ -207,11 +207,11 @@ function Home() {
                   <Link
                     key={job._id}
                     to={`/employee/jobs/${job._id}`}
-                    className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all group"
+                    className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-xl hover:-translate-y-0.5 transition-all  group"
                   >
                     <div className="flex justify-between items-start mb-3">
-                      <h3 className="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{job.title}</h3>
-                      <span className="px-2 py-1 bg-blue-50 text-blue-700 text-xs font-semibold rounded-full">
+                      <h3 className="font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{job.title}</h3>
+                      <span className="px-2 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-semibold rounded-full">
                         {job.jobType || "Full-time"}
                       </span>
                     </div>
@@ -230,13 +230,13 @@ function Home() {
 
       {/* Stats Section (for guests) */}
       {!user && (
-        <section className="py-20 bg-slate-50">
+        <section className="py-20 bg-slate-50 dark:bg-slate-800 transition-colors">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {stats.map((stat, index) => (
-                <div key={index} className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 text-center hover:shadow-md transition-shadow">
-                  <div className="text-4xl font-bold text-blue-600 mb-2">{stat.value}</div>
-                  <div className="text-slate-600 font-medium">{stat.label}</div>
+                <div key={index} className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 text-center hover:shadow-sm-hover transition-shadow">
+                  <div className="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">{stat.value}</div>
+                  <div className="text-slate-600 dark:text-slate-300 font-medium">{stat.label}</div>
                 </div>
               ))}
             </div>
@@ -245,11 +245,11 @@ function Home() {
       )}
 
       {/* Features Section */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-white dark:bg-slate-800 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-slate-900 mb-4">Why Choose Us?</h2>
-            <p className="text-slate-500 max-w-xl mx-auto">We provide the best tools and services to help you succeed.</p>
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">Why Choose Us?</h2>
+            <p className="text-slate-500 dark:text-slate-400 max-w-xl mx-auto">We provide the best tools and services to help you succeed.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
@@ -259,11 +259,11 @@ function Home() {
               { icon: "🤝", title: "Easy Apply", desc: "Apply to multiple jobs with just one click using your profile." }
             ].map((feature, i) => (
               <div key={i} className="group">
-                <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
+                <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
                   {feature.icon}
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-3">{feature.title}</h3>
-                <p className="text-slate-500 leading-relaxed">{feature.desc}</p>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">{feature.title}</h3>
+                <p className="text-slate-500 dark:text-slate-400 leading-relaxed">{feature.desc}</p>
               </div>
             ))}
           </div>

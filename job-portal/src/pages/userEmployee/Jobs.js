@@ -144,18 +144,18 @@ function Jobs() {
   // Recruiter View - Post Jobs
   if (user?.role === "recruiter") {
     return (
-      <div className="min-h-screen bg-slate-50 font-sans">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-700 font-sans transition-colors">
         <Navbar />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="mb-10 text-center">
-            <h1 className="text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">
+            <h1 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-4 tracking-tight">
               Post <span className="text-blue-600">Jobs</span>
             </h1>
-            <p className="text-lg text-slate-500 mb-8 max-w-2xl mx-auto">
+            <p className="text-lg text-slate-500 dark:text-slate-400 mb-8 max-w-2xl mx-auto">
               Create job listings to find the perfect candidates for your company.
             </p>
             <button
-              className="px-8 py-4 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl"
+              className="px-8 py-4 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all  shadow-lg hover:shadow-xl"
               onClick={() => {
                 // Reset edit mode and clear form before opening
                 setEditMode(false);
@@ -370,14 +370,14 @@ function Jobs() {
                           experience: ""
                         });
                       }}
-                      className="flex-1 py-3 border border-slate-200 text-slate-700 font-semibold rounded-lg hover:bg-slate-50 transition-all"
+                      className="flex-1 py-3 border border-slate-200 text-slate-700 font-semibold rounded-lg hover:bg-slate-50 transition-all "
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="flex-1 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex-1 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all  disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {submitting ? (editMode ? "Updating..." : "Posting...") : (editMode ? "Update Job" : "Post Job")}
                     </button>
@@ -405,10 +405,10 @@ function Jobs() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {jobs.filter(job => job.postedBy?._id === user?._id).map((job) => (
-                  <div key={job._id} className="bg-white rounded-xl shadow-sm border border-slate-100 p-6 hover:shadow-xl transition-all">
+                  <div key={job._id} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all ">
                     <div className="flex justify-between items-start mb-2">
-                      <h3 className="text-xl font-bold text-slate-900">{job.title}</h3>
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${job.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                      <h3 className="text-xl font-bold text-slate-900 dark:text-white">{job.title}</h3>
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${job.status === 'active' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'}`}>
                         {job.status}
                       </span>
                     </div>
@@ -447,17 +447,17 @@ function Jobs() {
 
   // Applicant View - Find Jobs
   return (
-    <div className="min-h-screen bg-slate-50 font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-800 font-sans transition-colors">
       <Navbar />
 
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header & Search */}
         <div className="mb-10 text-center">
-          <h1 className="text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">
+          <h1 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-4 tracking-tight">
             Explore <span className="text-blue-600">Opportunities</span>
           </h1>
-          <p className="text-lg text-slate-500 mb-8 max-w-2xl mx-auto">
+          <p className="text-lg text-slate-500 dark:text-slate-400 mb-8 max-w-2xl mx-auto">
             Discover roles that match your skills and aspirations from top companies.
           </p>
 
@@ -465,7 +465,7 @@ function Jobs() {
             <input
               type="text"
               placeholder="Search by job title or company..."
-              className="w-full p-4 pl-12 rounded-xl border border-slate-200 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-lg"
+              className="w-full h-11 pl-12 pr-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-200 placeholder:text-slate-400 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -488,42 +488,31 @@ function Jobs() {
             <p className="text-slate-500 mt-2">Try adjusting your search terms</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {filteredJobs.map((job) => (
-              <div key={job._id} className="bg-white rounded-xl shadow-sm border border-slate-100 p-6 hover:shadow-xl hover:border-blue-200 transition-all duration-300 group flex flex-col h-full relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-1 h-full bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-1">{job.title}</h3>
-                    <p className="text-slate-500 font-medium text-sm mt-1">{job.company}</p>
-                  </div>
-                  <div className="w-10 h-10 bg-slate-50 rounded-lg flex items-center justify-center text-xl">
-                    🏢
+              <div key={job._id} className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors duration-200 flex flex-col h-full">
+                <div className="mb-3">
+                  <h3 className="text-[15px] font-semibold text-slate-900 dark:text-white mb-1 line-clamp-1">{job.title}</h3>
+                  <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400">
+                    <span>{job.company}</span>
+                    <span>•</span>
+                    <span>{job.location}</span>
                   </div>
                 </div>
 
-                <div className="space-y-3 mb-6 flex-1">
-                  <div className="flex items-center text-slate-600 text-sm">
-                    <svg className="w-4 h-4 mr-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                    {job.location}
-                  </div>
-                  <div className="flex items-center text-slate-600 text-sm">
-                    <svg className="w-4 h-4 mr-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    ₹{job.salary} / year
-                  </div>
+                <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 mt-1 mb-4 flex-1">
+                  <span>₹{job.salary}</span>
+                  <span>•</span>
                   {job.jobType && (
-                    <div className="flex items-center text-slate-600 text-sm">
-                      <span className="bg-blue-50 text-blue-700 px-2.5 py-1 rounded text-xs font-semibold">
-                        {job.jobType}
-                      </span>
-                    </div>
+                    <span className="bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded-md text-[11px]">
+                      {job.jobType}
+                    </span>
                   )}
                 </div>
 
                 <button
                   onClick={() => navigate(`/employee/jobs/${job._id}`)}
-                  className="w-full py-2.5 bg-slate-50 text-slate-700 font-semibold rounded-lg hover:bg-blue-600 hover:text-white transition-all border border-slate-200 hover:border-blue-600"
+                  className="w-full px-3 py-1.5 bg-transparent border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 text-sm rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white transition-colors"
                 >
                   View Details
                 </button>
