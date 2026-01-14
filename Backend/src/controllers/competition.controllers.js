@@ -7,7 +7,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { application } from "express";
 import { getIO } from "../socket/socket.js";
-import { sendCompetitionRegistrationEmail } from "../services/emailService.js";
+import { sendCompetitionRegistrationEmail, sendCompetitionClosedEmail } from "../services/emailService.js";
 
 
 const createCompetiton = asyncHandler(async (req, res) => {
@@ -55,6 +55,12 @@ const updateCompetition = asyncHandler(async (req, res) => {
     if (!mongoose.isValidObjectId(competitionId)) {
         throw new ApiError(400, "Invalid competition Id")
     }
+
+    // Get the old competition to check if status is changing to 'closed'
+    const oldCompetition = await competitionsSchema.findById(competitionId).populate("applicants", "fullname email");
+    const wasOpen = oldCompetition && oldCompetition.status !== "closed";
+    const isClosing = status === "closed" && wasOpen;
+
     const competition = await competitionsSchema.findByIdAndUpdate({ _id: competitionId },
         {
             $set: {
@@ -68,6 +74,16 @@ const updateCompetition = asyncHandler(async (req, res) => {
     if (!competition) {
         throw new ApiError(404, "Competition not found")
     }
+
+    // Send closing emails to all applicants if competition is being closed
+    if (isClosing && oldCompetition.applicants.length > 0) {
+        oldCompetition.applicants.forEach(applicant => {
+            sendCompetitionClosedEmail(applicant, competition).catch(err =>
+                console.error(`Failed to send closing email to ${applicant.email}:`, err)
+            );
+        });
+    }
+
     // Emit real-time update
     getIO().emit("competition_updated", { type: "update", competitionId });
 

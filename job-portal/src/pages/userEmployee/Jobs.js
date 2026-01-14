@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../api/axios";
 import Navbar from "../../components/Navbar";
+import { JobCardSkeleton } from "../../components/Skeleton";
 import toast from "react-hot-toast";
 
 function Jobs() {
@@ -392,7 +393,7 @@ function Jobs() {
             {loading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[1, 2, 3].map(i => (
-                  <div key={i} className="h-48 bg-white rounded-xl shadow-sm animate-pulse border border-slate-100"></div>
+                  <JobCardSkeleton key={i} />
                 ))}
               </div>
             ) : jobs.filter(job => job.postedBy?._id === user?._id).length === 0 ? (
@@ -477,7 +478,7 @@ function Jobs() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map(i => (
-              <div key={i} className="h-64 bg-white rounded-xl shadow-sm animate-pulse border border-slate-100"></div>
+              <JobCardSkeleton key={i} />
             ))}
           </div>
         ) : filteredJobs.length === 0 ? (
