@@ -69,9 +69,7 @@ function Login({ onClose }) {
           <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Welcome Back</h2>
           <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Please enter your details to sign in</p>
         </div>
-        <div className="absolute bottom-7 w-full h-1.5 left-20 text-slate-600 dark:text-slate-300">
-          Don&apos;t have an account ?  <NavLink to="/signup" className='text-blue-600 dark:text-blue-400 font-medium hover:underline'>Register Now</NavLink>
-        </div>
+
 
         <div className="space-y-4">
           <div>
@@ -123,6 +121,13 @@ function Login({ onClose }) {
         >
           Cancel
         </button>
+
+        <div className="text-center text-sm text-slate-600 dark:text-slate-300 mt-4">
+          Don&apos;t have an account?{" "}
+          <NavLink to="/signup" className="text-blue-600 dark:text-blue-400 font-medium hover:underline">
+            Register Now
+          </NavLink>
+        </div>
       </div>
     </div>
   );
