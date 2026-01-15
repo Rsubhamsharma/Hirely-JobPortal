@@ -25,6 +25,14 @@ function Login({ onClose }) {
 
         // The backend returns: { statusCode, data: { user, accessToken, refreshToken }, message, success }
         const userData = res.data.data.user;
+        const accessToken = res.data.data.accessToken;
+
+        // Store token in localStorage for:
+        // 1. WebSocket authentication
+        // 2. Backup auth method for mobile browsers that may block cookies
+        if (accessToken) {
+          localStorage.setItem('accessToken', accessToken);
+        }
 
         login(userData);
         if (onClose) onClose();

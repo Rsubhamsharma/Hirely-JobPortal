@@ -63,12 +63,15 @@ export const AuthProvider = ({ children }) => {
             setLoading(true);
             await api.post('/users/logout');
             setUser(null);
+            // Clear token from localStorage
+            localStorage.removeItem('accessToken');
             toast.success("Logged out successfully");
             navigate("/");
         } catch (err) {
             console.error("Logout failed:", err);
             // Even if logout API fails, clear local state
             setUser(null);
+            localStorage.removeItem('accessToken');
             toast.error("Logout encountered an issue");
             navigate("/");
         }
