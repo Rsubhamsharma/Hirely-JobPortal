@@ -1,8 +1,199 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ============================================
+   HIRELY DESIGN SYSTEM - PREMIUM TYPOGRAPHY
+   ============================================ */
+
+@layer base {
+  /* Base Typography */
+  body {
+    @apply font-sans text-body text-text-light-body bg-white;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Dark mode body */
+  .dark body {
+    @apply text-text-dark-body bg-slate-950;
+  }
+
+  /* Headings */
+  h1 {
+    @apply text-h1 text-text-light-heading font-bold;
+  }
+
+  h2 {
+    @apply text-h2 text-text-light-heading font-bold;
+  }
+
+  h3 {
+    @apply text-h3 text-text-light-heading font-semibold;
+  }
+
+  h4 {
+    @apply text-h4 text-text-light-heading font-semibold;
+  }
+
+  h5 {
+    @apply text-h5 text-text-light-heading font-semibold;
+  }
+
+  /* Dark mode headings */
+  .dark h1,
+  .dark h2,
+  .dark h3,
+  .dark h4,
+  .dark h5 {
+    @apply text-text-dark-heading;
+  }
+
+  /* Responsive Typography - Tablet */
+  @media (max-width: 1024px) {
+    h1 {
+      @apply text-[40px] leading-[1.1];
+    }
+
+    h2 {
+      @apply text-[32px] leading-[1.15];
+    }
+
+    h3 {
+      @apply text-[24px] leading-[1.2];
+    }
+
+    body {
+      @apply text-body;
+    }
+  }
+
+  /* Responsive Typography - Mobile */
+  @media (max-width: 640px) {
+    h1 {
+      @apply text-[32px] leading-[1.1];
+    }
+
+    h2 {
+      @apply text-[26px] leading-[1.15];
+    }
+
+    h3 {
+      @apply text-[20px] leading-[1.2];
+    }
+
+    h4 {
+      @apply text-[18px] leading-[1.3];
+    }
+
+    body {
+      @apply text-[15px] leading-[1.6];
+    }
+  }
+}
+
+@layer components {
+  /* Logo Typography */
+  .logo-text {
+    @apply font-brand font-bold tracking-brand text-indigo-600;
+  }
+
+  .logo-text-dark {
+    @apply font-brand font-bold tracking-brand text-white;
+  }
+
+  /* Primary Button */
+  .btn-primary {
+    @apply bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors duration-200 text-btn-lg;
+    min-height: 44px;
+  }
+
+  .btn-primary:active {
+    @apply bg-indigo-800;
+  }
+
+  /* Success Button */
+  .btn-success {
+    @apply bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-lg transition-colors duration-200 text-btn-lg;
+    min-height: 44px;
+  }
+
+  /* Secondary Button */
+  .btn-secondary {
+    @apply bg-slate-200 hover:bg-slate-300 text-slate-900 font-semibold px-5 py-2.5 rounded-lg transition-colors duration-200 text-btn;
+    min-height: 44px;
+  }
+
+  .dark .btn-secondary {
+    @apply bg-slate-800 hover:bg-slate-700 text-white;
+  }
+
+  /* Form Labels */
+  .form-label {
+    @apply text-label font-medium text-text-light-heading mb-2 block;
+  }
+
+  .dark .form-label {
+    @apply text-text-dark-heading;
+  }
+
+  /* Form Inputs */
+  .form-input {
+    @apply w-full px-4 py-3 border border-slate-300 rounded-lg text-body focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all;
+    min-height: 44px;
+  }
+
+  .dark .form-input {
+    @apply bg-slate-900 border-slate-700 text-text-dark-body;
+  }
+
+  /* Status Badges */
+  .badge-success {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-body-sm font-medium bg-green-100 text-green-700;
+  }
+
+  .dark .badge-success {
+    @apply bg-green-900/30 text-green-400;
+  }
+
+  .badge-pending {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-body-sm font-medium bg-indigo-100 text-indigo-700;
+  }
+
+  .dark .badge-pending {
+    @apply bg-indigo-900/30 text-indigo-400;
+  }
+
+  .badge-muted {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-body-sm font-medium bg-slate-100 text-slate-700;
+  }
+
+  .dark .badge-muted {
+    @apply bg-slate-800 text-slate-400;
+  }
+
+  /* Links */
+  .link-primary {
+    @apply text-indigo-600 hover:text-indigo-700 font-medium transition-colors;
+  }
+
+  .dark .link-primary {
+    @apply text-indigo-400 hover:text-indigo-300;
+  }
+
+  /* Card */
+  .card {
+    @apply bg-white border border-slate-200 rounded-xl shadow-sm;
+  }
+
+  .dark .card {
+    @apply bg-slate-900 border-slate-800;
+  }
+}
+
+/* ============================================
+   ANIMATIONS & UTILITIES
+   ============================================ */
 
 /* Shimmer animation for skeleton loaders */
 .shimmer {
@@ -30,6 +221,10 @@
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+.dark .skeleton {
+  background-color: #1e293b;
+}
+
 @keyframes pulse {
 
   0%,
@@ -42,13 +237,13 @@
   }
 }
 
-body {
-  margin: 0;
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Smooth transitions */
+* {
+  @apply transition-colors duration-200;
 }
 
+/* Code blocks */
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  @apply text-body-sm bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded;
 }

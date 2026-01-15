@@ -48,10 +48,12 @@ function Navbar() {
 
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">J</span>
+            <div className="w-9 h-9 bg-indigo-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-lg">H</span>
             </div>
-            <span className="hidden sm:block text-xl font-bold text-blue-600">JobPortal</span>
+            <span className="hidden sm:block text-xl font-brand font-bold tracking-brand text-indigo-600 dark:text-white">
+              Hire<span className="text-green-500">ly</span>
+            </span>
           </Link>
 
           {/* Desktop Navigation - LinkedIn Style */}
@@ -170,7 +172,7 @@ function Navbar() {
                 <Link to="/login" className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
                   Login
                 </Link>
-                <Link to="/signup" className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                <Link to="/signup" className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors">
                   Sign Up
                 </Link>
               </>
@@ -218,19 +220,19 @@ function Navbar() {
           <div className="px-4 py-4 space-y-2">
             {user ? (
               <>
-                <NavLink to="/" onClick={() => setIsOpen(false)} className={({ isActive }) => `block px-4 py-2 rounded-lg text-sm font-medium ${isActive ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300'}`}>Home</NavLink>
+                <NavLink to="/" onClick={() => setIsOpen(false)} className={({ isActive }) => `block px-4 py-2 rounded-lg text-sm font-medium ${isActive ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400' : 'text-slate-700 dark:text-slate-300'}`}>Home</NavLink>
                 {user.role === 'applicant' && (
                   <>
-                    <NavLink to="/employee/jobs" onClick={() => setIsOpen(false)} className={({ isActive }) => `block px-4 py-2 rounded-lg text-sm font-medium ${isActive ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300'}`}>Find Jobs</NavLink>
-                    <NavLink to="/employee/my-applications" onClick={() => setIsOpen(false)} className={({ isActive }) => `block px-4 py-2 rounded-lg text-sm font-medium ${isActive ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300'}`}>Applications</NavLink>
+                    <NavLink to="/employee/jobs" onClick={() => setIsOpen(false)} className={({ isActive }) => `block px-4 py-2 rounded-lg text-sm font-medium ${isActive ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400' : 'text-slate-700 dark:text-slate-300'}`}>Find Jobs</NavLink>
+                    <NavLink to="/employee/my-applications" onClick={() => setIsOpen(false)} className={({ isActive }) => `block px-4 py-2 rounded-lg text-sm font-medium ${isActive ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400' : 'text-slate-700 dark:text-slate-300'}`}>Applications</NavLink>
                   </>
                 )}
-                {user.role === 'recruiter' && <NavLink to="/employee/jobs" onClick={() => setIsOpen(false)} className={({ isActive }) => `block px-4 py-2 rounded-lg text-sm font-medium ${isActive ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300'}`}>Post Jobs</NavLink>}
-                <NavLink to="/employee/competitions" onClick={() => setIsOpen(false)} className={({ isActive }) => `block px-4 py-2 rounded-lg text-sm font-medium ${isActive ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300'}`}>Competitions</NavLink>
-                <NavLink to="/employee/messages" onClick={() => setIsOpen(false)} className={({ isActive }) => `block px-4 py-2 rounded-lg text-sm font-medium relative ${isActive ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300'}`}>
+                {user.role === 'recruiter' && <NavLink to="/employee/jobs" onClick={() => setIsOpen(false)} className={({ isActive }) => `block px-4 py-2 rounded-lg text-sm font-medium ${isActive ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400' : 'text-slate-700 dark:text-slate-300'}`}>Post Jobs</NavLink>}
+                <NavLink to="/employee/competitions" onClick={() => setIsOpen(false)} className={({ isActive }) => `block px-4 py-2 rounded-lg text-sm font-medium ${isActive ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400' : 'text-slate-700 dark:text-slate-300'}`}>Competitions</NavLink>
+                <NavLink to="/employee/messages" onClick={() => setIsOpen(false)} className={({ isActive }) => `block px-4 py-2 rounded-lg text-sm font-medium relative ${isActive ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400' : 'text-slate-700 dark:text-slate-300'}`}>
                   Messages {unreadCount > 0 && <span className="ml-2 px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full">{unreadCount}</span>}
                 </NavLink>
-                <NavLink to="/employee/profile" onClick={() => setIsOpen(false)} className={({ isActive }) => `block px-4 py-2 rounded-lg text-sm font-medium ${isActive ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300'}`}>Profile</NavLink>
+                <NavLink to="/employee/profile" onClick={() => setIsOpen(false)} className={({ isActive }) => `block px-4 py-2 rounded-lg text-sm font-medium ${isActive ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400' : 'text-slate-700 dark:text-slate-300'}`}>Profile</NavLink>
                 <div className="pt-2 border-t border-slate-200 dark:border-slate-800"><ThemeToggle /></div>
                 <button onClick={() => { logout(); setIsOpen(false); }} className="w-full text-left px-4 py-2 rounded-lg text-sm font-medium text-red-600 dark:text-red-400">Logout</button>
               </>
@@ -238,7 +240,7 @@ function Navbar() {
               <>
                 <div className="pb-2"><ThemeToggle /></div>
                 <Link to="/login" onClick={() => setIsOpen(false)} className="block px-4 py-2 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300">Login</Link>
-                <Link to="/signup" onClick={() => setIsOpen(false)} className="block px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white text-center">Sign Up</Link>
+                <Link to="/signup" onClick={() => setIsOpen(false)} className="block px-4 py-2 rounded-lg text-sm font-medium bg-indigo-600 text-white text-center">Sign Up</Link>
               </>
             )}
           </div>

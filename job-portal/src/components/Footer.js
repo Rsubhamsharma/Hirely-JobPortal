@@ -10,10 +10,12 @@ function Footer() {
           {/* Brand Column */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-lg">
-                J
+              <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-lg">
+                H
               </div>
-              <span className="text-2xl font-bold text-white tracking-tight">JobPortal</span>
+              <span className="text-2xl font-brand font-bold tracking-brand text-white">
+                Hire<span className="text-green-500">ly</span>
+              </span>
             </div>
             <p className="text-slate-400 leading-relaxed max-w-sm">
               Connecting ambition with opportunity. Find your dream job or the perfect candidate with our premium recruitment platform. Secure, fast, and trusted by thousands.
@@ -54,7 +56,7 @@ function Footer() {
         {/* Divider */}
         <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-slate-500">
-            &copy; {new Date().getFullYear()} Job Portal. All Rights Reserved.
+            &copy; {new Date().getFullYear()} Hirely. All Rights Reserved.
           </p>
 
           <div className="flex space-x-6">

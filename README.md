@@ -1,4 +1,4 @@
-# Job Portal - Full Stack Application
+# Hirely - Full Stack Application
 
 A modern, full-featured job portal application built with the MERN stack, featuring role-based access for recruiters and applicants, real-time messaging, competitions, and a professional UI/UX design.
 

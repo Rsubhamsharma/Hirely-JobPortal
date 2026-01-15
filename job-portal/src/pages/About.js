@@ -9,7 +9,7 @@ function About() {
                 {/* Hero Section */}
                 <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20">
                     <div className="max-w-6xl mx-auto px-4">
-                        <h1 className="text-5xl font-bold mb-4">About JobPortal</h1>
+                        <h1 className="text-5xl font-bold mb-4">About Hirely</h1>
                         <p className="text-xl text-blue-100">Connecting talent with opportunity</p>
                     </div>
                 </div>
@@ -19,7 +19,7 @@ function About() {
                     <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
                         <h2 className="text-3xl font-bold text-slate-900 mb-4">Our Mission</h2>
                         <p className="text-lg text-slate-600 leading-relaxed">
-                            At JobPortal, we're on a mission to revolutionize the way people find jobs and companies discover talent.
+                            At Hirely, we're on a mission to revolutionize the way people find jobs and companies discover talent.
                             We believe that everyone deserves access to meaningful career opportunities, and every company deserves
                             to find the perfect candidate. Our platform bridges this gap with cutting-edge technology and a
                             user-first approach.

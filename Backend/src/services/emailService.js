@@ -20,7 +20,7 @@ const transporter = nodemailer.createTransport({
 export const sendEmail = async ({ to, subject, html, text }) => {
     try {
         const mailOptions = {
-            from: `"${process.env.SMTP_FROM_NAME || 'JobPortal'}" <${process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER}>`,
+            from: `"${process.env.SMTP_FROM_NAME || 'Hirely'}" <${process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER}>`,
             to,
             subject,
             html,
@@ -91,7 +91,7 @@ export const sendCompetitionRegistrationEmail = async (user, competition) => {
                                             </tr>
                                             <tr>
                                                 <td style="color: #4a5568; font-size: 15px;"><strong>👤 Organizer:</strong></td>
-                                                <td style="color: #2d3748; font-size: 15px;">${competition.organizer?.fullname || 'JobPortal Team'}</td>
+                                                <td style="color: #2d3748; font-size: 15px;">${competition.organizer?.fullname || 'Hirely Team'}</td>
                                             </tr>
                                         </table>
                                     </div>
@@ -121,13 +121,13 @@ export const sendCompetitionRegistrationEmail = async (user, competition) => {
                             <!-- Footer -->
                             <tr>
                                 <td style="background-color: #f7fafc; padding: 30px; border-radius: 0 0 12px 12px; text-align: center;">
-                                    <p style="color: #718096; font-size: 14px; margin: 0 0 10px;">Best regards,<br><strong>JobPortal Team</strong></p>
+                                    <p style="color: #718096; font-size: 14px; margin: 0 0 10px;">Best regards,<br><strong>Hirely Team</strong></p>
                                     <div style="margin: 20px 0;">
                                         <a href="http://localhost:3000/competitions" style="color: #667eea; text-decoration: none; margin: 0 10px; font-size: 13px;">Browse Competitions</a> |
                                         <a href="http://localhost:3000/jobs" style="color: #667eea; text-decoration: none; margin: 0 10px; font-size: 13px;">Find Jobs</a> |
                                         <a href="http://localhost:3000/profile" style="color: #667eea; text-decoration: none; margin: 0 10px; font-size: 13px;">My Profile</a>
                                     </div>
-                                    <p style="color: #a0aec0; font-size: 12px; margin: 15px 0 0;">This is an automated email from JobPortal. Please do not reply to this email.</p>
+                                    <p style="color: #a0aec0; font-size: 12px; margin: 15px 0 0;">This is an automated email from Hirely. Please do not reply to this email.</p>
                                 </td>
                             </tr>
                         </table>
@@ -166,7 +166,7 @@ export const sendStatusUpdateEmail = async (user, job, status) => {
                 <p><strong>Status:</strong> ${status}</p>
                 <p>${statusMessages[status] || 'Your application status has been updated.'}</p>
             </div>
-            <p>Best regards,<br>JobPortal Team</p>
+            <p>Best regards,<br>Hirely Team</p>
         </div>
     `;
 
@@ -285,13 +285,13 @@ export const sendJobApplicationEmail = async (user, job) => {
                             <!-- Footer -->
                             <tr>
                                 <td style="background-color: #f7fafc; padding: 30px; border-radius: 0 0 12px 12px; text-align: center;">
-                                    <p style="color: #718096; font-size: 14px; margin: 0 0 10px;">Best regards,<br><strong>JobPortal Team</strong></p>
+                                    <p style="color: #718096; font-size: 14px; margin: 0 0 10px;">Best regards,<br><strong>Hirely Team</strong></p>
                                     <div style="margin: 20px 0;">
                                         <a href="http://localhost:3000/applications" style="color: #11998e; text-decoration: none; margin: 0 10px; font-size: 13px;">My Applications</a> |
                                         <a href="http://localhost:3000/jobs" style="color: #11998e; text-decoration: none; margin: 0 10px; font-size: 13px;">Find Jobs</a> |
                                         <a href="http://localhost:3000/profile" style="color: #11998e; text-decoration: none; margin: 0 10px; font-size: 13px;">Update Profile</a>
                                     </div>
-                                    <p style="color: #a0aec0; font-size: 12px; margin: 15px 0 0;">This is an automated email from JobPortal. Please do not reply to this email.</p>
+                                    <p style="color: #a0aec0; font-size: 12px; margin: 15px 0 0;">This is an automated email from Hirely. Please do not reply to this email.</p>
                                 </td>
                             </tr>
                         </table>
@@ -414,13 +414,13 @@ export const sendCompetitionClosedEmail = async (user, competition) => {
                             <!-- Footer -->
                             <tr>
                                 <td style="background-color: #f7fafc; padding: 30px; border-radius: 0 0 12px 12px; text-align: center;">
-                                    <p style="color: #718096; font-size: 14px; margin: 0 0 10px;">Best regards,<br><strong>JobPortal Team</strong></p>
+                                    <p style="color: #718096; font-size: 14px; margin: 0 0 10px;">Best regards,<br><strong>Hirely Team</strong></p>
                                     <div style="margin: 20px 0;">
                                         <a href="http://localhost:3000/competitions" style="color: #f5576c; text-decoration: none; margin: 0 10px; font-size: 13px;">Competitions</a> |
                                         <a href="http://localhost:3000/jobs" style="color: #f5576c; text-decoration: none; margin: 0 10px; font-size: 13px;">Jobs</a> |
                                         <a href="http://localhost:3000/profile" style="color: #f5576c; text-decoration: none; margin: 0 10px; font-size: 13px;">Profile</a>
                                     </div>
-                                    <p style="color: #a0aec0; font-size: 12px; margin: 15px 0 0;">This is an automated email from JobPortal. Please do not reply to this email.</p>
+                                    <p style="color: #a0aec0; font-size: 12px; margin: 15px 0 0;">This is an automated email from Hirely. Please do not reply to this email.</p>
                                 </td>
                             </tr>
                         </table>
