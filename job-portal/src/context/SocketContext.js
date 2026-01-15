@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import { useAuth } from './AuthContext';
 
@@ -14,27 +14,48 @@ export const SocketProvider = ({ children }) => {
     useEffect(() => {
         if (isAuthenticated && user) {
             const newSocket = io('http://localhost:8000', {
-                auth: { token: localStorage.getItem('accessToken') }, // Note: cookies might handle this automatically, but token in auth is safer
-                withCredentials: true
+                auth: { token: localStorage.getItem('accessToken') },
+                withCredentials: true,
+                reconnection: true,
+                reconnectionAttempts: 5,
+                reconnectionDelay: 1000,
+                timeout: 10000,
+                transports: ['websocket', 'polling'] // Fallback to polling if websocket fails
             });
 
             newSocket.on('connect', () => {
+                console.log('Socket connected successfully');
+            });
 
+            newSocket.on('connect_error', (error) => {
+                // Silently handle connection errors - socket.io will retry automatically
+                console.warn('Socket connection error (will retry):', error.message);
             });
 
             newSocket.on('online_users', (users) => {
                 setOnlineUsers(users);
             });
 
+            newSocket.on('disconnect', (reason) => {
+                console.log('Socket disconnected:', reason);
+            });
+
             setSocket(newSocket);
 
-            return () => newSocket.close();
+            return () => {
+                newSocket.off('connect');
+                newSocket.off('connect_error');
+                newSocket.off('online_users');
+                newSocket.off('disconnect');
+                newSocket.close();
+            };
         } else {
             if (socket) {
                 socket.close();
                 setSocket(null);
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isAuthenticated, user]);
 
     const value = {

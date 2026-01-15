@@ -1,70 +1,163 @@
-# Getting Started with Create React App
+# Job Portal - Full Stack Application
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern, full-featured job portal application built with the MERN stack, featuring role-based access for recruiters and applicants, real-time messaging, competitions, and a professional UI/UX design.
 
-## Available Scripts
+## 🚀 Features
 
-In the project directory, you can run:
+### For Applicants
+- **Job Search & Discovery**: Browse and search jobs with advanced filters (location, job type, salary)
+- **Application Management**: Track application status (pending, shortlisted, rejected, hired)
+- **Profile Management**: Update profile, upload resume, manage personal information
+- **Competitions**: Participate in coding challenges and competitions
+- **Real-time Messaging**: Chat with recruiters and other users
+- **Dark Mode**: Toggle between light and dark themes
 
-### `npm start`
+### For Recruiters
+- **Job Posting**: Create, edit, and manage job listings
+- **Applicant Management**: View applications, shortlist candidates, update application status
+- **Analytics Dashboard**: Track job performance and application metrics
+- **Competition Hosting**: Create and manage coding competitions
+- **Messaging**: Communicate with applicants in real-time
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 🛠️ Tech Stack
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Frontend
+- **React** - UI library
+- **React Router** - Client-side routing
+- **Tailwind CSS** - Utility-first CSS framework
+- **Lucide React** - Icon library
+- **React Hot Toast** - Toast notifications
+- **Socket.io Client** - Real-time communication
+- **Axios** - HTTP client
 
-### `npm test`
+### Backend
+- **Node.js** - Runtime environment
+- **Express** - Web framework
+- **MongoDB** - Database
+- **Mongoose** - ODM for MongoDB
+- **Socket.io** - Real-time bidirectional communication
+- **JWT** - Authentication
+- **Bcrypt** - Password hashing
+- **Cloudinary** - Image/file storage
+- **Multer** - File upload handling
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 📦 Installation
 
-### `npm run build`
+### Prerequisites
+- Node.js (v14 or higher)
+- MongoDB (local or MongoDB Atlas)
+- npm or yarn
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Backend Setup
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+1. Navigate to the Backend folder:
+```bash
+cd Backend
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+2. Install dependencies:
+```bash
+npm install
+```
 
-### `npm run eject`
+3. Create a `.env` file in the Backend folder:
+```env
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_key
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+4. Start the backend server:
+```bash
+npm run dev
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+The backend will run on `http://localhost:5000`
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### Frontend Setup
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+1. Navigate to the job-portal folder:
+```bash
+cd job-portal
+```
 
-## Learn More
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+3. Create a `.env` file in the job-portal folder:
+```env
+REACT_APP_API_URL=http://localhost:5000
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+4. Start the development server:
+```bash
+npm start
+```
 
-### Code Splitting
+The frontend will run on `http://localhost:3000`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## 🎨 UI/UX Design
 
-### Analyzing the Bundle Size
+The application features a modern, professional design with:
+- Clean, minimal layouts inspired by Wellfound, LinkedIn, and Indeed
+- Responsive design for all screen sizes
+- Light and dark mode support
+- Professional color palette with blue accents
+- Smooth animations and transitions
+- Accessible and user-friendly interface
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## 📱 Key Pages
 
-### Making a Progressive Web App
+- **Home** - Landing page with hero section and features
+- **Jobs** - Job listings with advanced search and filters
+- **Competitions** - Browse and participate in coding challenges
+- **Messages** - Real-time chat interface
+- **Profile** - User profile management
+- **Dashboard** - Analytics and statistics (recruiter only)
+- **Applications** - Application tracking (applicant only)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## 🔐 Authentication
 
-### Advanced Configuration
+- JWT-based authentication
+- Role-based access control (Applicant/Recruiter)
+- Protected routes
+- Secure password hashing with bcrypt
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## 🚀 Deployment
 
-### Deployment
+### Frontend Deployment (Vercel/Netlify)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+1. Build the production bundle:
+```bash
+cd job-portal
+npm run build
+```
 
-### `npm run build` fails to minify
+2. Deploy the `build` folder to your hosting platform
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### Backend Deployment (Render/Railway/Heroku)
+
+1. Ensure all environment variables are set
+2. Deploy the Backend folder to your hosting platform
+3. Update the frontend API URL to point to your deployed backend
+
+## 📄 License
+
+This project is open source and available under the MIT License.
+
+## 👨‍💻 Author
+
+Built with ❤️ for modern job seekers and recruiters
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome!
+
+---
+
+**Note**: Make sure to update the environment variables with your actual credentials before running the application.

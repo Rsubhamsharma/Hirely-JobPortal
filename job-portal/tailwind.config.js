@@ -4,6 +4,7 @@ module.exports = {
     content: [
         "./src/**/*.{js,jsx,ts,tsx}",
     ],
+    darkMode: 'class', // Enable class-based dark mode
     theme: {
         extend: {
             colors: {
@@ -16,7 +17,7 @@ module.exports = {
                 accent: '#f59e0b', // Amber
             },
             fontFamily: {
-                sans: ['Inter', 'sans-serif'],
+                sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
             }
         },
     },
