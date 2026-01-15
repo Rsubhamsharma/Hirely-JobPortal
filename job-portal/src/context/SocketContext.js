@@ -13,7 +13,7 @@ export const SocketProvider = ({ children }) => {
 
     useEffect(() => {
         if (isAuthenticated && user) {
-            const newSocket = io('http://localhost:8000', {
+            const newSocket = io(process.env.REACT_APP_SOCKET_URL || 'http://localhost:8000', {
                 auth: { token: localStorage.getItem('accessToken') },
                 withCredentials: true,
                 reconnection: true,
