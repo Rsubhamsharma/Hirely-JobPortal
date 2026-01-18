@@ -32,26 +32,26 @@ const jobSchema = new mongoose.Schema(
     salary: {
       type: Number,
     },
-    companydetails:{
-      type:String,
-      default:""
+    companydetails: {
+      type: String,
+      default: ""
     },
-    status:{
-      type:String,
-      default:"active",
-      enum:["active","closed"]
+    status: {
+      type: String,
+      default: "active",
+      enum: ["active", "closed", "inactive"]
     },
-    isvisible:{
-      type:Boolean,
-      default:true
+    isvisible: {
+      type: Boolean,
+      default: true
     },
-    responsibilities:{
-      type:String,
-      default:""
+    responsibilities: {
+      type: String,
+      default: ""
     },
-    skills:[{
-      type:String,
-      default:""
+    skills: [{
+      type: String,
+      default: ""
     }],
 
     jobType: {
@@ -64,6 +64,11 @@ const jobSchema = new mongoose.Schema(
       ref: "user",
       required: true,
     },
+    profile: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Profile",
+
+    }
   },
   { timestamps: true }
 );

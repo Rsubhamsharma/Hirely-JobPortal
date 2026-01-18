@@ -28,11 +28,9 @@ function Jobs() {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    company: "",
     location: "",
     salary: "",
     jobType: "Full-time",
-    companydetails: "",
     responsibilities: "",
     skills: "",
     experience: ""
@@ -50,11 +48,9 @@ function Jobs() {
       setFormData({
         title: job.title || "",
         description: job.description || "",
-        company: job.company || "",
         location: job.location || "",
         salary: job.salary || "",
         jobType: job.jobType || "Full-time",
-        companydetails: job.companydetails || "",
         responsibilities: job.responsibilities || "",
         skills: Array.isArray(job.skills) ? job.skills.join(", ") : "",
         experience: job.experience || ""
@@ -80,11 +76,9 @@ function Jobs() {
       const jobData = {
         title: formData.title,
         description: formData.description,
-        company: formData.company,
         location: formData.location,
         salary: Number(formData.salary),
         jobType: formData.jobType,
-        companydetails: formData.companydetails,
         responsibilities: formData.responsibilities,
         skills: skillsArray,
         experience: formData.experience
@@ -106,11 +100,9 @@ function Jobs() {
         setFormData({
           title: "",
           description: "",
-          company: "",
           location: "",
           salary: "",
           jobType: "Full-time",
-          companydetails: "",
           responsibilities: "",
           skills: "",
           experience: ""
@@ -138,14 +130,49 @@ function Jobs() {
     }
   };
 
+  const handleDeleteJob = async (jobId) => {
+    if (!window.confirm("Are you sure you want to delete this job? This action cannot be undone.")) {
+      return;
+    }
+
+    const loadingToast = toast.loading("Deleting job...");
+    try {
+      const res = await api.delete(`/jobs/job/${jobId}`);
+      if (res.data.success) {
+        toast.success("Job deleted successfully!", { id: loadingToast });
+        fetchJobs();
+      }
+    } catch (error) {
+      console.error("Error deleting job:", error);
+      toast.error(error.response?.data?.message || "Failed to delete job", { id: loadingToast });
+    }
+  };
+
+  const handleToggleStatus = async (jobId, currentStatus) => {
+    const newStatus = currentStatus === "active" ? "inactive" : "active";
+    const loadingToast = toast.loading("Updating job status...");
+
+    try {
+      const res = await api.patch(`/jobs/job/${jobId}/toggle-status`);
+      if (res.data.success) {
+        toast.success(`Job marked as ${newStatus}!`, { id: loadingToast });
+        fetchJobs();
+      }
+    } catch (error) {
+      console.error("Error toggling job status:", error);
+      toast.error(error.response?.data?.message || "Failed to update job status", { id: loadingToast });
+    }
+  };
+
   // Recruiter View - Post Jobs
   if (user?.role === "recruiter") {
     const myJobs = jobs.filter(job => job.postedBy?._id === user?._id);
     const activeJobs = myJobs.filter(job => job.status === 'active');
+    const inactiveJobs = myJobs.filter(job => job.status === 'inactive');
     const closedJobs = myJobs.filter(job => job.status === 'closed');
     const totalApplications = myJobs.reduce((sum, job) => sum + (job.applications?.length || 0), 0);
 
-    const displayJobs = activeTab === "active" ? activeJobs : closedJobs;
+    const displayJobs = activeTab === "active" ? [...activeJobs, ...inactiveJobs] : closedJobs;
 
     return (
       <div className="min-h-screen bg-[#fafafa] dark:bg-slate-900">
@@ -164,11 +191,9 @@ function Jobs() {
                   setFormData({
                     title: "",
                     description: "",
-                    company: "",
                     location: "",
                     salary: "",
                     jobType: "Full-time",
-                    companydetails: "",
                     responsibilities: "",
                     skills: "",
                     experience: ""
@@ -226,18 +251,6 @@ function Jobs() {
                         onChange={handleInputChange}
                         className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:text-white"
                         placeholder="e.g. Senior React Developer"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">Company Name *</label>
-                      <input
-                        type="text"
-                        name="company"
-                        value={formData.company}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:text-white"
-                        placeholder="e.g. Tech Corp"
                         required
                       />
                     </div>
@@ -315,19 +328,6 @@ function Jobs() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">Company Details *</label>
-                    <textarea
-                      name="companydetails"
-                      value={formData.companydetails}
-                      onChange={handleInputChange}
-                      rows="2"
-                      className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:text-white resize-none"
-                      placeholder="About your company..."
-                      required
-                    />
-                  </div>
-
-                  <div>
                     <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">Responsibilities *</label>
                     <textarea
                       name="responsibilities"
@@ -363,11 +363,9 @@ function Jobs() {
                         setFormData({
                           title: "",
                           description: "",
-                          company: "",
                           location: "",
                           salary: "",
                           jobType: "Full-time",
-                          companydetails: "",
                           responsibilities: "",
                           skills: "",
                           experience: ""
@@ -507,23 +505,57 @@ function Jobs() {
                     <div className="flex flex-wrap items-center justify-between gap-4 mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
                       <span className={`inline-flex items-center px-3 py-1 rounded-md text-xs font-semibold ${job.status === 'active'
                         ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
-                        : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-600'
+                        : job.status === 'inactive'
+                          ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800'
+                          : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-600'
                         }`}>
-                        {job.status === 'active' ? 'Active' : 'Closed'}
+                        {job.status === 'active' ? 'Active' : job.status === 'inactive' ? 'Inactive' : 'Closed'}
                       </span>
 
                       <div className="flex gap-3">
                         <button
                           onClick={() => navigate(`/employee/jobs/${job._id}`)}
-                          className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white"
+                          className="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors text-sm font-medium"
+                        >
+                          View Details
+                        </button>
+                        <button
+                          onClick={() => {
+                            setEditMode(true);
+                            setEditingJobId(job._id);
+                            setFormData({
+                              title: job.title,
+                              description: job.description,
+                              location: job.location,
+                              salary: job.salary,
+                              jobType: job.jobType,
+                              responsibilities: job.responsibilities || "",
+                              skills: job.skills?.join(", ") || "",
+                              experience: job.experience
+                            });
+                            setShowForm(true);
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
+                          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
                         >
                           Edit
                         </button>
+                        {job.status !== 'closed' && (
+                          <button
+                            onClick={() => handleToggleStatus(job._id, job.status)}
+                            className={`px-4 py-2 rounded-lg transition-colors text-sm font-medium ${job.status === 'active'
+                              ? 'bg-amber-600 text-white hover:bg-amber-700'
+                              : 'bg-emerald-600 text-white hover:bg-emerald-700'
+                              }`}
+                          >
+                            {job.status === 'active' ? 'Mark Inactive' : 'Mark Active'}
+                          </button>
+                        )}
                         <button
-                          onClick={() => navigate(`/employee/jobs/${job._id}/applications`)}
-                          className="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700"
+                          onClick={() => handleDeleteJob(job._id)}
+                          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
                         >
-                          View Applicants
+                          Delete
                         </button>
                       </div>
                     </div>
@@ -678,12 +710,36 @@ function Jobs() {
                     </button>
                   </div>
 
-                  {/* Company & Location */}
-                  <div className="flex items-center gap-2 text-base text-slate-600 dark:text-slate-400 mb-4">
-                    <span>{job.company}</span>
-                    <span>•</span>
-                    <span>{job.location}</span>
+                  {/* Company & Recruiter Info */}
+                  <div className="flex items-center gap-3 mb-4">
+                    {job.profile?.companyLogo ? (
+                      <img
+                        src={job.profile.companyLogo}
+                        alt={job.profile.companyName || job.company}
+                        className="w-12 h-12 rounded-lg object-cover border-2 border-slate-200 dark:border-slate-700"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center border-2 border-indigo-200 dark:border-indigo-800">
+                        <span className="text-indigo-600 dark:text-indigo-400 font-bold text-lg">
+                          {(job.profile?.companyName || job.company)?.[0]?.toUpperCase() || 'C'}
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex-1">
+                      <p className="font-semibold text-slate-900 dark:text-white text-base">
+                        {job.profile?.companyName || job.company}
+                      </p>
+                      <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                        <MapPin className="w-3.5 h-3.5" />
+                        {job.location}
+                      </p>
+                    </div>
                   </div>
+
+                  {/* Posted By */}
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+                    Posted by <span className="font-medium text-slate-600 dark:text-slate-300">{job.postedBy?.fullname || 'Recruiter'}</span>
+                  </p>
 
                   {/* Divider */}
                   <div className="border-t border-slate-200 dark:border-slate-700 my-4"></div>

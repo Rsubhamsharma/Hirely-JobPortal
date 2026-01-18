@@ -149,17 +149,35 @@ function JobDetail() {
                 <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-8 mb-6">
                     <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
                         <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${job.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                                    }`}>
-                                    {job.status === 'active' ? '● Active' : '● Closed'}
-                                </span>
-                                <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">
-                                    {job.jobType}
-                                </span>
+                            {/* Company Logo and Info */}
+                            <div className="flex items-center gap-4 mb-4">
+                                {job.profile?.companyLogo ? (
+                                    <img
+                                        src={job.profile.companyLogo}
+                                        alt={job.profile.companyName || job.company}
+                                        className="w-16 h-16 rounded-lg object-cover border-2 border-slate-200 dark:border-slate-700"
+                                    />
+                                ) : (
+                                    <div className="w-16 h-16 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center border-2 border-indigo-200 dark:border-indigo-800">
+                                        <span className="text-indigo-600 dark:text-indigo-400 font-bold text-2xl">
+                                            {(job.profile?.companyName || job.company)?.[0]?.toUpperCase() || 'C'}
+                                        </span>
+                                    </div>
+                                )}
+                                <div>
+                                    <div className="flex items-center gap-3 mb-2">
+                                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${job.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                                            }`}>
+                                            {job.status === 'active' ? '● Active' : '● Closed'}
+                                        </span>
+                                        <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">
+                                            {job.jobType}
+                                        </span>
+                                    </div>
+                                    <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-1">{job.title}</h1>
+                                    <p className="text-xl text-slate-600 dark:text-slate-300 font-medium">{job.profile?.companyName || job.company}</p>
+                                </div>
                             </div>
-                            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">{job.title}</h1>
-                            <p className="text-xl text-slate-600 dark:text-slate-300 font-medium">{job.company}</p>
                         </div>
 
                         {/* Apply Button */}

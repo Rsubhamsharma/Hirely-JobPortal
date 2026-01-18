@@ -34,7 +34,11 @@ const getCompetitionById = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Invalid Id")
     }
     const competition = await competitionsSchema.findById(competitionId)
-        .populate("organizer", "fullname email role")
+        .populate({
+            path: "organizer",
+            select: "fullname email role",
+            populate: { path: "profile", select: "profileimage" }
+        })
         .populate("applicants", "fullname email")
     const isRegistered = competition.applicants.some(
         (applicant) => applicant._id.toString() === req.user._id.toString()
@@ -70,7 +74,11 @@ const updateCompetition = asyncHandler(async (req, res) => {
                 prize
 
             }
-        }, { new: true }).populate("organizer", "fullname email role ")
+        }, { new: true }).populate({
+            path: "organizer",
+            select: "fullname email role",
+            populate: { path: "profile", select: "profileimage" }
+        })
     if (!competition) {
         throw new ApiError(404, "Competition not found")
     }
@@ -94,7 +102,11 @@ const deleteCompetition = asyncHandler(async (req, res) => {
     if (!mongoose.isValidObjectId(competitionId)) {
         throw new ApiError(400, "Invalid competiton Id")
     }
-    const competition = await competitionsSchema.findByIdAndDelete(competitionId).populate("organizer", "fullname email role ")
+    const competition = await competitionsSchema.findByIdAndDelete(competitionId).populate({
+        path: "organizer",
+        select: "fullname email role",
+        populate: { path: "profile", select: "profileimage" }
+    })
     if (!competition) throw new ApiError(404, "Competiton not found")
 
     // Emit real-time update
@@ -103,7 +115,13 @@ const deleteCompetition = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, {}, "Competition deleted successfully"))
 })
 const getAllCompetitions = asyncHandler(async (req, res) => {
-    const competitions = await competitionsSchema.find().populate("organizer", "fullname email role ")
+    const competitions = await competitionsSchema.find()
+        .sort({ createdAt: -1 }) // Most recent first
+        .populate({
+            path: "organizer",
+            select: "fullname email role",
+            populate: { path: "profile", select: "profileimage" }
+        })
     if (competitions.length === 0) {
         throw new ApiError(404, "Competitions not found or no competitions available ")
     }
@@ -138,7 +156,11 @@ const RegisterCompetition = asyncHandler(async (req, res) => {
         competitionId,
         { $addToSet: { applicants: req.user._id } },
         { new: true }
-    ).populate("organizer", "fullname email role")
+    ).populate({
+        path: "organizer",
+        select: "fullname email role",
+        populate: { path: "profile", select: "profileimage" }
+    })
 
     // Send confirmation email (async, don't block response)
     sendCompetitionRegistrationEmail(req.user, competition).catch(err =>
@@ -158,7 +180,11 @@ const getRegisteredApplicants = asyncHandler(async (req, res) => {
     }
 
     const competition = await competitionsSchema.findById(competitionId)
-        .populate("organizer", "fullname email role")
+        .populate({
+            path: "organizer",
+            select: "fullname email role",
+            populate: { path: "profile", select: "profileimage" }
+        })
         .populate("applicants", "fullname email")
 
     if (!competition) {

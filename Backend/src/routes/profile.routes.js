@@ -19,7 +19,7 @@ import { upload } from "../middlewares/multer.middleware.js";
 const router = Router();
 
 // Base profile routes
-router.put("/me", verifyjwt, upload.fields([{ name: "resume", maxCount: 1 }, { name: "profileimage", maxCount: 1 }]), createOrUpdateProfile)
+router.put("/me", verifyjwt, upload.fields([{ name: "resume", maxCount: 1 }, { name: "profileimage", maxCount: 1 }, { name: "companyLogo", maxCount: 1 }]), createOrUpdateProfile)
 router.get("/me", verifyjwt, getProfile)
 router.get("/user/:userId", verifyjwt, getProfileById)
 router.post("/me/resume", verifyjwt, upload.single("resume"), uploadResume);

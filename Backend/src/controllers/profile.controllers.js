@@ -7,7 +7,7 @@ import User from "../models/user.schema.js";
 import mongoose from "mongoose";
 
 const createOrUpdateProfile = asyncHandler(async (req, res) => {
-    const { phoneNumber, profilesummary, skills, experience, education, portfolio, github, linkedin, profileimage, resume } = req.body
+    const { phoneNumber, profilesummary, skills, experience, education, portfolio, github, linkedin, profileimage, resume, companyName, companyLogo, aboutCompany } = req.body
     const updates = {}
     const isValidPhone = p => {
         const cleaned = String(p).replace(/\s+/g, "");
@@ -27,26 +27,31 @@ const createOrUpdateProfile = asyncHandler(async (req, res) => {
 
         }
     }
-    if (phoneNumber !== undefined && phoneNumber != "") {
-        if (!isValidPhone(phoneNumber)) {
-            throw new ApiError(400, "Invalid phone number")
+    if (phoneNumber !== undefined) {
+        if (phoneNumber === "") {
+            updates.phoneNumber = ""; // Allow clearing
+        } else if (!isValidPhone(phoneNumber)) {
+            throw new ApiError(400, "Invalid phone number");
+        } else {
+            updates.phoneNumber = String(phoneNumber).replace(/\s+/g, "").trim();
         }
-        updates.phoneNumber = String(phoneNumber).replace(/\s+/g, "").trim();
     }
     const urlField = { portfolio, github, linkedin }
     for (const [field, value] of Object.entries(urlField)) {
-        if (value != undefined && value != "") {
-            const url = normalizeUrl(value)
-            if (!url) {
-                throw new ApiError(400, `Invalid ${field} URL`)
+        if (value !== undefined) {
+            if (value === "") {
+                updates[field] = ""; // Allow clearing
+            } else {
+                const url = normalizeUrl(value);
+                if (!url) {
+                    throw new ApiError(400, `Invalid ${field} URL`);
+                }
+                updates[field] = url;
             }
-            updates[field] = url
-
         }
     }
-    if (profilesummary != undefined && profilesummary != "") {
-        updates.profilesummary = profilesummary
-
+    if (profilesummary !== undefined) {
+        updates.profilesummary = profilesummary; // Allow empty string
     }
 
     if (req.files?.profileimage?.[0]) {
@@ -68,6 +73,36 @@ const createOrUpdateProfile = asyncHandler(async (req, res) => {
         const n = normalizeUrl(profileimage)
         if (!n) throw new ApiError(400, "Invalid profile image URL")
         updates.profileimage = n
+    }
+
+    // Company fields for recruiters
+    if (companyName !== undefined && companyName !== "") {
+        updates.companyName = companyName.trim();
+    }
+
+    if (aboutCompany !== undefined && aboutCompany !== "") {
+        updates.aboutCompany = aboutCompany.trim();
+    }
+
+    // Handle company logo upload
+    if (req.files?.companyLogo?.[0]) {
+        try {
+            const uploadCompanyLogo = await uploadCloudinary(req.files.companyLogo[0].buffer, {
+                folder: "Finder/images",
+                resource_type: "auto"
+            });
+            if (!uploadCompanyLogo?.secure_url) {
+                throw new ApiError(500, "Company logo upload failed");
+            }
+            updates.companyLogo = uploadCompanyLogo.secure_url;
+        } catch (err) {
+            throw new ApiError(500, err.message || "Company logo upload failed");
+        }
+    }
+    else if (companyLogo !== undefined && companyLogo !== "") {
+        const n = normalizeUrl(companyLogo);
+        if (!n) throw new ApiError(400, "Invalid company logo URL");
+        updates.companyLogo = n;
     }
 
 
@@ -122,8 +157,10 @@ const createOrUpdateProfile = asyncHandler(async (req, res) => {
         context: "query"
     }).populate("user", "fullname email role")
 
-
-
+    // Link profile to user if not already linked
+    if (profile) {
+        await User.findByIdAndUpdate(req.user._id, { profile: profile._id });
+    }
 
     res.status(200).json(new ApiResponse(200, profile, "Profile created or updated successfully"))
 

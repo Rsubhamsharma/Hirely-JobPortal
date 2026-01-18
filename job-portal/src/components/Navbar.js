@@ -1,6 +1,8 @@
 import { useAuth } from "../context/AuthContext";
 import { useState, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { useCallback } from "react";
+
 import api from "../api/axios";
 import { useSocket } from "../context/SocketContext";
 import ThemeToggle from "./ThemeToggle";
@@ -10,36 +12,39 @@ function Navbar() {
   const [unreadCount, setUnreadCount] = useState(0);
   const { user, logout } = useAuth();
   const { socket } = useSocket();
-
-  useEffect(() => {
-    if (user) {
-      fetchUnreadCount();
-      const interval = setInterval(fetchUnreadCount, 30000);
-      return () => clearInterval(interval);
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (socket) {
-      const handleNewMessage = () => fetchUnreadCount();
-      const handleMessagesRead = () => fetchUnreadCount();
-      socket.on('new_message', handleNewMessage);
-      socket.on('messages_read', handleMessagesRead);
-      return () => {
-        socket.off('new_message', handleNewMessage);
-        socket.off('messages_read', handleMessagesRead);
-      };
-    }
-  }, [socket]);
-
-  const fetchUnreadCount = async () => {
+  const fetchUnreadCount = useCallback(async () => {
     try {
       const res = await api.get('/messages/unread-count');
       if (res.data.success) {
         setUnreadCount(res.data.data.unreadCount || 0);
       }
     } catch (error) { }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (!user) return;
+
+    fetchUnreadCount();
+    const interval = setInterval(fetchUnreadCount, 30000);
+
+    return () => clearInterval(interval);
+  }, [user, fetchUnreadCount]);
+
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on('new_message', fetchUnreadCount);
+    socket.on('messages_read', fetchUnreadCount);
+
+    return () => {
+      socket.off('new_message', fetchUnreadCount);
+      socket.off('messages_read', fetchUnreadCount);
+    };
+  }, [socket, fetchUnreadCount]);
+
+
+
 
   return (
     <nav className="sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-sm">

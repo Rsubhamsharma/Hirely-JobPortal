@@ -3,6 +3,7 @@ import api from "../../api/axios";
 import Navbar from "../../components/Navbar";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
+import RecruiterDashboard from "./RecruiterDashboard";
 
 // InputGroup component defined OUTSIDE to prevent re-creation on every render
 const InputGroup = ({ label, name, type = "text", placeholder, value, onChange, options }) => (
@@ -153,10 +154,8 @@ function UserDashboard() {
 
       toast.success(res.data.message || "Profile updated successfully!", { id: loadingToast });
 
-      // Recalculate progress
-      if (res.data.data) {
-        calculateProgress(res.data.data);
-      }
+      // Fetch fresh profile data to recalculate progress
+      await fetchProfile();
     } catch (err) {
       console.error("Error saving profile:", err);
       toast.error(err.response?.data?.message || "Error updating profile.", { id: loadingToast });
@@ -196,6 +195,11 @@ function UserDashboard() {
       toast.error(err.response?.data?.message || "Failed to update name");
     }
   };
+
+  // Redirect recruiters to their specific dashboard (after all hooks)
+  if (user?.role === "recruiter") {
+    return <RecruiterDashboard />;
+  }
 
   if (loading) {
     return (

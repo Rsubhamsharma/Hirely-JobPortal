@@ -8,17 +8,17 @@ const profileSchema = new mongoose.Schema(
       required: true,
       unique: true, // Ensures one profile per user
     },
-    profilesummary:{
-      type:String,
-      default:""
+    profilesummary: {
+      type: String,
+      default: ""
     },
-    profileimage:{
-      type:String,
-      default:""
+    profileimage: {
+      type: String,
+      default: ""
     },
     phoneNumber: {
       type: String,
-      default:""
+      default: ""
     },
     // firstName and lastName are removed to avoid redundancy with User model's fullname
     resume: {
@@ -52,20 +52,33 @@ const profileSchema = new mongoose.Schema(
       ],
       default: [],
     },
-    portfolio:{
-      type:String,
-      default:""
+    portfolio: {
+      type: String,
+      default: ""
     },
-    github:{
-      type:String,
-      default:""
+    github: {
+      type: String,
+      default: ""
     },
-    linkedin:{
-      type:String,
-      default:""
+    linkedin: {
+      type: String,
+      default: ""
+    },
+    // Recruiter-specific fields
+    companyName: {
+      type: String,
+      default: ""
+    },
+    companyLogo: {
+      type: String,  // Cloudinary URL
+      default: ""
+    },
+    aboutCompany: {
+      type: String,
+      default: ""
     }
-    
-    
+
+
   },
   {
     timestamps: true, // Adds createdAt and updatedAt fields
