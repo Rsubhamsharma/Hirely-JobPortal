@@ -2,12 +2,12 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../api/axios";
 import Navbar from "../../components/Navbar";
-import { useAuth } from "../../context/AuthContext";
+// import { useAuth } from "../../context/AuthContext";
 import { StatsCardSkeleton, ApplicationCardSkeleton } from "../../components/Skeleton";
 import toast from "react-hot-toast";
 
 function MyApplications() {
-    const { user } = useAuth();
+    // const { user } = useAuth();
     const navigate = useNavigate();
     const [applications, setApplications] = useState([]);
     const [loading, setLoading] = useState(true);

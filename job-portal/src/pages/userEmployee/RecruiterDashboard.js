@@ -56,7 +56,7 @@ function RecruiterDashboard() {
 
     useEffect(() => {
         fetchProfile();
-    }, []);
+    },);
 
     const fetchProfile = async () => {
         try {

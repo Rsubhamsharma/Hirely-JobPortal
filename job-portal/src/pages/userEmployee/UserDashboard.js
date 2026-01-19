@@ -64,7 +64,7 @@ function UserDashboard() {
 
   useEffect(() => {
     fetchProfile();
-  }, []);
+  },);
 
   const fetchProfile = async () => {
     try {
