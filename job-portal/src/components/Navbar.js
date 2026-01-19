@@ -21,25 +21,32 @@ function Navbar() {
     } catch (error) { }
   }, []);
 
+  // Fetch unread count once on mount
   useEffect(() => {
     if (!user) return;
-
     fetchUnreadCount();
-    const interval = setInterval(fetchUnreadCount, 30000);
-
-    return () => clearInterval(interval);
   }, [user, fetchUnreadCount]);
 
-
+  // Listen for real-time unread message events
   useEffect(() => {
     if (!socket) return;
 
-    socket.on('new_message', fetchUnreadCount);
-    socket.on('messages_read', fetchUnreadCount);
+    // Increment unread count when new message arrives
+    const handleUnreadMessage = () => {
+      setUnreadCount(prev => prev + 1);
+    };
+
+    // Reset unread count when messages are read
+    const handleMessagesRead = () => {
+      fetchUnreadCount();
+    };
+
+    socket.on('unread_message', handleUnreadMessage);
+    socket.on('messages_read', handleMessagesRead);
 
     return () => {
-      socket.off('new_message', fetchUnreadCount);
-      socket.off('messages_read', fetchUnreadCount);
+      socket.off('unread_message', handleUnreadMessage);
+      socket.off('messages_read', handleMessagesRead);
     };
   }, [socket, fetchUnreadCount]);
 

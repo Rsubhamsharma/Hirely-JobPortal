@@ -315,7 +315,7 @@ function JobDetail() {
                                     name="phone"
                                     value={applicationForm.phone}
                                     onChange={handleInputChange}
-                                    className="w-full p-3 border border-slate-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                    className="w-full dark:bg-slate-700 p-3 border border-slate-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                                     placeholder="+91 9876543210"
                                     required
                                 />
@@ -329,7 +329,7 @@ function JobDetail() {
                                     type="file"
                                     accept=".pdf,.doc,.docx"
                                     onChange={handleFileChange}
-                                    className="w-full p-3 border border-slate-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-700 file:font-medium hover:file:bg-blue-100"
+                                    className="w-full dark:bg-slate-700 p-3 border border-slate-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-700 file:font-medium hover:file:bg-blue-100"
                                     required
                                 />
                             </div>
@@ -343,7 +343,7 @@ function JobDetail() {
                                     name="expectedSalary"
                                     value={applicationForm.expectedSalary}
                                     onChange={handleInputChange}
-                                    className="w-full p-3 border border-slate-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                    className="w-full dark:bg-slate-700 p-3 border border-slate-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                                     placeholder="e.g. 1200000"
                                 />
                             </div>
@@ -357,7 +357,7 @@ function JobDetail() {
                                     name="experience"
                                     value={applicationForm.experience}
                                     onChange={handleInputChange}
-                                    className="w-full p-3 border border-slate-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                    className="w-full dark:bg-slate-700 p-3 border border-slate-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                                     placeholder="e.g. 3 years"
                                 />
                             </div>
@@ -371,7 +371,7 @@ function JobDetail() {
                                     value={applicationForm.coverLetter}
                                     onChange={handleInputChange}
                                     rows="4"
-                                    className="w-full p-3 border border-slate-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"
+                                    className="w-full dark:bg-slate-700 p-3 border border-slate-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"
                                     placeholder="Tell us why you're a great fit for this role..."
                                 />
                             </div>

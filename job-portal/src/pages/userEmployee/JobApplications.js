@@ -2,13 +2,12 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import api from "../../api/axios";
 import Navbar from "../../components/Navbar";
-import { useAuth } from "../../context/AuthContext";
+
 import { StatsCardSkeleton, ApplicationCardSkeleton } from "../../components/Skeleton";
 import toast from "react-hot-toast";
 
 function JobApplications() {
     const { jobId } = useParams();
-    const { user } = useAuth();
     const navigate = useNavigate();
 
     const [job, setJob] = useState(null);

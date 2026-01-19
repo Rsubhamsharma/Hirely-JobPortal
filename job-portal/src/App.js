@@ -11,6 +11,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ScrollToTop from "./components/ScrollToTop";
+import ProfileRouter from "./components/ProfileRouter";
 
 // Lazy load pages for better performance
 const Home = lazy(() => import("./pages/Home"));
@@ -74,9 +75,11 @@ function AppWrapper() {
 
                 <Route path="/employee/profile" element={
                   <ProtectedRoute>
-                    <UserDashboard />
+                    <ProfileRouter />
                   </ProtectedRoute>
                 } />
+
+
                 <Route path="/employee/internships" element={
                   <ProtectedRoute>
                     <Internships />

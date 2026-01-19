@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
 import RecruiterDashboard from "./RecruiterDashboard";
 
-// InputGroup component defined OUTSIDE to prevent re-creation on every render
+
 const InputGroup = ({ label, name, type = "text", placeholder, value, onChange, options }) => (
   <div className="flex flex-col">
     <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">{label}</label>
@@ -38,19 +38,14 @@ const InputGroup = ({ label, name, type = "text", placeholder, value, onChange, 
   </div>
 );
 
+
 function UserDashboard() {
   const { user, refreshUser } = useAuth();
+
+  // Redirect recruiters to their specific dashboard BEFORE any hooks run
+
+
   const formRef = useRef(null);
-
-  // Form state matching the backend profile schema
-  const [formData, setFormData] = useState({
-    phoneNumber: "",
-    profilesummary: "",
-    portfolio: "",
-    github: "",
-    linkedin: "",
-  });
-
   const [profileImage, setProfileImage] = useState(null);
   const [profileImagePreview, setProfileImagePreview] = useState("");
   const [resume, setResume] = useState(null);
@@ -60,11 +55,26 @@ function UserDashboard() {
   const [profileProgress, setProfileProgress] = useState(0);
   const [editingName, setEditingName] = useState(false);
   const [newName, setNewName] = useState("");
-  const [showDeletePhotoModal, setShowDeletePhotoModal] = useState(false);
+  const [showDeletePhotoModal, setShowDeletePhotoModal] = useState(false)
+
+  const [formData, setFormData] = useState({
+    phoneNumber: "",
+    profilesummary: "",
+    portfolio: "",
+    github: "",
+    linkedin: "",
+  });
+
+
 
   useEffect(() => {
     fetchProfile();
-  },);
+    // if (user?.role === "recruiter") {
+    //   return <RecruiterDashboard />;
+    // }
+  }, []); // Only run once on mount
+  // InputGroup component defined OUTSIDE to prevent re-creation on every render
+
 
   const fetchProfile = async () => {
     try {
@@ -195,11 +205,6 @@ function UserDashboard() {
       toast.error(err.response?.data?.message || "Failed to update name");
     }
   };
-
-  // Redirect recruiters to their specific dashboard (after all hooks)
-  if (user?.role === "recruiter") {
-    return <RecruiterDashboard />;
-  }
 
   if (loading) {
     return (

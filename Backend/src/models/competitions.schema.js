@@ -26,7 +26,11 @@ const competitionsSchema = mongoose.Schema(
         applicants: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: "user"
-        }]
+        }],
+        profile: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Profile"
+        }
 
     }
 )

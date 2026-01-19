@@ -381,27 +381,39 @@ const Competitions = () => {
                         {comp.title}
                       </h3>
 
-                      {/* Organizer Info with Profile Picture */}
+                      {/* Organizer Info with Profile Picture and Company Logo */}
                       <div className="flex items-center gap-2.5 mb-4">
-                        {comp.organizer?.profile?.profileimage ? (
+                        {/* Company Logo or Profile Image */}
+                        {comp.profile?.companyLogo ? (
                           <img
-                            src={comp.organizer.profile.profileimage}
-                            alt={comp.organizer.fullname}
+                            src={comp.profile.companyLogo}
+                            alt={comp.profile.companyName || "Company"}
+                            className="w-9 h-9 rounded-full object-cover border-2 border-blue-200 dark:border-blue-800"
+                          />
+                        ) : comp.profile?.profileimage ? (
+                          <img
+                            src={comp.profile.profileimage}
+                            alt={comp.organizer?.fullname}
                             className="w-9 h-9 rounded-full object-cover border-2 border-blue-200 dark:border-blue-800"
                           />
                         ) : (
                           <div className="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center border-2 border-blue-200 dark:border-blue-800">
                             <span className="text-blue-600 dark:text-blue-400 font-semibold text-sm">
-                              {comp.organizer?.fullname?.[0]?.toUpperCase() || 'O'}
+                              {comp.profile?.companyName?.[0]?.toUpperCase() || comp.organizer?.fullname?.[0]?.toUpperCase() || 'O'}
                             </span>
                           </div>
                         )}
-                        <div className="flex items-center gap-1.5 flex-1">
+                        <div className="flex flex-col flex-1">
                           <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                            {comp.organizer?.fullname || comp.organizer?.email || "Unknown"}
+                            {comp.profile?.companyName || comp.organizer?.fullname || comp.organizer?.email || "Unknown"}
                           </span>
-                          <CheckCircle2 className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                          {comp.profile?.companyName && (
+                            <span className="text-xs text-slate-500 dark:text-slate-400">
+                              by {comp.organizer?.fullname || comp.organizer?.email}
+                            </span>
+                          )}
                         </div>
+                        <CheckCircle2 className="w-4 h-4 text-blue-500 flex-shrink-0" />
                       </div>
 
                       {/* Divider */}

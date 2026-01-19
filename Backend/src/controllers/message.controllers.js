@@ -69,8 +69,21 @@ export const sendMessage = asyncHandler(async (req, res) => {
 
     await conversation.save();
 
-    // Emit real-time update
+    // Emit real-time update to conversation room
     emitToConversation(conversationId, "new_message", message);
+
+    // Emit unread_message event to receiver only (not to sender)
+    const { notifyUser } = await import("../socket/socket.js");
+    conversation.participants.forEach(participantId => {
+        if (participantId.toString() !== senderId.toString()) {
+            notifyUser(participantId, "unread_message", {
+                conversationId: conversationId,
+                senderId: senderId,
+                messageId: message._id,
+                timestamp: message.createdAt
+            });
+        }
+    });
 
     return res.status(201).json(
         new ApiResponse(201, message, "Message sent successfully")

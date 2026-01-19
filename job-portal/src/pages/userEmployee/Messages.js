@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
@@ -24,11 +24,7 @@ const Messages = () => {
     const [conversationToDelete, setConversationToDelete] = useState(null);
 
     // Fetch all conversations
-    useEffect(() => {
-        fetchConversations();
-    }, []);
-
-    const fetchConversations = async () => {
+    const fetchConversations = useCallback(async () => {
         try {
             const response = await api.get('/messages/conversations');
             setConversations(response.data.data || []);
@@ -47,15 +43,11 @@ const Messages = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [conversationIdFromUrl]);
 
-    // Fetch messages when conversation changes
     useEffect(() => {
-        if (activeConversation) {
-            fetchMessages(activeConversation);
-            markAsRead(activeConversation);
-        }
-    }, [activeConversation]);
+        fetchConversations();
+    }, [fetchConversations]);
 
     const fetchMessages = async (convId) => {
         setMessagesLoading(true);
@@ -69,7 +61,7 @@ const Messages = () => {
         }
     };
 
-    const markAsRead = async (convId) => {
+    const markAsRead = useCallback(async (convId) => {
         try {
             await api.post(`/messages/${convId}/mark-read`);
             // Refresh conversations to update unread counts
@@ -77,7 +69,15 @@ const Messages = () => {
         } catch (error) {
             console.error('Failed to mark as read:', error);
         }
-    };
+    }, [fetchConversations]);
+
+    // Fetch messages when conversation changes
+    useEffect(() => {
+        if (activeConversation) {
+            fetchMessages(activeConversation);
+            markAsRead(activeConversation);
+        }
+    }, [activeConversation, markAsRead]);
 
     // Socket.IO real-time message receiving
     useEffect(() => {
@@ -102,7 +102,7 @@ const Messages = () => {
         return () => {
             socket.off('new_message', handleNewMessage);
         };
-    }, [socket, activeConversation]);
+    }, [socket, activeConversation, fetchConversations]);
 
     // Send a message
     const handleSendMessage = async (e) => {

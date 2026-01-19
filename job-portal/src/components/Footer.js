@@ -39,15 +39,15 @@ function Footer() {
             <ul className="space-y-4 text-slate-400">
               <li className="flex items-start gap-3">
                 <span>📧</span>
-                <a href="mailto:support@jobportal.com" className="hover:text-white transition-colors">support@jobportal.com</a>
+                <a href="mailto:support@hirely.com" className="hover:text-white transition-colors">support@hirely.com</a>
               </li>
               <li className="flex items-start gap-3">
                 <span>📞</span>
-                <span>+91 123 456 7890</span>
+                <span>+91 8250629070</span>
               </li>
               <li className="flex items-start gap-3">
                 <span>📍</span>
-                <span>123 Tech Park, Innovation City, India</span>
+                <span>Chennai , India</span>
               </li>
             </ul>
           </div>

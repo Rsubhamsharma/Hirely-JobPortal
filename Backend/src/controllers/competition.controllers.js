@@ -5,7 +5,8 @@ import competitionsSchema from "../models/competitions.schema.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { application } from "express";
+import Profile from "../models/profile.schema.js";
+
 import { getIO } from "../socket/socket.js";
 import { sendCompetitionRegistrationEmail, sendCompetitionClosedEmail } from "../services/emailService.js";
 
@@ -15,10 +16,29 @@ const createCompetiton = asyncHandler(async (req, res) => {
     if ([title, date, prize].some((field) => field?.trim() === "")) {
         throw new ApiError(400, "all fields are required ")
     }
-    const competition = await competitionsSchema.create({ title, date, prize, status, organizer: req.user._id })
+
+    // Check if user has a profile
+    if (!req.user.profile) {
+        throw new ApiError(400, "Please create a profile before creating a competition. If you have a profile, try logging out and logging back in.")
+    }
+
+    console.log("Creating competition with profile:", req.user.profile);
+
+    const competition = await competitionsSchema.create(
+        {
+            title,
+            date,
+            prize,
+            status,
+            organizer: req.user._id,
+            profile: req.user.profile
+        }
+    )
     if (!competition) {
         throw new ApiError(500, "something went wrong while creating competition  ")
     }
+
+    console.log("Competition created:", competition);
 
     // Emit real-time update
     const io = getIO();
@@ -36,8 +56,11 @@ const getCompetitionById = asyncHandler(async (req, res) => {
     const competition = await competitionsSchema.findById(competitionId)
         .populate({
             path: "organizer",
-            select: "fullname email role",
-            populate: { path: "profile", select: "profileimage" }
+            select: "fullname email role"
+        })
+        .populate({
+            path: "profile",
+            select: "profileimage companyLogo companyName"
         })
         .populate("applicants", "fullname email")
     const isRegistered = competition.applicants.some(
@@ -61,7 +84,19 @@ const updateCompetition = asyncHandler(async (req, res) => {
     }
 
     // Get the old competition to check if status is changing to 'closed'
-    const oldCompetition = await competitionsSchema.findById(competitionId).populate("applicants", "fullname email");
+    const oldCompetition = await competitionsSchema.findById(competitionId)
+        .populate({
+            path: "organizer",
+            select: "fullname email role"
+        })
+        .populate({
+            path: "profile",
+            select: "profileimage companyLogo companyName"
+        })
+        .populate({
+            path: "applicants",
+            select: "fullname email"
+        });
     const wasOpen = oldCompetition && oldCompetition.status !== "closed";
     const isClosing = status === "closed" && wasOpen;
 
@@ -76,8 +111,11 @@ const updateCompetition = asyncHandler(async (req, res) => {
             }
         }, { new: true }).populate({
             path: "organizer",
-            select: "fullname email role",
-            populate: { path: "profile", select: "profileimage" }
+            select: "fullname email role"
+        })
+        .populate({
+            path: "profile",
+            select: "profileimage companyLogo companyName"
         })
     if (!competition) {
         throw new ApiError(404, "Competition not found")
@@ -102,11 +140,15 @@ const deleteCompetition = asyncHandler(async (req, res) => {
     if (!mongoose.isValidObjectId(competitionId)) {
         throw new ApiError(400, "Invalid competiton Id")
     }
-    const competition = await competitionsSchema.findByIdAndDelete(competitionId).populate({
-        path: "organizer",
-        select: "fullname email role",
-        populate: { path: "profile", select: "profileimage" }
-    })
+    const competition = await competitionsSchema.findByIdAndDelete(competitionId)
+        .populate({
+            path: "organizer",
+            select: "fullname email role"
+        })
+        .populate({
+            path: "profile",
+            select: "profileimage companyLogo companyName"
+        })
     if (!competition) throw new ApiError(404, "Competiton not found")
 
     // Emit real-time update
@@ -119,8 +161,11 @@ const getAllCompetitions = asyncHandler(async (req, res) => {
         .sort({ createdAt: -1 }) // Most recent first
         .populate({
             path: "organizer",
-            select: "fullname email role",
-            populate: { path: "profile", select: "profileimage" }
+            select: "fullname email role"
+        })
+        .populate({
+            path: "profile",
+            select: "profileimage companyLogo companyName"
         })
     if (competitions.length === 0) {
         throw new ApiError(404, "Competitions not found or no competitions available ")
@@ -142,7 +187,15 @@ const RegisterCompetition = asyncHandler(async (req, res) => {
     }
 
     // Check if already registered
-    const existingCompetition = await competitionsSchema.findById(competitionId).populate("organizer", "fullname email")
+    const existingCompetition = await competitionsSchema.findById(competitionId)
+        .populate({
+            path: "organizer",
+            select: "fullname email role"
+        })
+        .populate({
+            path: "profile",
+            select: "profileimage companyLogo companyName"
+        })
     if (!existingCompetition) {
         throw new ApiError(404, "Competition not found")
     }
@@ -158,9 +211,12 @@ const RegisterCompetition = asyncHandler(async (req, res) => {
         { new: true }
     ).populate({
         path: "organizer",
-        select: "fullname email role",
-        populate: { path: "profile", select: "profileimage" }
+        select: "fullname email role"
     })
+        .populate({
+            path: "profile",
+            select: "profileimage companyLogo companyName"
+        })
 
     // Send confirmation email (async, don't block response)
     sendCompetitionRegistrationEmail(req.user, competition).catch(err =>
@@ -182,8 +238,11 @@ const getRegisteredApplicants = asyncHandler(async (req, res) => {
     const competition = await competitionsSchema.findById(competitionId)
         .populate({
             path: "organizer",
-            select: "fullname email role",
-            populate: { path: "profile", select: "profileimage" }
+            select: "fullname email role"
+        })
+        .populate({
+            path: "profile",
+            select: "profileimage companyLogo companyName"
         })
         .populate("applicants", "fullname email")
 

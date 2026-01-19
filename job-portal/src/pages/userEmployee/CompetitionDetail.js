@@ -173,13 +173,33 @@ function CompetitionDetail() {
                 <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-8 mb-6">
                     <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Organizer</h2>
                     <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-2xl font-bold">
-                            {competition.organizer?.fullname?.[0] || "O"}
-                        </div>
+                        {/* Company Logo or Profile Image */}
+                        {competition.profile?.companyLogo ? (
+                            <img
+                                src={competition.profile.companyLogo}
+                                alt={competition.profile.companyName || "Company"}
+                                className="w-16 h-16 rounded-full object-cover border-4 border-blue-200 dark:border-blue-800"
+                            />
+                        ) : competition.profile?.profileimage ? (
+                            <img
+                                src={competition.profile.profileimage}
+                                alt={competition.organizer?.fullname}
+                                className="w-16 h-16 rounded-full object-cover border-4 border-blue-200 dark:border-blue-800"
+                            />
+                        ) : (
+                            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-2xl font-bold border-4 border-blue-200 dark:border-blue-800">
+                                {competition.profile?.companyName?.[0]?.toUpperCase() || competition.organizer?.fullname?.[0] || "O"}
+                            </div>
+                        )}
                         <div>
                             <p className="text-lg font-semibold text-slate-900 dark:text-white">
-                                {competition.organizer?.fullname || "Unknown Organizer"}
+                                {competition.profile?.companyName || competition.organizer?.fullname || "Unknown Organizer"}
                             </p>
+                            {competition.profile?.companyName && (
+                                <p className="text-sm text-slate-500 dark:text-slate-400">
+                                    by {competition.organizer?.fullname || competition.organizer?.email}
+                                </p>
+                            )}
                             <p className="text-slate-500 dark:text-slate-400">{competition.organizer?.email}</p>
                             {competition.organizer?.role && (
                                 <span className="inline-block mt-1 px-2 py-0.5 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded text-xs font-medium capitalize">
