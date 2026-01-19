@@ -17,7 +17,6 @@ import ProfileRouter from "./components/ProfileRouter";
 const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
 const Signup = lazy(() => import("./pages/Signup"));
-const UserDashboard = lazy(() => import("./pages/userEmployee/UserDashboard"));
 const Internships = lazy(() => import("./pages/userEmployee/Internships"));
 const Jobs = lazy(() => import("./pages/userEmployee/Jobs"));
 const JobDetail = lazy(() => import("./pages/userEmployee/JobDetail"));

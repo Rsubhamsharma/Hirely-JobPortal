@@ -1,9 +1,8 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import api from "../../api/axios";
 import Navbar from "../../components/Navbar";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
-import RecruiterDashboard from "./RecruiterDashboard";
 
 
 const InputGroup = ({ label, name, type = "text", placeholder, value, onChange, options }) => (
@@ -67,16 +66,7 @@ function UserDashboard() {
 
 
 
-  useEffect(() => {
-    fetchProfile();
-    // if (user?.role === "recruiter") {
-    //   return <RecruiterDashboard />;
-    // }
-  }, []); // Only run once on mount
-  // InputGroup component defined OUTSIDE to prevent re-creation on every render
-
-
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     try {
       const res = await api.get("/profile/me");
       if (res.data.success && res.data.data) {
@@ -104,7 +94,11 @@ function UserDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]); // Only run once on mount
 
   const calculateProgress = (profile) => {
     const fields = ['phoneNumber', 'profilesummary', 'portfolio', 'github', 'linkedin', 'resume', 'profileimage'];

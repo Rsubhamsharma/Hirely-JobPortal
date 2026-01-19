@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import api from "../../api/axios";
 import Navbar from "../../components/Navbar";
 import toast from "react-hot-toast";
@@ -54,11 +54,7 @@ function RecruiterDashboard() {
     const [newName, setNewName] = useState("");
     const [showDeletePhotoModal, setShowDeletePhotoModal] = useState(false);
 
-    useEffect(() => {
-        fetchProfile();
-    }, []);
-
-    const fetchProfile = async () => {
+    const fetchProfile = useCallback(async () => {
         try {
             const res = await api.get("/profile/me");
             if (res.data.success && res.data.data) {
@@ -86,7 +82,11 @@ function RecruiterDashboard() {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        fetchProfile();
+    }, [fetchProfile]);
 
     const calculateProgress = (profile) => {
         const fields = ['phoneNumber', 'companyName', 'aboutCompany', 'portfolio', 'linkedin', 'profileimage', 'companyLogo'];
