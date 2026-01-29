@@ -183,9 +183,14 @@ function Jobs() {
       });
 
       const res = await api.get(`/jobs?${params.toString()}`);
-      if (res.data.success) {
-        setJobs(res.data.data?.jobs || []);
-        setTotalPages(res.data.data?.totalPages || 1);
+      if (res.data?.success) {
+        const rawData = res.data.data;
+        const jobsArray = Array.isArray(rawData)
+          ? rawData
+          : (rawData && Array.isArray(rawData.jobs) ? rawData.jobs : []);
+
+        setJobs(jobsArray);
+        setTotalPages(rawData?.totalPages || 1);
         setCurrentPage(page);
       }
     } catch (error) {
@@ -648,8 +653,9 @@ function Jobs() {
   }
 
   // Applicant View - Find Jobs
-  // Get unique locations
-  const locations = ["all", ...new Set(jobs.map(job => job.location).filter(Boolean))];
+  // Get unique locations - ensure jobs is an array before mapping
+  const jobsArray = Array.isArray(jobs) ? jobs : [];
+  const locations = ["all", ...new Set(jobsArray.map(job => job.location).filter(Boolean))];
 
 
 

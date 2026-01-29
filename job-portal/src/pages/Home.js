@@ -19,10 +19,15 @@ function Home() {
     try {
       // Fetch recent jobs
       const jobsRes = await api.get("/jobs");
-      if (jobsRes.data.success) {
+      if (jobsRes.data?.success) {
         // Backend now returns paginated data: {jobs: [], total, page, limit, totalPages}
-        const jobsData = jobsRes.data.data?.jobs || jobsRes.data.data || [];
-        setRecentJobs(Array.isArray(jobsData) ? jobsData.slice(0, 3) : []);
+        // Safely extract the jobs array whether it's the new object or old raw array
+        const rawData = jobsRes.data.data;
+        const jobsArray = Array.isArray(rawData)
+          ? rawData
+          : (rawData && Array.isArray(rawData.jobs) ? rawData.jobs : []);
+
+        setRecentJobs(jobsArray.slice(0, 3));
       }
 
       // Fetch my applications (for applicants)
