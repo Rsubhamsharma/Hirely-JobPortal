@@ -307,9 +307,7 @@ const removeEducation = asyncHandler(async (req, res) => {
 const removeSkill = asyncHandler(async (req, res) => {
     let skillToRemove = req.params.skill || req.params.skills || req.query.skill || req.query.skills || req.body.skill || req.body.skills;
     // helpful debug when request isn't providing body (DELETE bodies can be skipped by some clients)
-    if (!skillToRemove && Object.keys(req.body || {}).length === 0) {
-        console.log("removeSkill: no body provided; check Content-Type and that client sends body for DELETE");
-    }
+    // deleted debug log
     if (!skillToRemove) throw new ApiError(400, "Skill to remove is required (send as param, query or body)");
     if (!Array.isArray(skillToRemove)) skillToRemove = [skillToRemove];
     skillToRemove = skillToRemove.map(s => String(s).trim()).filter(Boolean);
@@ -429,14 +427,13 @@ const uploadResume = asyncHandler(async (req, res) => {
             });
 
             if (!uploadResult?.secure_url) {
-                console.error("Cloudinary result:", uploadResult);
                 throw new ApiError(500, "Resume upload failed (cloudinary)");
             }
 
             resumeUrl = normalizeUrl(uploadResult.secure_url);
             if (!resumeUrl) throw new ApiError(400, "Invalid resume URL after upload");
         } catch (err) {
-            console.error("Resume upload error:", err);
+            // Error logged by middleware if needed
             // if err is ApiError let it bubble up, else wrap to avoid leaking internals
             if (err instanceof ApiError) throw err;
             throw new ApiError(500, "Resume upload failed");
@@ -461,7 +458,7 @@ const uploadResume = asyncHandler(async (req, res) => {
             .status(200)
             .json(new ApiResponse(200, profile, "Resume uploaded successfully"));
     } catch (err) {
-        console.error("Profile update error:", err);
+        // Error handled by global handler
         // Optional: if you uploaded to cloudinary and DB update failed, you might remove the uploaded file here.
         if (err instanceof ApiError) throw err;
         throw new ApiError(500, "Failed to update profile with resume");

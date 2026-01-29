@@ -53,7 +53,6 @@ export const AuthProvider = ({ children }) => {
     // Login function - called after successful login API call
     // The backend sets HTTP-only cookies, we just need to store user data
     const login = useCallback((userData) => {
-        console.log('Login called with user data:', userData);
         setUser(userData);
     }, []);
 
@@ -89,7 +88,6 @@ export const AuthProvider = ({ children }) => {
                 return res.data.data;
             }
         } catch (error) {
-            console.error('Failed to refresh user:', error);
             setUser(null);
         }
         return null;

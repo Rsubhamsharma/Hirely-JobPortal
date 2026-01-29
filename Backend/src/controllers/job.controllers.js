@@ -6,6 +6,8 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import User from "../models/user.schema.js";
 import mongoose from "mongoose";
 import Profile from "../models/profile.schema.js";
+import { scrapeJobDescription } from "../services/scrape.service.js";
+import * as aiService from "../services/ai.service.js";
 
 const createJob = asyncHandler(async (req, res) => {
   const user = req.user
@@ -109,6 +111,23 @@ const createJob = asyncHandler(async (req, res) => {
 const getJobById = asyncHandler(async (req, res) => {
   const { jobId } = req.params
 
+  // Parse job ID to determine source
+  const [source] = jobId.split("_");
+
+  // Handle external jobs
+  const externalSources = ["adzuna", "jsearch", "remotive"];
+  if (externalSources.includes(source)) {
+    const { getCachedData } = await import("../services/redis.service.js");
+    const job = await getCachedData(`job:${jobId}`);
+
+    if (!job) {
+      throw new ApiError(404, "Job not found. It may have expired or was removed by the provider.");
+    }
+
+    return res.status(200).json(new ApiResponse(200, job, "External job fetched successfully"))
+  }
+
+  // Handle internal jobs (default)
   if (!mongoose.Types.ObjectId.isValid(jobId)) {
     throw new ApiError(400, "Invalid job ID format")
   }
@@ -281,33 +300,228 @@ const toggleJobStatus = asyncHandler(async (req, res) => {
 });
 
 const getAllJobs = asyncHandler(async (req, res) => {
-  // Optionally add filters (e.g., ?search=developer)
-  const { search, location, jobType } = req.query;
+  try {
+    // Import aggregator service
+    const { aggregateJobs } = await import("../services/jobAggregator.service.js");
 
-  const query = { status: { $ne: "closed" } }; // Fetch active and inactive jobs, exclude closed
+    // Extract query parameters (already validated by middleware)
+    const { keyword, location, type, source, page, limit } = req.query;
 
-  if (search) {
-    query.title = { $regex: search, $options: "i" };
-  }
-  if (location) {
-    query.location = { $regex: location, $options: "i" };
-  }
-  if (jobType) {
-    query.jobType = jobType;
-  }
-
-  const jobs = await Job.find(query)
-    .sort({ createdAt: -1 })
-    .populate({
-      path: "postedBy",
-      select: "fullname email role"
-    })
-    .populate({
-      path: "profile",
-      select: "profileimage companyName companyLogo aboutCompany"
+    // Use job aggregator to fetch and combine jobs
+    const result = await aggregateJobs({
+      keyword,
+      location,
+      type: type || "",
+      source: source || "",
+      page: parseInt(page) || 1,
+      limit: parseInt(limit) || 20
     });
 
-  return res.status(200).json(new ApiResponse(200, jobs, "Jobs fetched successfully"));
+    return res.status(200).json(
+      new ApiResponse(200, result, "Jobs fetched successfully")
+    );
+  } catch (error) {
+    // Fallback: Query database directly
+    try {
+      const { keyword, location, type, page = 1, limit = 20 } = req.query;
+
+      const query = { status: { $ne: "closed" } };
+
+      if (keyword) {
+        query.$or = [
+          { title: { $regex: keyword, $options: "i" } },
+          { description: { $regex: keyword, $options: "i" } }
+        ];
+      }
+
+      if (location) {
+        query.location = { $regex: location, $options: "i" };
+      }
+
+      if (type) {
+        query.jobType = type;
+      }
+
+      const skip = (parseInt(page) - 1) * parseInt(limit);
+
+      const [jobs, total] = await Promise.all([
+        Job.find(query)
+          .populate({
+            path: "postedBy",
+            select: "fullname email role"
+          })
+          .populate({
+            path: "profile",
+            select: "profileimage companyName companyLogo aboutCompany"
+          })
+          .limit(parseInt(limit))
+          .skip(skip)
+          .sort({ createdAt: -1 })
+          .lean(),
+        Job.countDocuments(query)
+      ]);
+
+      const result = {
+        jobs: jobs.map(job => ({
+          ...job,
+          id: job._id.toString(),
+          source: "internal"
+        })),
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        totalPages: Math.ceil(total / parseInt(limit))
+      };
+
+      // Fallback query successful
+
+      return res.status(200).json(
+        new ApiResponse(200, result, "Jobs fetched successfully (fallback mode)")
+      );
+    } catch (fallbackError) {
+      // Fallback query also failed
+      throw new ApiError(500, "Failed to fetch jobs");
+    }
+  }
 });
 
-export { createJob, getJobById, editJob, closeJob, deleteJob, toggleJobStatus, getAllJobs }
+const trackJobClick = asyncHandler(async (req, res) => {
+  const { jobId } = req.params;
+
+  // Import JobClick model
+  const JobClick = (await import("../models/jobClick.schema.js")).default;
+
+  // Parse job ID to determine source
+  const [source] = jobId.split("_");
+
+  // Validate source
+  const validSources = ["internal", "adzuna", "jsearch", "remotive"];
+  if (!validSources.includes(source)) {
+    throw new ApiError(400, "Invalid job source");
+  }
+
+  // Get IP and user agent
+  const ip = req.ip || req.connection.remoteAddress || "";
+  const userAgent = req.get("user-agent") || "";
+
+  // Log the click (don't await - fire and forget)
+  JobClick.create({
+    jobId,
+    source,
+    ip,
+    userAgent
+  }).catch(() => { }); // Fire and forget, ignore logging in prod for this
+
+  // Get external job URL
+  let redirectUrl = null;
+
+  if (source === "internal") {
+    // For internal jobs, redirect to job detail page
+    const internalId = jobId.replace("internal_", "");
+    redirectUrl = `${process.env.CORS_ORIGIN}/jobs/${internalId}`;
+  } else {
+    // For external jobs, we need to get the URL from cache or reconstruct it
+    // This is a simplified version - in production, you'd want to cache full job data
+    const { getExternalJobUrl } = await import("../services/jobAggregator.service.js");
+    redirectUrl = await getExternalJobUrl(jobId);
+
+    if (!redirectUrl) {
+      // Fallback: construct generic URLs based on provider
+      const [provider, ...idParts] = jobId.split("_");
+      const originalId = idParts.join("_");
+
+      switch (provider) {
+        case "remotive":
+          redirectUrl = `https://remotive.com/remote-jobs/${originalId}`;
+          break;
+        case "adzuna":
+          redirectUrl = `https://www.adzuna.com/details/${originalId}`;
+          break;
+        case "jsearch":
+          // JSearch doesn't have a direct URL pattern
+          throw new ApiError(404, "Job URL not found. Please search for the job again.");
+        default:
+          throw new ApiError(404, "Job not found");
+      }
+    }
+  }
+
+  if (!redirectUrl) {
+    throw new ApiError(404, "Job URL not found");
+  }
+
+  // Redirect to the job URL
+  return res.redirect(302, redirectUrl);
+});
+
+/**
+ * Scrape full job description from external job URL
+ * For jobs from Adzuna and other aggregators that only provide short snippets
+ */
+const scrapeFullJobDescription = asyncHandler(async (req, res) => {
+  const { jobId } = req.params;
+
+  // Parse job ID to determine source
+  const [source] = jobId.split("_");
+
+  // Only allow scraping for external jobs
+  const externalSources = ["adzuna", "jsearch", "remotive"];
+  if (!externalSources.includes(source)) {
+    throw new ApiError(400, "Scraping only available for external jobs");
+  }
+
+  // Get the job data directly from cache to get the real externalUrl
+  const { getCachedData } = await import("../services/redis.service.js");
+  const cachedJob = await getCachedData(`job:${jobId}`);
+
+  let externalUrl = null;
+
+  if (cachedJob && cachedJob.externalUrl) {
+    externalUrl = cachedJob.externalUrl;
+  } else {
+    // Fallback: try to construct URL from provider patterns
+    const { getExternalJobUrl } = await import("../services/jobAggregator.service.js");
+    externalUrl = await getExternalJobUrl(jobId);
+  }
+
+  if (!externalUrl) {
+    return res.status(200).json(
+      new ApiResponse(200, {
+        description: null,
+        scraped: false,
+        message: "External job URL not found in cache"
+      }, "Scraping not available for this job")
+    );
+  }
+
+  // Try to scrape first
+  let description = await scrapeJobDescription(externalUrl);
+  let scraped = !!description;
+
+  if (!description || description.length < 1200) {
+
+    // Use cachedJob if available, or construct basic data from ID
+    // Adzuna IDs are usually numbers, so we try to provide a generic but professional context
+    const expansionData = {
+      title: cachedJob?.title || "Professional Role",
+      company: cachedJob?.company || "Premier Employer",
+      description: description || cachedJob?.description || "Snippet not available",
+      location: cachedJob?.location || "Remote",
+      source: source
+    };
+
+    description = await aiService.generateFullDescription(expansionData);
+    scraped = false; // Mark as AI enhanced, not scraped
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200, {
+      description,
+      scraped,
+      aiEnhanced: !scraped,
+      url: externalUrl
+    }, scraped ? "Full description fetched successfully" : "Job description enhanced with AI")
+  );
+});
+
+export { createJob, getJobById, editJob, closeJob, deleteJob, toggleJobStatus, getAllJobs, trackJobClick, scrapeFullJobDescription }

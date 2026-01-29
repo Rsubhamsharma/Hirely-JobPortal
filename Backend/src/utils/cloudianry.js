@@ -19,10 +19,8 @@ export const uploadCloudinary = async (filebuffer, options = {}) => {
             },
             (error, result) => {
                 if (error) {
-                    // console.error("Cloudinary upload error:", error.message || error);
                     return reject(error);
                 }
-                // console.log("Cloudinary upload success:", result?.secure_url);
                 resolve(result);
             }
         );
@@ -30,7 +28,6 @@ export const uploadCloudinary = async (filebuffer, options = {}) => {
         try {
             streamifier.createReadStream(filebuffer).pipe(uploadStream);
         } catch (err) {
-            // console.error("Stream error:", err.message || err);
             reject(err);
         }
     });

@@ -32,8 +32,7 @@ function Signup({ onClose }) {
 
 
     } catch (error) {
-      console.log(error)
-
+      // Error handled
     }
   }
 
@@ -61,7 +60,6 @@ function Signup({ onClose }) {
         navigate("/login");
       }
     } catch (error) {
-      console.error(error);
       toast.error(error.response?.data?.message || "Signup failed");
     } finally {
       setLoading(false);

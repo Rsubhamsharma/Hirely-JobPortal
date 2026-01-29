@@ -22,7 +22,7 @@ const createCompetiton = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Please create a profile before creating a competition. If you have a profile, try logging out and logging back in.")
     }
 
-    console.log("Creating competition with profile:", req.user.profile);
+    // console.log("Creating competition with profile:", req.user.profile);
 
     const competition = await competitionsSchema.create(
         {
@@ -38,7 +38,7 @@ const createCompetiton = asyncHandler(async (req, res) => {
         throw new ApiError(500, "something went wrong while creating competition  ")
     }
 
-    console.log("Competition created:", competition);
+    // console.log("Competition created:", competition);
 
     // Emit real-time update
     const io = getIO();

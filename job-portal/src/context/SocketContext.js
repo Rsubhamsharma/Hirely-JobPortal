@@ -24,12 +24,11 @@ export const SocketProvider = ({ children }) => {
             });
 
             newSocket.on('connect', () => {
-                console.log('Socket connected successfully');
+                // Connected
             });
 
             newSocket.on('connect_error', (error) => {
-                // Silently handle connection errors - socket.io will retry automatically
-                console.warn('Socket connection error (will retry):', error.message);
+                // Silently handle connection errors
             });
 
             newSocket.on('online_users', (users) => {
@@ -37,7 +36,7 @@ export const SocketProvider = ({ children }) => {
             });
 
             newSocket.on('disconnect', (reason) => {
-                console.log('Socket disconnected:', reason);
+                // Disconnected
             });
 
             setSocket(newSocket);

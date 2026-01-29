@@ -20,7 +20,9 @@ function Home() {
       // Fetch recent jobs
       const jobsRes = await api.get("/jobs");
       if (jobsRes.data.success) {
-        setRecentJobs(jobsRes.data.data.slice(0, 3) || []);
+        // Backend now returns paginated data: {jobs: [], total, page, limit, totalPages}
+        const jobsData = jobsRes.data.data?.jobs || jobsRes.data.data || [];
+        setRecentJobs(Array.isArray(jobsData) ? jobsData.slice(0, 3) : []);
       }
 
       // Fetch my applications (for applicants)
@@ -204,10 +206,9 @@ function Home() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {recentJobs.map((job) => (
-                  <Link
-                    key={job._id}
-                    to={`/employee/jobs/${job._id}`}
-                    className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-xl hover:-translate-y-0.5 transition-all  group"
+                  <div
+                    key={job._id || job.id}
+                    className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-xl hover:-translate-y-0.5 transition-all  group relative"
                   >
                     <div className="flex justify-between items-start mb-3">
                       <h3 className="font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{job.title}</h3>
@@ -216,11 +217,33 @@ function Home() {
                       </span>
                     </div>
                     <p className="text-sm text-slate-500 mb-3">{job.company}</p>
-                    <div className="flex  text-black items-center gap-3 text-xs text-slate-500">
+                    <div className="flex items-center gap-3 text-xs text-slate-500">
                       <span className="font-bold text-md"> {job.location || "Remote"}</span>
-                      <span className="font-bold text-md"> ₹{job.salary?.toLocaleString() || "Competitive"}</span>
+                      <span className="font-bold text-md"> {job.salary ? (String(job.salary).match(/[₹$€£]/) ? job.salary : `₹${job.salary.toLocaleString()}`) : "Competitive"}</span>
                     </div>
-                  </Link>
+
+                    <div className="flex items-center justify-between mt-4 pt-4 border-t border-slate-100 dark:border-slate-700">
+                      <Link
+                        to={`/employee/jobs/${job.id || job._id}`}
+                        state={{ jobData: job }}
+                        className="text-blue-600 dark:text-blue-400 font-semibold hover:underline text-xs"
+                      >
+                        Details →
+                      </Link>
+                      {job.source !== "internal" && (
+                        <button
+                          onClick={() => {
+                            const url = job.externalUrl || job.applyUrl;
+                            const absoluteUrl = url.startsWith('http') ? url : `http://localhost:8000${url}`;
+                            window.open(absoluteUrl, '_blank');
+                          }}
+                          className="px-3 py-1.5 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 transition-all shadow-md"
+                        >
+                          Apply Now
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 ))}
               </div>
             )}
@@ -272,7 +295,7 @@ function Home() {
 
       {/* CTA Section (for guests and applicants) */}
       {(!user || user?.role === "applicant") && (
-        <section className="py-20 bg-slate-900 sm:mx-6 lg:mx-12 rounded-3xl mb-20">
+        <section className="py-20 bg-slate-900 mx-4 sm:mx-6 lg:mx-12 rounded-3xl mb-20">
           <div className="max-w-4xl mx-auto px-4 text-center">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
               {user ? "Want to hire talent?" : "Ready to start your journey?"}

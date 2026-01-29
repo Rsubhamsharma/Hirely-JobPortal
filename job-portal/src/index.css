@@ -7,6 +7,7 @@
    ============================================ */
 
 @layer base {
+
   /* Base Typography */
   body {
     @apply font-sans text-body text-text-light-body bg-white;
@@ -93,6 +94,7 @@
 }
 
 @layer components {
+
   /* Logo Typography */
   .logo-text {
     @apply font-brand font-bold tracking-brand text-indigo-600;
@@ -246,4 +248,92 @@
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
   @apply text-body-sm bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded;
+}
+
+/* Professional Job Description Styling */
+.job-prose {
+  @apply text-slate-600 dark:text-slate-300;
+  line-height: 1.7;
+  /* Readable but compact */
+}
+
+/* Force-strip undesirable external stylings */
+.job-prose *:not(ul):not(ol):not(li):not(p):not(strong):not(b):not(h1):not(h2):not(h3):not(h4) {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.job-prose p {
+  @apply mb-5 block;
+  /* Balanced spacing */
+}
+
+.job-section-header {
+  @apply text-indigo-600 dark:text-indigo-400 font-bold mb-4 mt-8 block uppercase tracking-widest text-xs;
+}
+
+.job-prose h1,
+.job-prose h2,
+.job-prose h3,
+.job-prose h4 {
+  @apply text-slate-900 dark:text-white font-bold mb-5 mt-10 block;
+}
+
+.job-list {
+  @apply mb-6 block;
+  list-style-type: disc !important;
+  list-style-position: inside !important;
+  /* CRITICAL: Ensures bullets are NOT cut off by parent overflow:hidden */
+  padding-left: 0.5rem !important;
+  /* Visible markers */
+}
+
+.job-prose ul {
+  @apply job-list;
+}
+
+.job-prose ol {
+  @apply job-list;
+  list-style-type: decimal !important;
+}
+
+.job-prose li {
+  @apply text-slate-600 dark:text-slate-300;
+  display: list-item !important;
+  margin-bottom: 0.6rem !important;
+  /* Professional separation */
+  padding-left: 0.75rem !important;
+  line-height: 1.6;
+}
+
+/* Force marker visibility and style */
+.job-prose li::marker {
+  @apply text-indigo-600 dark:text-indigo-400 font-extrabold;
+  content: "•  ";
+  /* Backup for some browser styles */
+}
+
+.job-prose strong,
+.job-prose b {
+  @apply text-slate-900 dark:text-white font-bold;
+}
+
+.job-prose a {
+  @apply text-indigo-600 dark:text-indigo-400 hover:underline font-bold;
+}
+
+.job-prose br {
+  @apply block mb-2;
+  content: "";
+  display: block;
+}
+
+/* Explicit layout resets */
+.job-prose div,
+.job-prose section,
+.job-prose article {
+  @apply mb-4 block;
+  width: 100% !important;
+  padding: 0 !important;
 }

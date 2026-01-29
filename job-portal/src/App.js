@@ -53,95 +53,99 @@ function AppWrapper() {
       <AuthProvider>
         <ThemeProvider>
           <SocketProvider>
-            <SocketEventManager />
-            <ScrollToTop />
-            <Toaster position="top-right" toastOptions={{ className: 'font-sans' }} />
-            {!hideNavbar && <Navbar />}
+            <div className="flex flex-col min-h-screen">
+              <SocketEventManager />
+              <ScrollToTop />
+              <Toaster position="top-right" toastOptions={{ className: 'font-sans' }} />
+              {!hideNavbar && <Navbar />}
 
-            <Suspense fallback={
-              <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
-                <div className="text-center">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400 mx-auto mb-4"></div>
-                  <p className="text-slate-600 dark:text-slate-400">Loading...</p>
-                </div>
-              </div>
-            }>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
+              <main className="flex-grow">
+                <Suspense fallback={
+                  <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+                    <div className="text-center">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400 mx-auto mb-4"></div>
+                      <p className="text-slate-600 dark:text-slate-400">Loading...</p>
+                    </div>
+                  </div>
+                }>
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/signup" element={<Signup />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
 
-                <Route path="/employee/profile" element={
-                  <ProtectedRoute>
-                    <ProfileRouter />
-                  </ProtectedRoute>
-                } />
+                    <Route path="/employee/profile" element={
+                      <ProtectedRoute>
+                        <ProfileRouter />
+                      </ProtectedRoute>
+                    } />
 
 
-                <Route path="/employee/internships" element={
-                  <ProtectedRoute>
-                    <Internships />
-                  </ProtectedRoute>
-                } />
-                <Route path="/employee/jobs" element={
-                  <ProtectedRoute>
-                    <Jobs />
-                  </ProtectedRoute>
-                } />
-                <Route path="/employee/jobs/:jobId" element={
-                  <ProtectedRoute>
-                    <JobDetail />
-                  </ProtectedRoute>
-                } />
-                <Route path="/employee/jobs/:jobId/applications" element={
-                  <ProtectedRoute>
-                    <JobApplications />
-                  </ProtectedRoute>
-                } />
-                <Route path="/employee/my-applications" element={
-                  <ProtectedRoute>
-                    <MyApplications />
-                  </ProtectedRoute>
-                } />
-                <Route path="/employee/competitions" element={
-                  <ProtectedRoute>
-                    <Competitions />
-                  </ProtectedRoute>
-                } />
-                <Route path="/employee/competitions/:competitionId" element={
-                  <ProtectedRoute>
-                    <CompetitionDetail />
-                  </ProtectedRoute>
-                } />
-                <Route path="/employee/messages" element={
-                  <ProtectedRoute>
-                    <Messages />
-                  </ProtectedRoute>
-                } />
-                <Route path="/employee/resume" element={
-                  <ProtectedRoute>
-                    <Resume />
-                  </ProtectedRoute>
-                } />
-                <Route path="/about" element={
-                  <ProtectedRoute>
-                    <About />
-                  </ProtectedRoute>
-                } />
-                <Route path="/contact" element={
-                  <ProtectedRoute>
-                    <Contact />
-                  </ProtectedRoute>
-                } />
-                <Route path="/employee/competitions/register/:competitionId" element={
-                  <ProtectedRoute>
-                    <RegisterCompetition />
-                  </ProtectedRoute>
-                } />
-              </Routes>
-            </Suspense>
-            <Footer />
+                    <Route path="/employee/internships" element={
+                      <ProtectedRoute>
+                        <Internships />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/employee/jobs" element={
+                      <ProtectedRoute>
+                        <Jobs />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/employee/jobs/:jobId" element={
+                      <ProtectedRoute>
+                        <JobDetail />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/employee/jobs/:jobId/applications" element={
+                      <ProtectedRoute>
+                        <JobApplications />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/employee/my-applications" element={
+                      <ProtectedRoute>
+                        <MyApplications />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/employee/competitions" element={
+                      <ProtectedRoute>
+                        <Competitions />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/employee/competitions/:competitionId" element={
+                      <ProtectedRoute>
+                        <CompetitionDetail />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/employee/messages" element={
+                      <ProtectedRoute>
+                        <Messages />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/employee/resume" element={
+                      <ProtectedRoute>
+                        <Resume />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/about" element={
+                      <ProtectedRoute>
+                        <About />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/contact" element={
+                      <ProtectedRoute>
+                        <Contact />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/employee/competitions/register/:competitionId" element={
+                      <ProtectedRoute>
+                        <RegisterCompetition />
+                      </ProtectedRoute>
+                    } />
+                  </Routes>
+                </Suspense>
+              </main>
+              <Footer />
+            </div>
           </SocketProvider>
         </ThemeProvider>
       </AuthProvider>

@@ -1,8 +1,20 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import helmet from "helmet";
+import compression from "compression";
+import morgan from "morgan";
+
 
 const app = express();
+
+// Security headers
+app.use(helmet());
+
+// Performance and logging middlewares
+app.use(compression());
+// app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
+
 
 // Configure CORS to accept multiple origins
 const allowedOrigins = [
