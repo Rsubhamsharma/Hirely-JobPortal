@@ -325,7 +325,7 @@ function MyApplications() {
                 {/* Tips Section */}
                 {applications.length > 0 && analytics.rejected > analytics.shortlisted && (
                     <div className="mt-8 bg-amber-50 border border-amber-200 rounded-2xl p-6">
-                        <h3 className="text-lg font-semibold text-amber-800 mb-2">💡 Tips to Improve</h3>
+                        <h3 className="text-lg font-semibold text-amber-800 mb-2">Tips to Improve</h3>
                         <ul className="text-amber-700 space-y-2">
                             <li>• Make sure your resume is up-to-date and tailored for each job</li>
                             <li>• Write personalized cover letters highlighting relevant experience</li>

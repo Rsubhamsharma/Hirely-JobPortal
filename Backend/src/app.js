@@ -49,6 +49,7 @@ import jobRoutes from "./routes/job.routes.js"
 import competitionRoutes from "./routes/competition.routes.js"
 import applicationRoutes from "./routes/application.routes.js"
 import messageRoutes from "./routes/message.routes.js"
+import healthRoutes from "./routes/health.routes.js"
 
 
 app.use("/api/v1/users", userRoutes)
@@ -57,6 +58,7 @@ app.use("/api/v1/jobs", jobRoutes)
 app.use("/api/v1/competitions", competitionRoutes)
 app.use("/api/v1/applications", applicationRoutes)
 app.use("/api/v1/messages", messageRoutes)
+app.use("/api/v1/health", healthRoutes)
 
 import { errorHandler } from "./middlewares/error.middleware.js";
 app.use(errorHandler);

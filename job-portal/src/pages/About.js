@@ -93,7 +93,7 @@ function About() {
                             <div className="flex gap-4">
                                 <div className="flex-shrink-0">
                                     <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                        <span className="text-2xl">🎯</span>
+                                        <span className="text-xl font-bold text-blue-600">I</span>
                                     </div>
                                 </div>
                                 <div>
@@ -115,7 +115,7 @@ function About() {
                             <div className="flex gap-4">
                                 <div className="flex-shrink-0">
                                     <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                                        <span className="text-2xl">⚡</span>
+                                        <span className="text-xl font-bold text-purple-600">S</span>
                                     </div>
                                 </div>
                                 <div>
@@ -126,7 +126,7 @@ function About() {
                             <div className="flex gap-4">
                                 <div className="flex-shrink-0">
                                     <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                                        <span className="text-2xl">🌟</span>
+                                        <span className="text-xl font-bold text-orange-600">E</span>
                                     </div>
                                 </div>
                                 <div>
