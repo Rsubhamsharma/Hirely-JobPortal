@@ -817,7 +817,7 @@ Role Details
                                         ? 'bg-gradient-to-r from-green-500 to-emerald-500'
                                         : 'bg-gradient-to-r from-indigo-500 to-purple-500'
                                         }`}>
-                                        {isScraping ? '⏳ Loading...' : (isAiEnhanced ? '✨ AI Professionals Expansion' : (scrapedDescription ? '✓ Scraped Full Content' : 'AI Summary'))}
+                                        {isScraping ? 'Loading...' : (isAiEnhanced ? 'AI Professionals Expansion' : (scrapedDescription ? 'Scraped Full Content' : 'AI Summary'))}
                                     </span>
                                 )}
                             </div>
@@ -859,7 +859,7 @@ Role Details
                         {job.responsibilities && !job.description.toLowerCase().includes(job.responsibilities.substring(0, 20).toLowerCase()) && (
                             <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-8 hover:shadow-md transition-all relative">
                                 <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100 dark:border-slate-700">
-                                    <span className="text-2xl">🚀</span>
+                                    <span className="text-2xl">📋</span>
                                     <h2 className="text-xl font-bold text-slate-900 dark:text-white">Key Responsibilities</h2>
                                 </div>
                                 <div
